@@ -1,6 +1,7 @@
-import PPRLIndex
+from pblock import PPRLIndex
 
-def test_init(self):
+
+def test_init():
     """Test constructor for base class PPRLIndex."""
     pprl = PPRLIndex(nparty=2)
 
