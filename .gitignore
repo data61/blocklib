@@ -1,0 +1,11 @@
+.DS_Store
+.idea/*
+__pycache__/*
+data/*
+datasets/*
+logs/*
+venv/*
+*.csv
+*.pdf
+*.png
+*.jpg
