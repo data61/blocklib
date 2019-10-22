@@ -8,8 +8,8 @@ class TestPSig(unittest.TestCase):
         attr_ind = [0, 1]
         dtuple = ('Joyce', 'Wang', 2134)
         signature_strategy = 'feature-value'
-        signatures = generate_signature(signature_strategy, attr_ind, dtuple)
-        assert signatures == ['JoyceWang']
+        signatures = generate_signature(signature_strategy, attr_ind, dtuple, {})
+        assert signatures == set(['JoyceWang'])
 
 
     def test_n_gram(self):
@@ -18,12 +18,15 @@ class TestPSig(unittest.TestCase):
         dtuple = ('Joyce', 'Wang', 2134)
 
         # test 2-gram
-        signature_strategy = '2-gram'
-        signatures = generate_signature(signature_strategy, attr_ind, dtuple)
+        signature_strategy = 'n-gram'
+        signature_strategy_config = {'n': 2}
+        signatures = generate_signature(signature_strategy, attr_ind, dtuple,
+                                        signature_strategy_config)
         assert signatures == set(['Jo', 'oy', 'yc', 'ce', 'eW', 'Wa', 'an', 'ng'])
 
         # test 3-gram
-        signature_strategy = '3-gram'
-        signatures = generate_signature(signature_strategy, attr_ind, dtuple)
+        signature_strategy_config = {'n': 3}
+        signatures = generate_signature(signature_strategy, attr_ind, dtuple,
+                                        signature_strategy_config)
         assert signatures == set(['Joy', 'oyc', 'yce', 'ceW', 'eWa', 'Wan',
                                   'ang'])

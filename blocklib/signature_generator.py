@@ -1,6 +1,7 @@
 
 
-def generate_signature(signature_strategy, attr_ind, dtuple):
+def generate_signature(signature_strategy, attr_ind, dtuple,
+                       signature_strategy_config):
     """Generate signature for one record.
 
     Parameters
@@ -14,19 +15,23 @@ def generate_signature(signature_strategy, attr_ind, dtuple):
     dtuple: tuple
         It contains raw record
 
+    signature_strategy_config: dict
+        It specifies the configuration for signature strategy
+
     Return
     ------
     signatures: list of str
 
     """
+    # arguments that we need to pass for any strategy
+    args = dict(attr_ind=attr_ind, dtuple=dtuple)
+    args.update(signature_strategy_config)
+
     if signature_strategy == 'feature-value':
-        signatures = generate_by_feature_value(attr_ind, dtuple)
+        signatures = generate_by_feature_value(**args)
 
-    elif signature_strategy == '2-gram':
-        signatures = generate_by_n_gram(attr_ind, dtuple, 2)
-
-    elif signature_strategy == '3-gram':
-        signatures = generate_by_n_gram(attr_ind, dtuple, 3)
+    elif signature_strategy == 'n-gram':
+        signatures = generate_by_n_gram(**args)
 
     else:
         raise NotImplementedError('Strategy {} is not implemented yet!')
@@ -35,7 +40,7 @@ def generate_signature(signature_strategy, attr_ind, dtuple):
 
 def generate_by_feature_value(attr_ind, dtuple):
     """Generate signatures by concatenate original features."""
-    return [''.join([dtuple[ind] for ind in attr_ind])]
+    return set([''.join([dtuple[ind] for ind in attr_ind])])
 
 
 def generate_by_n_gram(attr_ind, dtuple, n):

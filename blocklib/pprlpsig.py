@@ -28,6 +28,8 @@ class PPRLIndexPSignature(PPRLIndex):
         self.min_occur_ratio = get_config(config, 'min_occur_ratio')
         self.max_occur_ratio = get_config(config, 'max_occur_ratio')
         self.signature_strategy = get_config(config, 'signature_strategy')
+        self.signature_strategy_config = get_config(
+            config, 'signature_strategy_config')
 
     def build_inverted_index(self, data, rec_id_col=None):
         """Build inverted index given P-Sig method."""
@@ -40,13 +42,15 @@ class PPRLIndexPSignature(PPRLIndex):
 
         # Get the signature signature_strategy in config
         signature_strategy = self.signature_strategy
+        signature_strategy_config = self.signature_strategy_config
 
         # Build reverted index
         for rec_id, dtuple in zip(rec_ids, data):
             attr_ind = self.attr_select_list
 
             # generate signatures
-            signatures = generate_signature(signature_strategy, attr_ind, dtuple)
+            signatures = generate_signature(signature_strategy, attr_ind,
+                                            dtuple, signature_strategy_config)
 
             for signature in signatures:
                 if signature in invert_index:
