@@ -1,5 +1,6 @@
 import hashlib
 from .pprlindex import PPRLIndex
+from .signature_generator import generate_signature
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -24,6 +25,8 @@ class PPRLIndexPSignature(PPRLIndex):
         self.bf_len = self.get_config(config,'bf_len')
         self.min_occur_ratio = self.get_config(config,'min_occur_ratio')
         self.max_occur_ratio = self.get_config(config,'max_occur_ratio')
+        self.signature_strategy = self.get_config(config, 'signature_strategy')
+
 
     def get_config(self, config, arg_name):
         """Get arg value if arg_name exists in the config.
@@ -48,14 +51,21 @@ class PPRLIndexPSignature(PPRLIndex):
         else:
             rec_ids = range(len(data))
 
+        # Get the signature signature_strategy in config
+        signature_strategy = self.signature_strategy
+
         # Build reverted index
         for rec_id, dtuple in zip(rec_ids, data):
             attr_ind = self.attr_select_list
-            signature = ''.join([dtuple[ind] for ind in attr_ind])
-            if signature in invert_index:
-                invert_index[signature].append(rec_id)
-            else:
-                invert_index[signature] = [rec_id]
+
+            # generate signatures
+            signatures = generate_signature(signature_strategy, attr_ind, dtuple)
+
+            for signature in signatures:
+                if signature in invert_index:
+                    invert_index[signature].append(rec_id)
+                else:
+                    invert_index[signature] = [rec_id]
 
         # Filter revert index based on ratio
         n = len(data)
@@ -69,6 +79,7 @@ class PPRLIndexPSignature(PPRLIndex):
         candidate_bloom_filter = self.generate_bloom_filter(invert_index)
         # cache this?
         return invert_index, candidate_bloom_filter
+
 
     def generate_bloom_filter(self, invert_index):
         """Generate candidate bloom filter for inverted index."""
