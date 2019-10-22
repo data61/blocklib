@@ -2,8 +2,7 @@ import statistics
 
 
 class PPRLIndex:
-    """Base class for PPRL indexing/blocking
-    """
+    """Base class for PPRL indexing/blocking."""
 
     def __init__(self):
         """Initialise base class."""
