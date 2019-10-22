@@ -1,5 +1,6 @@
 import fuzzy
 
+
 def generate_by_feature_value(attr_ind, dtuple, list_substrings_indices=[[0]]):
     """ Generate signatures by simply concatenating original features and selecting a substring (useful for dates for
      example).
@@ -28,7 +29,6 @@ def generate_by_n_gram(attr_ind, dtuple, n):
     return signatures
 
 
-
 def generate_by_soundex(attr_ind, dtuple):
     """Generate a phonetic encoding of features using soundex.
 
@@ -44,15 +44,15 @@ def generate_by_soundex(attr_ind, dtuple):
 def generate_by_metaphone(attr_ind, dtuple):
     """Generate a phonetic encoding of features using metaphone.
 
-    >>> sigs = generate_by_metaphone([0, 1], ('Joyce', 'Wang', 2134))
-    >>> assert sigs == {b'JK', b'ANK', b'FNK', b'AK'}
+    >>> sorted(generate_by_metaphone([0, 1], ('Smith', 'Schmidt', 2134)))
+    ['SM0XMT', 'XMTSMT']
 
     """
     features = tuple(dtuple[i] for i in attr_ind)
     metaphone = fuzzy.DMetaphone()
     sigs = []
     for feature in features:
-        sigs.extend(metaphone(feature))
+        sigs.append(''.join(f.decode() for f in metaphone(feature)))
     return set(sigs)
 
 
