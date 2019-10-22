@@ -1,11 +1,15 @@
 
 
-def generate_by_feature_value(attr_ind, dtuple):
-    """ Generate signatures by simply concatenating original features.
-    >>> generate_by_feature_value([2, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'))
-    {'Little WhingingSurrey'}
+def generate_by_feature_value(attr_ind, dtuple, list_substrings_indices=[[0]]):
+    """ Generate signatures by simply concatenating original features and selecting a substring (useful for dates for
+     example).
+    >>> res = generate_by_feature_value([2, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'))
+    >>> assert res == {'Little WhingingSurrey'}
+    >>> res = generate_by_feature_value([2, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), list_substrings_indices=[[2,4], [5]])
+    >>> assert res == {'tt', 'e WhingingSurrey'}
     """
-    return set([''.join([dtuple[ind] for ind in attr_ind])])
+
+    return set([''.join([dtuple[ind] for ind in attr_ind])[x[0]: x[1] if len(x) > 1 else None] for x in list_substrings_indices])
 
 
 def generate_by_n_gram(attr_ind, dtuple, n):
