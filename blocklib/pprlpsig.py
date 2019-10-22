@@ -1,10 +1,8 @@
-import os
-import time
-import math
 import hashlib
-from collections import defaultdict
+
 
 from .pprlindex import PPRLIndex
+
 
 class PPRLIndexPSignature(PPRLIndex):
     """Class that implements the PPRL indexing technique:
@@ -12,7 +10,7 @@ class PPRLIndexPSignature(PPRLIndex):
         Reference scalability entity resolution using probability signatures
         on parallel databases.
 
-        This class includes an implmentation of p-sig algorithm.
+        This class includes an implementation of p-sig algorithm.
     """
 
     def __init__(self, config):
@@ -43,8 +41,8 @@ class PPRLIndexPSignature(PPRLIndex):
             raise ValueError('P-Sig: Argument "{}" is not specified'.format(arg_name))
         return value
 
-    def build_invert_index(self, data, rec_id_col=None):
-        """Build reverted index given P-Sig method."""
+    def build_inverted_index(self, data, rec_id_col=None):
+        """Build inverted index given P-Sig method."""
         invert_index = {}
         # Build index of records
         if rec_id_col is not None:
