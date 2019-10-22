@@ -23,8 +23,8 @@ class TestPSig(unittest.TestCase):
                 ('id6', 'Lindsay', 'Jone', 'Narwee')]
         config = {'num_hash_funct': 20,
                   'bf_len': 2048,
-                  'signature_strategy': 'feature-value',
-                  'signature_strategy_config': {},
+                  'signature_strategy': ['feature-value'],
+                  'signature_strategy_config': [{}],
                   'attr_select_list': [1],
                   'max_occur_ratio': 0.5,
                   'min_occur_ratio': 0.2}
