@@ -2,7 +2,8 @@ import statistics
 
 
 class PPRLIndex:
-    """General class that implements an indexing technique for PPRL."""
+    """Base class for PPRL indexing/blocking
+    """
 
     def __init__(self):
         """Initialise base class."""
@@ -12,8 +13,7 @@ class PPRLIndex:
         self.revert_index = {}
         self.stats = {}
 
-
-    def build_revert_index(self, data):
+    def build_inverted_index(self, data):
         """Method which builds the index for all database.
 
            Argument:
@@ -22,8 +22,7 @@ class PPRLIndex:
 
            See derived classes for actual implementations.
         """
-        pass
-
+        raise NotImplementedError("Derived class needs to implement")
 
     def summarize_revert_index(self):
         """Summarize statistics of reverted index / blocks."""

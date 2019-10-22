@@ -1,5 +1,6 @@
 from blocklib import PPRLIndex
 
+
 def test_init():
     """Test constructor for base class PPRLIndex."""
     pprl = PPRLIndex()
