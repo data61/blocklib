@@ -18,7 +18,7 @@ class TestPSig(unittest.TestCase):
         attr_ind = [0, 1]
         list_substrings_indices=[[1, 4], [6]]
         dtuple = ('Joyce', 'Wang', 2134)
-        signature_strategy = 'feature-value'
+        signature_strategy = ['feature-value']
         signatures = generate_signature(signature_strategy, attr_ind, dtuple,
                                         {'list_substrings_indices': list_substrings_indices})
         assert signatures == set(['oyc', 'ang'])
