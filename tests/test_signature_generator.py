@@ -20,7 +20,7 @@ class TestPSig(unittest.TestCase):
         dtuple = ('Joyce', 'Wang', 2134)
         signature_strategy = ['feature-value']
         signatures = generate_signature(signature_strategy, attr_ind, dtuple,
-                                        {'list_substrings_indices': list_substrings_indices})
+                                        [{'list_substrings_indices': list_substrings_indices}])
         assert signatures == set(['oyc', 'ang'])
 
     def test_n_gram(self):
