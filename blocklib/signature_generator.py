@@ -38,13 +38,20 @@ def generate_signature(signature_strategy, attr_ind, dtuple,
 
     return signatures
 
+
 def generate_by_feature_value(attr_ind, dtuple):
-    """Generate signatures by concatenate original features."""
+    """ Generate signatures by simply concatenating original features.
+    >>> generate_by_feature_value([2, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'))
+    {'Little WhingingSurrey'}
+    """
     return set([''.join([dtuple[ind] for ind in attr_ind])])
 
 
 def generate_by_n_gram(attr_ind, dtuple, n):
-    """Generate signatures by constructing n-grams."""
+    """Generate signatures by constructing n-grams.
+    >>> res = generate_by_n_gram([0, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), 2)
+    >>> assert res == {'y ', 'ot', 'rS', 'Su', 'ry', 'er', 'ur', 'po', 're', 'ha', 'te', 'ar', 'tt', 'rr', ' p', 'ey'}
+    """
     # concatenate all attributes as 1 string
     attribute = ''.join([dtuple[x] for x in attr_ind])
 
