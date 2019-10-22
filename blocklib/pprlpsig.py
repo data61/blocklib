@@ -44,9 +44,9 @@ class PPRLIndexPSignature(PPRLIndex):
             raise ValueError('P-Sig: Argument "{}" is not specified'.format(arg_name))
         return value
 
-    def build_revert_index(self, data, rec_id_col=None):
+    def build_invert_index(self, data, rec_id_col=None):
         """Build reverted index given P-Sig method."""
-        revert_index = {}
+        invert_index = {}
         # Build index of records
         if rec_id_col is not None:
             rec_ids = [dtuple[rec_id_col] for dtuple in data]
@@ -57,16 +57,47 @@ class PPRLIndexPSignature(PPRLIndex):
         for rec_id, dtuple in zip(rec_ids, data):
             attr_ind = self.attr_select_list
             signature = ''.join([dtuple[ind] for ind in attr_ind])
-            if signature in revert_index:
-                revert_index[signature].append(rec_id)
+            if signature in invert_index:
+                invert_index[signature].append(rec_id)
             else:
-                revert_index[signature] = [rec_id]
+                invert_index[signature] = [rec_id]
 
         # Filter revert index based on ratio
         n = len(data)
-        revert_index = {k: v for k, v in revert_index.items()
+        invert_index = {k: v for k, v in invert_index.items()
                         if len(v) < n * self.max_occur_ratio and
                            len(v) > n * self.min_occur_ratio}
 
+        # Generate candidate Bloom Filter
+        candidate_bloom_filter = self.generate_bloom_filter(invert_index)
         # cache this?
-        return revert_index
+        return invert_index, candidate_bloom_filter
+
+    def generate_bloom_filter(self, invert_index):
+        """Generate candidate bloom filter for inverted index."""
+        # config for hashing
+        h1 = hashlib.sha1
+        h2 = hashlib.md5
+        num_hash_funct = self.num_hash_funct
+        bf_len = self.bf_len
+
+        # go through each signature and generate bloom filter of it
+        # -- we only store the set of indice that flipped to 1
+        candidate_bloom_filter = set()
+        for signature in invert_index:
+            hex_str1 = h1(signature.encode('utf-8')).hexdigest()
+            hex_str2 = h2(signature.encode('utf-8')).hexdigest()
+            int1 = int(hex_str1, 16)
+            int2 = int(hex_str2, 16)
+
+            # flip {num_hash_funct} times
+            bfset = set()
+            for i in range(num_hash_funct):
+                gi = int1 + i * int2
+                gi = int(gi % bf_len)
+                bfset.add(gi)
+
+            # union indices that have been flipped 1 in candidate bf
+            candidate_bloom_filter = candidate_bloom_filter.union(bfset)
+
+        return candidate_bloom_filter
