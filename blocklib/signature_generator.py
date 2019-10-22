@@ -1,4 +1,4 @@
-
+import fuzzy
 
 def generate_by_feature_value(attr_ind, dtuple, list_substrings_indices=[[0]]):
     """ Generate signatures by simply concatenating original features and selecting a substring (useful for dates for
@@ -28,12 +28,42 @@ def generate_by_n_gram(attr_ind, dtuple, n):
     return signatures
 
 
+
+def generate_by_soundex(attr_ind, dtuple):
+    """Generate a phonetic encoding of features using soundex.
+
+    >>> sigs = generate_by_soundex([0, 1], ('Joyce', 'Wang', 2134))
+    >>> assert sigs == {'W520', 'J200'}
+
+    """
+    features = tuple(dtuple[i] for i in attr_ind)
+    soundex = fuzzy.Soundex(4)
+    return {soundex(feature) for feature in features}
+
+
+def generate_by_metaphone(attr_ind, dtuple):
+    """Generate a phonetic encoding of features using metaphone.
+
+    >>> sigs = generate_by_metaphone([0, 1], ('Joyce', 'Wang', 2134))
+    >>> assert sigs == {b'JK', b'ANK', b'FNK', b'AK'}
+
+    """
+    features = tuple(dtuple[i] for i in attr_ind)
+    metaphone = fuzzy.DMetaphone()
+    sigs = []
+    for feature in features:
+        sigs.extend(metaphone(feature))
+    return set(sigs)
+
+
 #################################################
 ########## Add strategy here ####################
 #################################################
 SIGNATURE_STRATEGIES = {
     'feature-value': generate_by_feature_value,
     'n-gram': generate_by_n_gram,
+    'soundex': generate_by_soundex,
+    'metaphone': generate_by_metaphone
 }
 
 
@@ -74,7 +104,7 @@ def generate_signature(signature_strategies, attr_ind, dtuple,
         func = SIGNATURE_STRATEGIES.get(strategy, None)
 
         if func is None:
-            raise NotImplementedError('Strategy {} is not implemented yet!')
+            raise NotImplementedError(f'Strategy {strategy} is not implemented yet!')
         else:
             config.update(args)
             signatures = signatures.union(func(**config))
