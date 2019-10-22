@@ -29,7 +29,6 @@ class PPRLIndexPSignature(PPRLIndex):
         self.min_occur_ratio = self.get_config(config,'min_occur_ratio')
         self.max_occur_ratio = self.get_config(config,'max_occur_ratio')
 
-
     def get_config(self, config, arg_name):
         """Get arg value if arg_name exists in the config.
 
@@ -67,6 +66,8 @@ class PPRLIndexPSignature(PPRLIndex):
         invert_index = {k: v for k, v in invert_index.items()
                         if len(v) < n * self.max_occur_ratio and
                            len(v) > n * self.min_occur_ratio}
+        if len(invert_index) == 0:
+            raise ValueError('P-Sig: All records are filtered out!')
 
         # Generate candidate Bloom Filter
         candidate_bloom_filter = self.generate_bloom_filter(invert_index)
