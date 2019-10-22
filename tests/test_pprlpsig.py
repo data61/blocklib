@@ -7,7 +7,7 @@ class TestPSig(unittest.TestCase):
     def test_config(self):
         """Test p-sig configuration."""
         with self.assertRaises(ValueError):
-            config = {'num_hash_funct': 20,
+            config = {'number_hash_functions': 20,
                       'bf_len': 2048,
                       'attr_select_list': [1],
                       'max_occur_ratio': 0.015}
@@ -21,11 +21,10 @@ class TestPSig(unittest.TestCase):
                 ('id4', 'Fred', 'Yu', 'Strathfield'),
                 ('id5', 'Fred', 'Zhang', 'Chippendale'),
                 ('id6', 'Lindsay', 'Jone', 'Narwee')]
-        config = {'num_hash_funct': 20,
+        config = {'number_hash_functions': 20,
                   'bf_len': 2048,
-                  'signature_strategy': ['feature-value'],
-                  'signature_strategy_config': [{}],
-                  'attr_select_list': [1],
+                  'signatures': [{'type': 'feature-value'}],
+                  'default_features': [1],
                   'max_occur_ratio': 0.5,
                   'min_occur_ratio': 0.2}
         psig = PPRLIndexPSignature(config)

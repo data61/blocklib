@@ -1,7 +1,7 @@
 import hashlib
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
-from .signature_generator import generate_signature
+from .signature_generator import generate_signatures
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -22,14 +22,12 @@ class PPRLIndexPSignature(PPRLIndex):
 
         """
         super().__init__()
-        self.num_hash_funct = get_config(config, 'num_hash_funct')
-        self.attr_select_list = get_config(config, 'attr_select_list')
+        self.num_hashes = get_config(config, 'number_hash_functions')
+        self.attr_select_list = get_config(config, 'default_features')
         self.bf_len = get_config(config, 'bf_len')
         self.min_occur_ratio = get_config(config, 'min_occur_ratio')
         self.max_occur_ratio = get_config(config, 'max_occur_ratio')
-        self.signature_strategy = get_config(config, 'signature_strategy')
-        self.signature_strategy_config = get_config(
-            config, 'signature_strategy_config')
+        self.signature_strategies = get_config(config, 'signatures')
 
     def build_inverted_index(self, data, rec_id_col=None):
         """Build inverted index given P-Sig method."""
@@ -40,17 +38,12 @@ class PPRLIndexPSignature(PPRLIndex):
         else:
             rec_ids = range(len(data))
 
-        # Get the signature signature_strategy in config
-        signature_strategy = self.signature_strategy
-        signature_strategy_config = self.signature_strategy_config
-
-        # Build reverted index
+        # Build inverted index
+        # {signature -> record ids}
         for rec_id, dtuple in zip(rec_ids, data):
             attr_ind = self.attr_select_list
 
-            # generate signatures
-            signatures = generate_signature(signature_strategy, attr_ind,
-                                            dtuple, signature_strategy_config)
+            signatures = generate_signatures(self.signature_strategies, attr_ind, dtuple)
 
             for signature in signatures:
                 if signature in invert_index:
@@ -58,30 +51,35 @@ class PPRLIndexPSignature(PPRLIndex):
                 else:
                     invert_index[signature] = [rec_id]
 
-        # Filter revert index based on ratio
+        invert_index = self.filter_inverted_index(data, invert_index)
+
+        # Generate candidate Bloom Filter
+        candidate_bloom_filter, cbf_index_to_sig_map = self.generate_bloom_filter(invert_index)
+        # cache this?
+        return invert_index, candidate_bloom_filter
+
+    def filter_inverted_index(self, data, invert_index):
+        # Filter inverted index based on ratio
         n = len(data)
         invert_index = {k: v for k, v in invert_index.items()
                         if n * self.max_occur_ratio > len(v) > n * self.min_occur_ratio}
         if len(invert_index) == 0:
             raise ValueError('P-Sig: All records are filtered out!')
-
-        # Generate candidate Bloom Filter
-        candidate_bloom_filter = self.generate_bloom_filter(invert_index)
-        # cache this?
-        return invert_index, candidate_bloom_filter
-
+        return invert_index
 
     def generate_bloom_filter(self, invert_index):
         """Generate candidate bloom filter for inverted index."""
         # config for hashing
         h1 = hashlib.sha1
         h2 = hashlib.md5
-        num_hash_funct = self.num_hash_funct
+        num_hash_funct = self.num_hashes
         bf_len = self.bf_len
 
         # go through each signature and generate bloom filter of it
-        # -- we only store the set of indice that flipped to 1
+        # -- we only store the set of index that flipped to 1
         candidate_bloom_filter = set()
+        cbf_index_to_sig_map = {}
+
         for signature in invert_index:
             hex_str1 = h1(signature.encode('utf-8')).hexdigest()
             hex_str2 = h2(signature.encode('utf-8')).hexdigest()
@@ -90,12 +88,16 @@ class PPRLIndexPSignature(PPRLIndex):
 
             # flip {num_hash_funct} times
             bfset = set()
-            for i in range(num_hash_funct):
+            for i in range(1, num_hash_funct + 1):
                 gi = int1 + i * int2
                 gi = int(gi % bf_len)
                 bfset.add(gi)
 
+                sigs = cbf_index_to_sig_map.setdefault(gi, set())
+                sigs.add(signature)
+
             # union indices that have been flipped 1 in candidate bf
             candidate_bloom_filter = candidate_bloom_filter.union(bfset)
 
-        return candidate_bloom_filter
+        #print("number of unset bits in cbf:", len(set(range(bf_len)).difference(candidate_bloom_filter)))
+        return candidate_bloom_filter, cbf_index_to_sig_map

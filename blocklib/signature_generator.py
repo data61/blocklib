@@ -1,3 +1,5 @@
+from typing import List, Dict, Sequence
+
 import fuzzy
 
 
@@ -52,7 +54,9 @@ def generate_by_metaphone(attr_ind, dtuple):
     metaphone = fuzzy.DMetaphone()
     sigs = []
     for feature in features:
-        sigs.append(''.join(f.decode() for f in metaphone(feature)))
+        phonetic_encoding = metaphone(feature)
+
+        sigs.append(''.join(p.decode() for p in phonetic_encoding if p is not None))
     return set(sigs)
 
 
@@ -67,28 +71,21 @@ SIGNATURE_STRATEGIES = {
 }
 
 
-def generate_signature(signature_strategies, attr_ind, dtuple,
-                       signature_strategies_config):
-    """Generate signature for one record.
+def generate_signatures(signature_strategies: List[Dict],
+                        attr_ind: List[int],
+                        dtuple: Sequence):
+    """Generate signatures for one record.
 
-    Parameters
-    ----------
-    signature_strategies: list of str
-        It specifies list of strategies to generate signatures.
+    :param signature_strategies:
+        A list of dicts each describing a strategy to generate signatures.
 
-    attr_ind: list of integer
-        It specifies the positions of attributes used to get signatures
+    :param attr_ind:
+        Specifies the positions of attributes used to get signatures
 
-    dtuple: tuple
-        It contains raw record
+    :param dtuple:
+        Raw data to generate signatures from
 
-    signature_strategies_config: list of dict
-        It specifies the configuration for signature strategy
-
-    Return
-    ------
-    signatures: set of str
-
+    :return signatures: set of str
     """
     # arguments that we need to pass for any strategy
     args = dict(attr_ind=attr_ind, dtuple=dtuple)
@@ -97,11 +94,12 @@ def generate_signature(signature_strategies, attr_ind, dtuple,
     signatures = set()
 
     # loop through each strategy
-    pair = zip(signature_strategies, signature_strategies_config)
-    for strategy, config in pair:
+
+    for strategy in signature_strategies:
+        config = strategy.get('config', {})
 
         # find the correct strategy function to call
-        func = SIGNATURE_STRATEGIES.get(strategy, None)
+        func = SIGNATURE_STRATEGIES.get(strategy['type'], None)
 
         if func is None:
             raise NotImplementedError(f'Strategy {strategy} is not implemented yet!')
