@@ -25,9 +25,8 @@ class TestPSig(unittest.TestCase):
                   'bf_len': 2048,
                   'attr_select_list': [1],
                   'max_occur_ratio': 0.5,
-                  'min_occur_ratio': 0.1}
+                  'min_occur_ratio': 0.2}
         psig = PPRLIndexPSignature(config)
         revert_index = psig.build_revert_index(data, rec_id_col=0)
         print(revert_index)
-        assert revert_index == {'Fred': ['id4', 'id5'],
-                                'Lindsay': ['id6']}
+        assert revert_index == {'Fred': ['id4', 'id5']}
