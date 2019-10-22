@@ -5,30 +5,20 @@ class PPRLIndex:
     """General class that implements an indexing technique for PPRL."""
 
     def __init__(self):
-        """Initialise base class.
-
-        Parameters
-        ----------
-        nparty: int
-            Number of parties
-
-        """
+        """Initialise base class."""
         self.rec_dict = None
         self.ent_id_col = None
         self.rec_id_col = None
         self.revert_index = {}
-        self.attr_select_list = {}
         self.stats = {}
 
 
-    def build_revert_index(self, data, attr_select_lists):
+    def build_revert_index(self, data):
         """Method which builds the index for all database.
 
            Argument:
            - data: list of tuples
                 PII datasets
-           - attr_select_lists: A list
-                A list of attributes selected by users
 
            See derived classes for actual implementations.
         """
