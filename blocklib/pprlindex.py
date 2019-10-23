@@ -45,4 +45,12 @@ class PPRLIndex:
                     rec_to_block[rec] = [block_id]
         num_of_blocks_per_rec = [len(x) for x in rec_to_block.values()]
         self.stats['num_of_blocks_per_rec'] = num_of_blocks_per_rec
+
+        print('Number of Blocks:   {}'.format(self.stats['num_of_blocks']))
+        print('Maximum Block Size: {}'.format(self.stats['min_size']))
+        print('Minimum Block Size: {}'.format(self.stats['max_size']))
+        print('Average Block Size: {}'.format(self.stats['avg_size']))
+        print('Median Block Size:  {}'.format(self.stats['med_size']))
+        print('Number of Blocks Per Record (Sorted): {}'.format(sorted(num_of_blocks_per_rec)))
+
         return self.stats
