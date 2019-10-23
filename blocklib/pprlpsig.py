@@ -1,4 +1,5 @@
 import hashlib
+import time
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
@@ -31,6 +32,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
     def build_inverted_index(self, data, rec_id_col=None):
         """Build inverted index given P-Sig method."""
+        start_time = time.time()
         invert_index = {}
         # Build index of records
         if rec_id_col is not None:
@@ -56,6 +58,10 @@ class PPRLIndexPSignature(PPRLIndex):
         # Generate candidate Bloom Filter
         candidate_bloom_filter, cbf_index_to_sig_map = self.generate_bloom_filter(invert_index)
         # cache this?
+
+        delta_time = time.time() - start_time
+        self.stats['blocking_time'] = delta_time
+
         return invert_index, candidate_bloom_filter
 
     def filter_inverted_index(self, data, invert_index):

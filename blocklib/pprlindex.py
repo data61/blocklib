@@ -23,12 +23,26 @@ class PPRLIndex:
         """
         raise NotImplementedError("Derived class needs to implement")
 
-    def summarize_revert_index(self):
+    def summarize_invert_index(self, invert_index):
         """Summarize statistics of reverted index / blocks."""
-        assert len(self.revert_index) > 0
-        lengths = [len(rv) for rv in self.revert_index.values()]
+        assert len(invert_index) > 0
+        # statistics of block
+        lengths = [len(rv) for rv in invert_index.values()]
+        self.stats['num_of_blocks'] = len(lengths)
+        self.stats['len_of_blocks'] = lengths
         self.stats['min_size'] = min(lengths)
         self.stats['max_size'] = max(lengths)
         self.stats['avg_size'] = statistics.mean(lengths)
         self.stats['med_size'] = statistics.median(lengths)
+
+        # find how many blocks each entity / record is a member of
+        rec_to_block = {}
+        for block_id, block in invert_index.items():
+            for rec in block:
+                if rec in rec_to_block:
+                    rec_to_block[rec].append(block_id)
+                else:
+                    rec_to_block[rec] = [block_id]
+        num_of_blocks_per_rec = [len(x) for x in rec_to_block.values()]
+        self.stats['num_of_blocks_per_rec'] = num_of_blocks_per_rec
         return self.stats

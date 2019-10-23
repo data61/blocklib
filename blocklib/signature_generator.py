@@ -35,7 +35,7 @@ def generate_by_soundex(attr_ind, dtuple):
     """Generate a phonetic encoding of features using soundex.
 
     >>> sigs = generate_by_soundex([0, 1], ('Joyce', 'Wang', 2134))
-    >>> assert sigs == {'W520', 'J200'}
+    >>> assert sigs == {'W52', 'J2'}
 
     """
     features = tuple(dtuple[i] for i in attr_ind)
