@@ -81,16 +81,15 @@ class PPRLIndexPSignature(PPRLIndex):
         cbf_index_to_sig_map = {}
 
         for signature in invert_index:
-            hex_str1 = h1(signature.encode('utf-8')).hexdigest()
-            hex_str2 = h2(signature.encode('utf-8')).hexdigest()
-            int1 = int(hex_str1, 16)
-            int2 = int(hex_str2, 16)
+            sha_bytes = h1(signature.encode('utf-8')).digest()
+            md5_bytes = h2(signature.encode('utf-8')).digest()
+            int1 = int.from_bytes(sha_bytes, 'big') % bf_len
+            int2 = int.from_bytes(md5_bytes, 'big') % bf_len
 
             # flip {num_hash_funct} times
             bfset = set()
-            for i in range(1, num_hash_funct + 1):
-                gi = int1 + i * int2
-                gi = int(gi % bf_len)
+            for i in range(num_hash_funct):
+                gi = (int1 + i * int2) % bf_len
                 bfset.add(gi)
 
                 sigs = cbf_index_to_sig_map.setdefault(gi, set())
