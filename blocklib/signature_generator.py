@@ -88,7 +88,7 @@ def generate_signatures(signature_strategies: List[Dict],
     :return signatures: set of str
     """
     # arguments that we need to pass for any strategy
-    args = dict(attr_ind=attr_ind, dtuple=dtuple)
+    args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
 
     # signatures to return
     signatures = set()
