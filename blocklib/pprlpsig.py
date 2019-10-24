@@ -62,7 +62,7 @@ class PPRLIndexPSignature(PPRLIndex):
         delta_time = time.time() - start_time
         self.stats['blocking_time'] = delta_time
 
-        return invert_index, candidate_bloom_filter
+        return invert_index
 
     def filter_inverted_index(self, data, invert_index):
         # Filter inverted index based on ratio

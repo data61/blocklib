@@ -3,7 +3,7 @@
 from blocklib import PPRLIndexKAnonymousSortedNeighbour
 
 
-def test_snn_sim():
+def test_kasn():
     """Test KASN based on SIM."""
     config = {
         'k': 100,
@@ -27,3 +27,8 @@ def test_snn_sim():
     data = snn_sim.__read_csv_gz_file__('datasets/4611_50_overlap_no_mod_bob.csv',
                                         header_line=False, rec_id_col=0)
     snn_sim.build_inverted_index(data)
+
+    # test SIZE based
+    config['sim_or_size'] = 'SIZE'
+    snn_size = PPRLIndexKAnonymousSortedNeighbour(config)
+    snn_size.build_inverted_index(data) 

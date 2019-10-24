@@ -28,5 +28,5 @@ class TestPSig(unittest.TestCase):
                   'max_occur_ratio': 0.5,
                   'min_occur_ratio': 0.2}
         psig = PPRLIndexPSignature(config)
-        invert_index, _ = psig.build_inverted_index(data, rec_id_col=0)
+        invert_index = psig.build_inverted_index(data, rec_id_col=0)
         assert invert_index == {'Fred': ['id4', 'id5']}
