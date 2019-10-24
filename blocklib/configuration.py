@@ -11,5 +11,5 @@ def get_config(config, arg_name):
     """
     value = config.get(arg_name, 'not specified')
     if value == 'not specified':
-        raise ValueError(f'P-Sig: Argument "{arg_name}" was not specified\n\n{config}')
+        raise ValueError(f'Argument "{arg_name}" was not specified\n\n{config}')
     return value
