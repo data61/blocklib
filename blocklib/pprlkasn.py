@@ -102,7 +102,7 @@ class PPRLIndexKAnonymousSortedNeighbour(PPRLIndex):
             ref_val_dict[ref_val] = []
 
         point = int(len(data) / 5)
-        for num_rec_done, (rec_id, rec_list) in enumerate(data.items()):
+        for num_rec_done, rec_list in enumerate(data):
             if num_rec_done % point == 0:
                 print('KASN: Processed {} records'.format(num_rec_done))
 
@@ -116,7 +116,7 @@ class PPRLIndexKAnonymousSortedNeighbour(PPRLIndex):
             pos = bisect.bisect(sort_ref_val_list, sk_val)
             ref_val = ref_ind_dict[pos]
             skvs_list = ref_val_dict[ref_val]
-            skvs_list.append(rec_id)
+            skvs_list.append(num_rec_done)
             ref_val_dict[ref_val] = skvs_list
 
         if self.sim_or_size == 'SIM':
@@ -162,8 +162,6 @@ class PPRLIndexKAnonymousSortedNeighbour(PPRLIndex):
                     next_ref_val = ref_ind_dict[i + j + 1]
                     min_len = int(3 * min(len(this_ref_val), len(next_ref_val)) / 4)
                     sim_val = self.sim.sim(this_ref_val[:min_len], next_ref_val[:min_len])
-                    if sim_val >= 0.95:
-                        print(this_ref_val, next_ref_val)
                 j += 1
             # If a block contains less than k elements (probably the last block)
             # merge it with the previous block
@@ -260,4 +258,4 @@ class PPRLIndexKAnonymousSortedNeighbour(PPRLIndex):
             min_size_blk = min(blk_size, key=blk_size.get)
             min_size = blk_size[min_size_blk]
 
-            return block_dict
+        return block_dict

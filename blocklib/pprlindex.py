@@ -35,8 +35,8 @@ class PPRLIndex:
         self.stats['len_of_blocks'] = lengths
         self.stats['min_size'] = min(lengths)
         self.stats['max_size'] = max(lengths)
-        self.stats['avg_size'] = statistics.mean(lengths)
-        self.stats['med_size'] = statistics.median(lengths)
+        self.stats['avg_size'] = int(statistics.mean(lengths))
+        self.stats['med_size'] = int(statistics.median(lengths))
 
         # find how many blocks each entity / record is a member of
         rec_to_block = {}
@@ -50,11 +50,10 @@ class PPRLIndex:
         self.stats['num_of_blocks_per_rec'] = num_of_blocks_per_rec
 
         print('Number of Blocks:   {}'.format(self.stats['num_of_blocks']))
-        print('Maximum Block Size: {}'.format(self.stats['min_size']))
-        print('Minimum Block Size: {}'.format(self.stats['max_size']))
+        print('Minimum Block Size: {}'.format(self.stats['min_size']))
+        print('Maximum Block Size: {}'.format(self.stats['max_size']))
         print('Average Block Size: {}'.format(self.stats['avg_size']))
         print('Median Block Size:  {}'.format(self.stats['med_size']))
-        print('Number of Blocks Per Record (Sorted): {}'.format(sorted(num_of_blocks_per_rec)))
 
         return self.stats
 
@@ -66,7 +65,7 @@ class PPRLIndex:
         ref_default_features = get_config(ref_data_config, 'default_features')
         ref_random_seed = get_config(ref_data_config, 'random_seed')
         num_vals = get_config(ref_data_config, 'num_vals')
-        
+
         # load reference data as a dictionary
         rec_dict = self.__read_csv_gz_file__(ref_data_path, ref_header_line)
         print('Loaded reference values database: %d records' % (len(rec_dict)))

@@ -33,7 +33,7 @@ class EditSim(SimMeasure):
         else:
             self.min_threshold = None
 
-    def sim(str1, str2):
+    def sim(self, str1, str2):
         """Return sim score between 0 to 1."""
         min_threshold = self.min_threshold
         # Quick check if the strings are empty or the same - - - - - - - - - - - - -
