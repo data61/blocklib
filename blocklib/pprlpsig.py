@@ -23,11 +23,8 @@ class PPRLIndexPSignature(PPRLIndex):
 
         """
         super().__init__()
-        self.num_hashes = get_config(config, 'number_hash_functions')
-        self.attr_select_list = get_config(config, 'default_features')
-        self.bf_len = get_config(config, 'bf_len')
-        self.min_occur_ratio = get_config(config, 'min_occur_ratio')
-        self.max_occur_ratio = get_config(config, 'max_occur_ratio')
+        self.filter_config = get_config(config, "filter")
+        self.blocking_config = get_config(config, "blocking-filter")
         self.signature_strategies = get_config(config, 'signatures')
 
     def build_inverted_index(self, data, rec_id_col=None):
@@ -43,9 +40,8 @@ class PPRLIndexPSignature(PPRLIndex):
         # Build inverted index
         # {signature -> record ids}
         for rec_id, dtuple in zip(rec_ids, data):
-            attr_ind = self.attr_select_list
 
-            signatures = generate_signatures(self.signature_strategies, attr_ind, dtuple)
+            signatures = generate_signatures(self.signature_strategies, dtuple)
 
             for signature in signatures:
                 if signature in invert_index:
@@ -56,7 +52,7 @@ class PPRLIndexPSignature(PPRLIndex):
         invert_index = self.filter_inverted_index(data, invert_index)
 
         # Generate candidate Bloom Filter
-        candidate_bloom_filter, cbf_index_to_sig_map = self.generate_bloom_filter(invert_index)
+        candidate_bloom_filter, cbf_index_to_sig_map = self.generate_block_filter(invert_index)
         # cache this?
 
         delta_time = time.time() - start_time
@@ -67,19 +63,42 @@ class PPRLIndexPSignature(PPRLIndex):
     def filter_inverted_index(self, data, invert_index):
         # Filter inverted index based on ratio
         n = len(data)
-        invert_index = {k: v for k, v in invert_index.items()
-                        if n * self.max_occur_ratio > len(v) > n * self.min_occur_ratio}
+
+        # filter blocks based on filter type
+        filter_type = get_config(self.filter_config, "type")
+        if filter_type == "ratio":
+            min_occur_ratio = get_config(self.filter_config, 'min_occur_ratio')
+            max_occur_ratio = get_config(self.filter_config, 'max_occur_ratio')
+            invert_index = {k: v for k, v in invert_index.items() if n * max_occur_ratio > len(v) > n * min_occur_ratio}
+        elif filter_type == "count":
+            min_occur_count = get_config(self.filter_config, "min_occur_count")
+            max_occur_count = get_config(self.filter_config, "max_occur_count")
+            invert_index = {k: v for k, v in invert_index.items() if n * max_occur_count > len(v) > min_occur_count}
+        else:
+            raise NotImplementedError("Don't support {} filter yet.".format(filter_type))
+
+        # check if final inverted index is empty
         if len(invert_index) == 0:
             raise ValueError('P-Sig: All records are filtered out!')
         return invert_index
 
-    def generate_bloom_filter(self, invert_index):
-        """Generate candidate bloom filter for inverted index."""
+    def generate_block_filter(self, invert_index):
+        """Generate candidate blocking filter for inverted index e.g. bloom filter."""
+        blocking_type = get_config(self.blocking_config, "type")
+        if blocking_type == "bloom filter":
+            cbf, cbd_index_to_sig_map = self.__generate_bloom_filter__(invert_index)
+        else:
+            raise NotImplementedError("Don't support {} blocking filter yet.".format(blocking_type))
+        return cbf, cbd_index_to_sig_map
+
+    def __generate_bloom_filter__(self, invert_index):
+        """Generate bloom filter for inverted index."""
+        num_hash_funct = int(get_config(self.blocking_config, "number_hash_functions"))
+        bf_len = int(get_config(self.blocking_config, "bf_len"))
+
         # config for hashing
         h1 = hashlib.sha1
         h2 = hashlib.md5
-        num_hash_funct = self.num_hashes
-        bf_len = self.bf_len
 
         # go through each signature and generate bloom filter of it
         # -- we only store the set of index that flipped to 1

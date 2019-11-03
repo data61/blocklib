@@ -72,30 +72,26 @@ SIGNATURE_STRATEGIES = {
 
 
 def generate_signatures(signature_strategies: List[Dict],
-                        attr_ind: List[int],
                         dtuple: Sequence):
     """Generate signatures for one record.
 
     :param signature_strategies:
         A list of dicts each describing a strategy to generate signatures.
 
-    :param attr_ind:
-        Specifies the positions of attributes used to get signatures
-
     :param dtuple:
         Raw data to generate signatures from
 
     :return signatures: set of str
     """
-    # arguments that we need to pass for any strategy
-    args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
-
     # signatures to return
     signatures = set()
 
     # loop through each strategy
 
     for strategy in signature_strategies:
+        # arguments that we need to pass for any strategy
+        attr_ind = strategy.get("columns", [])
+        args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
         config = strategy.get('config', {})
 
         # find the correct strategy function to call

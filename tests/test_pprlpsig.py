@@ -7,11 +7,20 @@ class TestPSig(unittest.TestCase):
     def test_config(self):
         """Test p-sig configuration."""
         with self.assertRaises(ValueError):
-            config = {'number_hash_functions': 20,
-                      'bf_len': 2048,
-                      'attr_select_list': [1],
-                      'max_occur_ratio': 0.015}
-            psig = PPRLIndexPSignature(config)
+            config = {
+                "blocking_features": [1],
+                "filter": {
+                    "type": "ratio",
+                    "max_occur_ratio": 0.02,
+                    "min_occur_ratio": 0.001,
+                },
+                "blocking-filter": {
+                    "type": "bloom filter",
+                    "number_hash_functions": 4,
+                    "bf_len": 4096,
+                },
+            }
+            PPRLIndexPSignature(config)
 
     def test_build_inverted_index(self):
         """Test build revert index."""
@@ -21,12 +30,21 @@ class TestPSig(unittest.TestCase):
                 ('id4', 'Fred', 'Yu', 'Strathfield'),
                 ('id5', 'Fred', 'Zhang', 'Chippendale'),
                 ('id6', 'Lindsay', 'Jone', 'Narwee')]
-        config = {'number_hash_functions': 20,
-                  'bf_len': 2048,
-                  'signatures': [{'type': 'feature-value'}],
-                  'default_features': [1],
-                  'max_occur_ratio': 0.5,
-                  'min_occur_ratio': 0.2}
+        config = {
+            "blocking_features": [1],
+            "filter": {
+                "type": "ratio",
+                "max_occur_ratio": 0.5,
+                "min_occur_ratio": 0.2,
+            },
+            "blocking-filter": {
+                "type": "bloom filter",
+                "number_hash_functions": 20,
+                "bf_len": 2048,
+            },
+            "signatures": [
+                {"type": "feature-value", "columns": [1]}]
+        }
         psig = PPRLIndexPSignature(config)
         invert_index = psig.build_inverted_index(data, rec_id_col=0)
         assert invert_index == {'Fred': ['id4', 'id5']}
