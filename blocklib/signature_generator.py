@@ -3,16 +3,52 @@ from typing import List, Dict, Sequence
 import fuzzy
 
 
-def generate_by_feature_value(attr_ind, dtuple, list_substrings_indices=[[0]]):
-    """ Generate signatures by simply concatenating original features and selecting a substring (useful for dates for
-     example).
-    >>> res = generate_by_feature_value([2, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'))
-    >>> assert res == {'Little WhingingSurrey'}
-    >>> res = generate_by_feature_value([2, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), list_substrings_indices=[[2,4], [5]])
-    >>> assert res == {'tt', 'e WhingingSurrey'}
-    """
+def generate_by_feature_value(attr_ind, dtuple):
+    """Generate signatures by simply return original feature at attr_ind."""
+    return dtuple[attr_ind]
 
-    return set([''.join([dtuple[ind] for ind in attr_ind])[x[0]: x[1] if len(x) > 1 else None] for x in list_substrings_indices])
+
+def generate_by_char_at(attr_ind, dtuple, pos):
+    """ Generate signatures by select subset of characters in original features.
+    >>> res = generate_by_char_at(2, ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), [0, 3])
+    >>> assert res == 'Lt'
+    >>> res = generate_by_char_at(2, ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), [":4"])
+    >>> assert res == 'Litt'
+    """
+    sig = []
+    feature = dtuple[attr_ind]
+
+    # missing value
+    if feature == '':
+        return None
+
+    max_ind = len(feature)
+    for p in pos:
+        if type(p) == int:
+            p = min(p, max_ind - 1)
+            sig.append(feature[p])
+        else:
+            start_ind, end_ind = p.split(":")
+            if start_ind != '' and end_ind != '':
+                start_ind = int(start_ind)
+                end_ind = int(end_ind)
+                assert start_ind < end_ind, "Start index should be less than End index in {}".format(p)
+                start_ind = min(start_ind, max_ind - 1)
+                end_ind = min(end_ind, max_ind)
+                c = feature[start_ind: end_ind]
+            elif start_ind == '' and end_ind != '':
+                end_ind = int(end_ind)
+                end_ind = min(end_ind, max_ind)
+                c = feature[:end_ind]
+            elif start_ind != '' and end_ind == '':
+                start_ind = int(start_ind)
+                start_ind = min(start_ind, max_ind)
+                c = feature[start_ind:]
+            else:
+                raise ValueError('Invalid pos argument: {}'.format(p))
+            sig.append(c)
+
+    return ''.join(sig)
 
 
 def generate_by_n_gram(attr_ind, dtuple, n):
@@ -34,30 +70,26 @@ def generate_by_n_gram(attr_ind, dtuple, n):
 def generate_by_soundex(attr_ind, dtuple):
     """Generate a phonetic encoding of features using soundex.
 
-    >>> sigs = generate_by_soundex([0, 1], ('Joyce', 'Wang', 2134))
-    >>> assert sigs == {'W52', 'J2'}
+    >>> sigs = generate_by_soundex(1, ('Joyce', 'Wang', 2134))
+    >>> assert sigs == 'W52'
 
     """
-    features = tuple(dtuple[i] for i in attr_ind)
+    feature = dtuple[attr_ind]
     soundex = fuzzy.Soundex(4)
-    return {soundex(feature) for feature in features}
+    return soundex(feature)
 
 
 def generate_by_metaphone(attr_ind, dtuple):
     """Generate a phonetic encoding of features using metaphone.
 
-    >>> sorted(generate_by_metaphone([0, 1], ('Smith', 'Schmidt', 2134)))
-    ['SM0XMT', 'XMTSMT']
+    >>> generate_by_metaphone(0, ('Smith', 'Schmidt', 2134))
+    'SM0XMT'
 
     """
-    features = tuple(dtuple[i] for i in attr_ind)
+    feature = dtuple[attr_ind]
     metaphone = fuzzy.DMetaphone()
-    sigs = []
-    for feature in features:
-        phonetic_encoding = metaphone(feature)
-
-        sigs.append(''.join(p.decode() for p in phonetic_encoding if p is not None))
-    return set(sigs)
+    phonetic_encoding = metaphone(feature)
+    return ''.join(p.decode() for p in phonetic_encoding if p is not None)
 
 
 #################################################
@@ -65,13 +97,14 @@ def generate_by_metaphone(attr_ind, dtuple):
 #################################################
 SIGNATURE_STRATEGIES = {
     'feature-value': generate_by_feature_value,
-    'n-gram': generate_by_n_gram,
+    "characters_at": generate_by_char_at,
+    # 'n-gram': generate_by_n_gram,
     'soundex': generate_by_soundex,
     'metaphone': generate_by_metaphone
 }
 
 
-def generate_signatures(signature_strategies: List[Dict],
+def generate_signatures(signature_strategies: List[List],
                         dtuple: Sequence):
     """Generate signatures for one record.
 
@@ -89,18 +122,24 @@ def generate_signatures(signature_strategies: List[Dict],
     # loop through each strategy
 
     for strategy in signature_strategies:
-        # arguments that we need to pass for any strategy
-        attr_ind = strategy.get("columns", [])
-        args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
-        config = strategy.get('config', {})
+        sig = []
+        for spec in strategy:
+            # arguments that we need to pass for any strategy
+            attr_ind = spec.get("feature_idx", -1)
+            args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
+            config = spec.get('config', {})
 
-        # find the correct strategy function to call
-        func = SIGNATURE_STRATEGIES.get(strategy['type'], None)
+            # find the correct strategy function to call
+            func = SIGNATURE_STRATEGIES.get(spec['type'], None)
 
-        if func is None:
-            raise NotImplementedError(f'Strategy {strategy} is not implemented yet!')
-        else:
-            config.update(args)
-            signatures = signatures.union(func(**config))
+            if func is None:
+                strategy_type = spec['type']
+                print(spec)
+                raise NotImplementedError(f'Strategy {strategy_type} is not implemented yet!')
+            else:
+                config.update(args)
+                s = func(**config)
+                sig.append(s)
+        signatures.add(''.join([x for x in sig if x is not None]))
 
     return signatures

@@ -42,8 +42,12 @@ class TestPSig(unittest.TestCase):
                 "number_hash_functions": 20,
                 "bf_len": 2048,
             },
-            "signatures": [
-                {"type": "feature-value", "columns": [1]}]
+            "signatureSpecs": [
+                [
+                    {"type": "feature-value", "feature_idx": 1}
+                ]
+            ]
+
         }
         psig = PPRLIndexPSignature(config)
         invert_index = psig.build_inverted_index(data, rec_id_col=0)

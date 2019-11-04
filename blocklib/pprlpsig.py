@@ -1,5 +1,6 @@
 import hashlib
 import time
+import numpy as np
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
@@ -25,7 +26,7 @@ class PPRLIndexPSignature(PPRLIndex):
         super().__init__()
         self.filter_config = get_config(config, "filter")
         self.blocking_config = get_config(config, "blocking-filter")
-        self.signature_strategies = get_config(config, 'signatures')
+        self.signature_strategies = get_config(config, 'signatureSpecs')
 
     def build_inverted_index(self, data, rec_id_col=None):
         """Build inverted index given P-Sig method."""
@@ -50,10 +51,6 @@ class PPRLIndexPSignature(PPRLIndex):
                     invert_index[signature] = [rec_id]
 
         invert_index = self.filter_inverted_index(data, invert_index)
-
-        # Generate candidate Bloom Filter
-        candidate_bloom_filter, cbf_index_to_sig_map = self.generate_block_filter(invert_index)
-        # cache this?
 
         delta_time = time.time() - start_time
         self.stats['blocking_time'] = delta_time
@@ -123,5 +120,9 @@ class PPRLIndexPSignature(PPRLIndex):
             # union indices that have been flipped 1 in candidate bf
             candidate_bloom_filter = candidate_bloom_filter.union(bfset)
 
+        # massage the cbf into a numpy bool array from a set
+        candidate_block_filter = np.zeros(bf_len, dtype=bool)
+        candidate_block_filter[list(candidate_bloom_filter)] = True
+
         #print("number of unset bits in cbf:", len(set(range(bf_len)).difference(candidate_bloom_filter)))
-        return candidate_bloom_filter, cbf_index_to_sig_map
+        return candidate_block_filter, cbf_index_to_sig_map
