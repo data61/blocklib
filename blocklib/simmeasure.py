@@ -122,35 +122,8 @@ class DiceSim(SimMeasure):
         q_minus_1 = self.ngram_len - 1
 
         # Convert input strings into q-gram lists
-        if cache and (s1 in self.q_gram_cache):
-            l1 = self.q_gram_cache[s1]
-
-        else:
-            # Need to calculate q-gram list for the first string
-            if self.ngram_padding:
-                ps1 = self.padding_start_char * q_minus_1 + s1 + self.padding_end_char * q_minus_1
-            else:
-                ps1 = s1
-
-            l1 = [ps1[i:i + self.ngram_len] for i in range(len(ps1) - q_minus_1)]
-
-            if cache:
-                self.q_gram_cache[s1] = l1
-
-        if cache and (s2 in self.q_gram_cache):
-            l2 = self.q_gram_cache[s2]
-
-        else:
-            # Need to calculate q-gram list for the second string
-            if self.ngram_padding:
-                ps2 = self.padding_start_char * q_minus_1 + s2 + self.padding_end_char * q_minus_1
-            else:
-                ps2 = s2
-
-            l2 = [ps2[i:i + self.ngram_len] for i in range(len(ps2) - q_minus_1)]
-
-            if cache:
-                self.q_gram_cache[s2] = l2
+        l1 = self._convert_to_qgrams(s1, q_minus_1, cache)
+        l2 = self._convert_to_qgrams(s2, q_minus_1, cache)
 
         common = len(set(l1).intersection(set(l2)))
 
@@ -160,4 +133,21 @@ class DiceSim(SimMeasure):
             self.sim_cache[(s1, s2)] = sim
 
         return sim
+
+    def _convert_to_qgrams(self, inputstr, q_minus_1, cache):
+        if cache and (inputstr in self.q_gram_cache):
+            qgrams = self.q_gram_cache[inputstr]
+
+        else:
+            # Need to calculate q-gram list for the first string
+            if self.ngram_padding:
+                ps1 = self.padding_start_char * q_minus_1 + inputstr + self.padding_end_char * q_minus_1
+            else:
+                ps1 = inputstr
+
+            qgrams = [ps1[i:i + self.ngram_len] for i in range(len(ps1) - q_minus_1)]
+
+            if cache:
+                self.q_gram_cache[inputstr] = qgrams
+        return qgrams
 
