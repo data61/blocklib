@@ -10,3 +10,5 @@ venv/*
 *.pdf
 *.png
 *.jpg
+.coverage
+
