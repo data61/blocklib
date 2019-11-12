@@ -2,7 +2,7 @@
 from .configuration import get_config
 
 
-def generate_blocks(reversed_indices, config):
+def generate_blocks_2party(reversed_indices, config):
     """
     Generate final blocks given list of reversed indices from mutliparty data providers.
     :param reversed_indices: List of dictionaries

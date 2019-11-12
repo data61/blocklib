@@ -4,6 +4,7 @@ import numpy as np
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
+from .encoding import generate_bloom_filter
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -93,36 +94,8 @@ class PPRLIndexPSignature(PPRLIndex):
         num_hash_funct = int(get_config(self.blocking_config, "number_hash_functions"))
         bf_len = int(get_config(self.blocking_config, "bf_len"))
 
-        # config for hashing
-        h1 = hashlib.sha1
-        h2 = hashlib.md5
-
-        # go through each signature and generate bloom filter of it
-        # -- we only store the set of index that flipped to 1
-        candidate_bloom_filter = set()
-        cbf_index_to_sig_map = {}
-
-        for signature in invert_index:
-            sha_bytes = h1(signature.encode('utf-8')).digest()
-            md5_bytes = h2(signature.encode('utf-8')).digest()
-            int1 = int.from_bytes(sha_bytes, 'big') % bf_len
-            int2 = int.from_bytes(md5_bytes, 'big') % bf_len
-
-            # flip {num_hash_funct} times
-            bfset = set()
-            for i in range(num_hash_funct):
-                gi = (int1 + i * int2) % bf_len
-                bfset.add(gi)
-
-                sigs = cbf_index_to_sig_map.setdefault(gi, set())
-                sigs.add(signature)
-
-            # union indices that have been flipped 1 in candidate bf
-            candidate_bloom_filter = candidate_bloom_filter.union(bfset)
-
-        # massage the cbf into a numpy bool array from a set
-        candidate_block_filter = np.zeros(bf_len, dtype=bool)
-        candidate_block_filter[list(candidate_bloom_filter)] = True
+        candidate_block_filter, cbf_index_to_sig_map = generate_bloom_filter(invert_index.keys(),
+                                                                             bf_len, num_hash_funct)
 
         #print("number of unset bits in cbf:", len(set(range(bf_len)).difference(candidate_bloom_filter)))
         return candidate_block_filter, cbf_index_to_sig_map
