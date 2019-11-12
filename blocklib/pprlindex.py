@@ -37,7 +37,7 @@ class PPRLIndex:
         self.stats['max_size'] = max(lengths)
         self.stats['avg_size'] = int(statistics.mean(lengths))
         self.stats['med_size'] = int(statistics.median(lengths))
-
+        self.stats['std_size'] = statistics.stdev(lengths)
         # find how many blocks each entity / record is a member of
         rec_to_block = {}
         for block_id, block in invert_index.items():
@@ -54,6 +54,7 @@ class PPRLIndex:
         print('Maximum Block Size: {}'.format(self.stats['max_size']))
         print('Average Block Size: {}'.format(self.stats['avg_size']))
         print('Median Block Size:  {}'.format(self.stats['med_size']))
+        print('Standard Deviation of Block Size:  {}'.format(self.stats['std_size']))
 
         return self.stats
 

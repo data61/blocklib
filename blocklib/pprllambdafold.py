@@ -32,6 +32,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         self.K = int(get_config(config, "K"))
         # blocking-features: list of blocking feature indices
         self.blocking_features = get_config(config, "blocking-features")
+        self.random_state = get_config(config, "random_state")
 
     def __record_to_bf__(self, record):
         """Convert a record to list of bigrams and then map to a bloom filter."""
@@ -60,7 +61,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
             bloom_filter[bit_index] = 1
         return bloom_filter
 
-    def build_inverted_index(self, data, rec_id_col=None, random_state=None):
+    def build_inverted_index(self, data, rec_id_col=None):
         """Build inverted index for PPRL Lambda-fold blocking method.
 
         :param data: list of lists
@@ -72,16 +73,15 @@ class PPRLIndexLambdaFold(PPRLIndex):
             record_ids = np.arange(len(data))
         else:
             record_ids = [x[rec_id_col] for x in data]
-
+        rnd = np.random.RandomState(self.random_state)
         # build Lambda fold tables and add to the invert index
         invert_index = {}
         for i in range(self.Lambda):
             lambda_table = defaultdict(list)
+            # sample K indices from [0, bf-len]
+            indices = rnd.choice(range(self.bf_len), self.K)
             for rec_id, rec in zip(record_ids, data):
                 bloom_filter = self.__record_to_bf__(rec)
-                # sample K indices from [0, bf-len]
-                rnd = np.random.RandomState(random_state)
-                indices = rnd.choice(range(self.bf_len), self.K)
                 block_key = ''.join(bloom_filter[indices].astype(np.int8).astype(str))
                 lambda_table[block_key].append(rec_id)
             invert_index.update(lambda_table)
