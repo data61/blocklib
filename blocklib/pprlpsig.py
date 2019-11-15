@@ -28,20 +28,21 @@ class PPRLIndexPSignature(PPRLIndex):
         self.filter_config = get_config(config, "filter")
         self.blocking_config = get_config(config, "blocking-filter")
         self.signature_strategies = get_config(config, 'signatureSpecs')
+        self.rec_id_col = config.get("record-id-col", None)
 
-    def build_inverted_index(self, data, rec_id_col=None):
+    def build_inverted_index(self, data):
         """Build inverted index given P-Sig method."""
         start_time = time.time()
         invert_index = {}
         # Build index of records
-        if rec_id_col is not None:
-            rec_ids = [dtuple[rec_id_col] for dtuple in data]
+        if self.rec_id_col is None:
+            record_ids = np.arange(len(data))
         else:
-            rec_ids = range(len(data))
+            record_ids = [x[self.rec_id_col] for x in data]
 
         # Build inverted index
         # {signature -> record ids}
-        for rec_id, dtuple in zip(rec_ids, data):
+        for rec_id, dtuple in zip(record_ids, data):
 
             signatures = generate_signatures(self.signature_strategies, dtuple)
 
@@ -71,7 +72,7 @@ class PPRLIndexPSignature(PPRLIndex):
         elif filter_type == "count":
             min_occur_count = get_config(self.filter_config, "min_occur_count")
             max_occur_count = get_config(self.filter_config, "max_occur_count")
-            invert_index = {k: v for k, v in invert_index.items() if n * max_occur_count > len(v) > min_occur_count}
+            invert_index = {k: v for k, v in invert_index.items() if max_occur_count > len(v) > min_occur_count}
         else:
             raise NotImplementedError("Don't support {} filter yet.".format(filter_type))
 
@@ -95,7 +96,8 @@ class PPRLIndexPSignature(PPRLIndex):
         bf_len = int(get_config(self.blocking_config, "bf_len"))
 
         candidate_block_filter, cbf_index_to_sig_map = generate_bloom_filter(invert_index.keys(),
-                                                                             bf_len, num_hash_funct)
+                                                                             bf_len, num_hash_funct,
+                                                                             return_cbf_index_sig_map=True)
 
         #print("number of unset bits in cbf:", len(set(range(bf_len)).difference(candidate_bloom_filter)))
         return candidate_block_filter, cbf_index_to_sig_map

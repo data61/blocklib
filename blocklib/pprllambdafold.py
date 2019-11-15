@@ -34,6 +34,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         # blocking-features: list of blocking feature indices
         self.blocking_features = get_config(config, "blocking-features")
         self.random_state = get_config(config, "random_state")
+        self.record_id_col = config.get("record-id-col", None)
 
     def __record_to_bf__(self, record):
         """Convert a record to list of bigrams and then map to a bloom filter."""
@@ -45,7 +46,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
         return bloom_filter
 
-    def build_inverted_index(self, data, rec_id_col=None):
+    def build_inverted_index(self, data):
         """Build inverted index for PPRL Lambda-fold blocking method.
 
         :param data: list of lists
@@ -53,10 +54,10 @@ class PPRLIndexLambdaFold(PPRLIndex):
         :return:
         """
         # create record index lists
-        if rec_id_col is None:
+        if self.record_id_col is None:
             record_ids = np.arange(len(data))
         else:
-            record_ids = [x[rec_id_col] for x in data]
+            record_ids = [x[self.record_id_col] for x in data]
         rnd = np.random.RandomState(self.random_state)
         # build Lambda fold tables and add to the invert index
         invert_index = {}

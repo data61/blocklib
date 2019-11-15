@@ -32,6 +32,7 @@ class TestPSig(unittest.TestCase):
                 ('id6', 'Lindsay', 'Jone', 'Narwee')]
         config = {
             "blocking_features": [1],
+            "record-id-col": 0,
             "filter": {
                 "type": "ratio",
                 "max_occur_ratio": 0.5,
@@ -50,5 +51,5 @@ class TestPSig(unittest.TestCase):
 
         }
         psig = PPRLIndexPSignature(config)
-        invert_index = psig.build_inverted_index(data, rec_id_col=0)
+        invert_index = psig.build_inverted_index(data)
         assert invert_index == {'Fred': ['id4', 'id5']}
