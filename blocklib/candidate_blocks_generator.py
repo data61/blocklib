@@ -47,7 +47,7 @@ def make_candidate_block_object(reversed_index: Dict, state: PPRLIndex, algorith
     return candidate_block_obj
 
 
-def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config):
+def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict):
     """
     :param data: list of tuples E.g. ('0', 'Kenneth Bain', '1964/06/17', 'M')
     :param signature_config:

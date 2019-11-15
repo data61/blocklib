@@ -15,7 +15,7 @@ class PPRLIndex:
         self.revert_index = {}
         self.stats = {}
 
-    def build_reversed_index(self, data: Sequence[Tuple]):
+    def build_reversed_index(self, data: Sequence[Sequence]):
         """Method which builds the index for all database.
 
            Argument:
@@ -26,7 +26,7 @@ class PPRLIndex:
         """
         raise NotImplementedError("Derived class needs to implement")
 
-    def summarize_reversed_index(self, reversed_index):
+    def summarize_reversed_index(self, reversed_index: Dict):
         """Summarize statistics of reverted index / blocks."""
         assert len(reversed_index) > 0
         # statistics of block
@@ -58,7 +58,7 @@ class PPRLIndex:
 
         return self.stats
 
-    def load_reference_data(self, reference_data: Sequence[Tuple], ref_data_config: Dict):
+    def load_reference_data(self, reference_data: Sequence[Sequence], ref_data_config: Dict):
         """Load reference data for methods need reference."""
         # read configurations
         ref_default_features = get_config(ref_data_config, 'default_features')

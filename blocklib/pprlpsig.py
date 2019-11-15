@@ -1,6 +1,6 @@
-import hashlib
 import time
 import numpy as np
+from typing import Dict, Sequence, Tuple
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
@@ -16,7 +16,7 @@ class PPRLIndexPSignature(PPRLIndex):
         This class includes an implementation of p-sig algorithm.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Dict):
         """Initialize the class and set the required parameters.
 
         Arguments:
@@ -30,7 +30,7 @@ class PPRLIndexPSignature(PPRLIndex):
         self.signature_strategies = get_config(config, 'signatureSpecs')
         self.rec_id_col = config.get("record-id-col", None)
 
-    def build_reversed_index(self, data):
+    def build_reversed_index(self, data: Sequence[Sequence]):
         """Build inverted index given P-Sig method."""
         start_time = time.time()
         reversed_index = {}
@@ -59,7 +59,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
         return reversed_index
 
-    def filter_reversed_index(self, data, reversed_index):
+    def filter_reversed_index(self, data: Sequence[Sequence], reversed_index: Dict):
         # Filter inverted index based on ratio
         n = len(data)
 
@@ -81,7 +81,7 @@ class PPRLIndexPSignature(PPRLIndex):
             raise ValueError('P-Sig: All records are filtered out!')
         return reversed_index
 
-    def generate_block_filter(self, reversed_index):
+    def generate_block_filter(self, reversed_index: Dict):
         """Generate candidate blocking filter for inverted index e.g. bloom filter."""
         blocking_type = get_config(self.blocking_config, "type")
         if blocking_type == "bloom filter":
@@ -90,7 +90,7 @@ class PPRLIndexPSignature(PPRLIndex):
             raise NotImplementedError("Don't support {} blocking filter yet.".format(blocking_type))
         return cbf, cbd_index_to_sig_map
 
-    def __generate_bloom_filter__(self, reversed_index):
+    def __generate_bloom_filter__(self, reversed_index: Dict):
         """Generate bloom filter for inverted index."""
         num_hash_funct = int(get_config(self.blocking_config, "number_hash_functions"))
         bf_len = int(get_config(self.blocking_config, "bf_len"))
@@ -99,5 +99,5 @@ class PPRLIndexPSignature(PPRLIndex):
                                                                              bf_len, num_hash_funct,
                                                                              return_cbf_index_sig_map=True)
 
-        #print("number of unset bits in cbf:", len(set(range(bf_len)).difference(candidate_bloom_filter)))
+        print("Number of unset bits in candidate bloom filter:", len(set(range(bf_len)).difference(candidate_block_filter)))
         return candidate_block_filter, cbf_index_to_sig_map

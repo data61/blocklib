@@ -1,5 +1,6 @@
 import numpy as np
 from collections import defaultdict
+from typing import Dict, Sequence, Tuple
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .encoding import generate_bloom_filter
@@ -13,7 +14,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         This class includes an implementation of Lambda-fold redundant blocking method.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Dict):
         """Initialize the class and set the required parameters.
 
         Arguments:
@@ -35,7 +36,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         self.random_state = get_config(config, "random_state")
         self.record_id_col = config.get("record-id-col", None)
 
-    def __record_to_bf__(self, record):
+    def __record_to_bf__(self, record: Sequence):
         """Convert a record to list of bigrams and then map to a bloom filter."""
         bloom_filter = np.zeros(self.bf_len, dtype=bool)
         s = ''.join([record[i] for i in self.blocking_features])
@@ -45,7 +46,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
         return bloom_filter
 
-    def build_reversed_index(self, data):
+    def build_reversed_index(self, data: Sequence[Sequence]):
         """Build inverted index for PPRL Lambda-fold blocking method.
 
         :param data: list of lists

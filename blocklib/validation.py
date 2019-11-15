@@ -1,10 +1,10 @@
 import json
-
+from typing import Dict
 import jsonschema
 import pathlib
 
 
-def load_schema(file_name):
+def load_schema(file_name: str):
     path = pathlib.Path(__file__).parent / '../docs/schemas' / file_name
 
     # schema_bytes = pkgutil.get_data('anonlinkclient', 'docs/schemas/{}'.format(file_name))
@@ -16,7 +16,7 @@ def load_schema(file_name):
 
 
 
-def validate_signature_config(config):
+def validate_signature_config(config: Dict):
     schema = load_schema('signature-config-schema.json')
     try:
         jsonschema.validate(config, schema)

@@ -58,7 +58,7 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     return rec_to_blockkey
 
 
-def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[PPRLIndex], threshold:int):
+def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[PPRLIndex], threshold: int):
     """
     Generate final blocks for P-Sig.
     :param reversed_indices:

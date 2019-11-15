@@ -1,12 +1,15 @@
 """Class to implement privacy preserving encoding."""
 import hashlib
 import numpy as np
+from typing import List, Sequence
 
 
-def generate_bloom_filter(list_of_strs, bf_len, num_hash_funct, return_cbf_index_sig_map=False):
+def generate_bloom_filter(list_of_strs: List[str], bf_len: int, num_hash_funct: int,
+                          return_cbf_index_sig_map: bool = False):
     """
     Generate a bloom filter given list of strings.
 
+    :param return_cbf_index_sig_map:
     :param list_of_strs:
     :param bf_len:
     :param num_hash_funct:
@@ -50,4 +53,3 @@ def generate_bloom_filter(list_of_strs, bf_len, num_hash_funct, return_cbf_index
         return bloom_filter_vector, cbf_index_to_sig_map
     else:
         return bloom_filter_vector
-
