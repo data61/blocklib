@@ -75,8 +75,8 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config)
 
     elif algorithm in PPRLSTATES:
         state = PPRLSTATES[algorithm](config)
-        reversed_index = state.build_inverted_index(data)
-        state.summarize_invert_index(reversed_index)
+        reversed_index = state.build_reversed_index(data)
+        state.summarize_reversed_index(reversed_index)
 
         # make candidate blocking result object
         candidate_block_obj = make_candidate_block_object(reversed_index, state, algorithm)

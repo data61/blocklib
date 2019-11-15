@@ -1,6 +1,6 @@
-import gzip
 import random
 import statistics
+from typing import Sequence, Tuple, Dict
 from blocklib.configuration import get_config
 
 
@@ -15,7 +15,7 @@ class PPRLIndex:
         self.revert_index = {}
         self.stats = {}
 
-    def build_inverted_index(self, data):
+    def build_reversed_index(self, data: Sequence[Tuple]):
         """Method which builds the index for all database.
 
            Argument:
@@ -26,11 +26,11 @@ class PPRLIndex:
         """
         raise NotImplementedError("Derived class needs to implement")
 
-    def summarize_invert_index(self, invert_index):
+    def summarize_reversed_index(self, reversed_index):
         """Summarize statistics of reverted index / blocks."""
-        assert len(invert_index) > 0
+        assert len(reversed_index) > 0
         # statistics of block
-        lengths = [len(rv) for rv in invert_index.values()]
+        lengths = [len(rv) for rv in reversed_index.values()]
         self.stats['num_of_blocks'] = len(lengths)
         self.stats['len_of_blocks'] = lengths
         self.stats['min_size'] = min(lengths)
@@ -40,7 +40,7 @@ class PPRLIndex:
         self.stats['std_size'] = statistics.stdev(lengths)
         # find how many blocks each entity / record is a member of
         rec_to_block = {}
-        for block_id, block in invert_index.items():
+        for block_id, block in reversed_index.items():
             for rec in block:
                 if rec in rec_to_block:
                     rec_to_block[rec].append(block_id)
@@ -58,22 +58,15 @@ class PPRLIndex:
 
         return self.stats
 
-    def load_reference_data(self, ref_data_config):
+    def load_reference_data(self, reference_data: Sequence[Tuple], ref_data_config: Dict):
         """Load reference data for methods need reference."""
         # read configurations
-        ref_data_path = get_config(ref_data_config, 'path')
-        ref_header_line = get_config(ref_data_config, 'header_line')
         ref_default_features = get_config(ref_data_config, 'default_features')
         ref_random_seed = get_config(ref_data_config, 'random_seed')
         num_vals = get_config(ref_data_config, 'num_vals')
 
-        # load reference data as a dictionary
-        rec_dict = self.__read_csv_gz_file__(ref_data_path, ref_header_line)
-        print('Loaded reference values database: %d records' % (len(rec_dict)))
-
         # extract features in config
-        rec_features = [''.join([dtuple[x] for x in ref_default_features])
-                        for dtuple in rec_dict.values()]
+        rec_features = [''.join([dtuple[x] for x in ref_default_features]) for dtuple in reference_data]
 
         # generate reference values
         random.seed(ref_random_seed)
@@ -86,33 +79,3 @@ class PPRLIndex:
 
         print('  Selected %d random reference values' % (len(ref_val_list)))
         return ref_val_list
-
-    def __read_csv_gz_file__(self, file_name, header_line, rec_id_col=None):
-        """Read a CSV or Gz file and return a dictionary.
-
-        The keys are unique record identifiers and values are lists that
-        contain actual record.
-        """
-        rec_dict = {}
-
-        # read in file
-        is_gz_file = file_name.lower().endswith('gz')
-        in_file = gzip.open(file_name) if is_gz_file else open(file_name)
-
-        if header_line:
-            header_line = in_file.readline()  # skip over header line
-
-        for rec_count, rec in enumerate(in_file):
-            if type(rec) == bytes:
-                rec = rec.decode()
-            rec = rec.split(',')
-            rec = list(map(lambda x: x.strip(), rec))
-
-            # check uniqueness of record id
-            rec_id =  rec_count if rec_id_col is None else rec[rec_id_col]
-            if rec_id in rec_dict:
-                raise ValueError('Record ID "{}" is not unique in file {}'.format(rec_id, file_name))
-
-            rec_dict[rec_id] = rec
-
-        return rec_dict

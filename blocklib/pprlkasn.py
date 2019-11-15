@@ -46,6 +46,7 @@ class PPRLIndexKAnonymousSortedNeighbour(PPRLIndex):
         self.default_features = get_config(config, 'default_features')
         self.sim_or_size = get_config(config, 'sim_or_size')
         self.sorted_first_val = get_config(config, 'sorted_first_val')
+        self.record_col_id = config.get('record-col-id', None)
         if self.sim_or_size not in ['SIM', 'SIZE']:
             raise ValueError('KASN: Please only pass "SIM" or "SIZE" for config "sim_or_size"')
 
@@ -77,7 +78,7 @@ class PPRLIndexKAnonymousSortedNeighbour(PPRLIndex):
         self.sort_ref_val_list = sort_ref_val_list
 
 
-    def build_inverted_index(self, data, rec_id_col=None):
+    def build_reversed_index(self, data):
         """Build inverted index for KASN method.
 
         Each record (its record identifier) is inserted into one block according

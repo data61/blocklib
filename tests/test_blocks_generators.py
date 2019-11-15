@@ -1,8 +1,6 @@
 import unittest
 from blocklib import generate_blocks_2party, generate_reverse_blocks
 from blocklib import generate_candidate_blocks
-from blocklib import PPRLIndexLambdaFold
-from blocklib import PPRLIndexPSignature
 
 
 class TestBlocksGenerator(unittest.TestCase):

@@ -22,7 +22,7 @@ class TestPSig(unittest.TestCase):
             }
             PPRLIndexPSignature(config)
 
-    def test_build_inverted_index(self):
+    def test_build_reversed_index(self):
         """Test build revert index."""
         data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
                 ('id2', 'Joyce', 'Hsu', 'Burwood'),
@@ -51,5 +51,5 @@ class TestPSig(unittest.TestCase):
 
         }
         psig = PPRLIndexPSignature(config)
-        invert_index = psig.build_inverted_index(data)
-        assert invert_index == {'Fred': ['id4', 'id5']}
+        reversed_index = psig.build_reversed_index(data)
+        assert reversed_index == {'Fred': ['id4', 'id5']}

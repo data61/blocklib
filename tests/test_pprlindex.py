@@ -12,17 +12,17 @@ def test_init():
     assert pprl.stats == {}
 
 
-def test_summarize_invert_index():
-    """Test summarize_invert_index for base class PPRLIndex."""
+def test_summarize_reversed_index():
+    """Test summarize_reversed_index for base class PPRLIndex."""
     pprl = PPRLIndex()
 
-    invert_index = {
+    reversed_index = {
         'Jo': ['id1', 'id2', 'id3'],
         'Fr': ['id2', 'id4'],
         'Li': ['id5']
     }
 
-    stats = pprl.summarize_invert_index(invert_index)
+    stats = pprl.summarize_reversed_index(reversed_index)
     assert stats['num_of_blocks'] == 3
     assert stats['len_of_blocks'] == [3, 2, 1]
     assert stats['min_size'] == 1

@@ -1,4 +1,3 @@
-import hashlib
 import numpy as np
 from collections import defaultdict
 from blocklib.configuration import get_config
@@ -46,7 +45,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
         return bloom_filter
 
-    def build_inverted_index(self, data):
+    def build_reversed_index(self, data):
         """Build inverted index for PPRL Lambda-fold blocking method.
 
         :param data: list of lists

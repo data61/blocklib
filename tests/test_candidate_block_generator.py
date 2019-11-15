@@ -54,7 +54,7 @@ class TestCandidateBlockGenerator(unittest.TestCase):
         assert candidate_block_obj.blocks == {'Fred': ['id4', 'id5'], 'Lindsay': ['id6']}
 
         psig = PPRLIndexPSignature(config)
-        reversed_index = psig.build_inverted_index(data)
+        reversed_index = psig.build_reversed_index(data)
         cbf, cbf_map = psig.generate_block_filter(reversed_index)
         assert all(candidate_block_obj.extra['candidate_block_filter'] == cbf)
         assert candidate_block_obj.extra['cbf_map'] == cbf_map
