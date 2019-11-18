@@ -40,8 +40,8 @@ class TestCandidateBlockGenerator(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max-occur-ratio": 0.5,
-                "min-occur-ratio": 0.0,
+                "max": 0.5,
+                "min": 0.0,
             },
             "blocking-filter": {
                 "type": "bloom filter",

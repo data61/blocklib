@@ -66,12 +66,12 @@ class PPRLIndexPSignature(PPRLIndex):
         # filter blocks based on filter type
         filter_type = get_config(self.filter_config, "type")
         if filter_type == "ratio":
-            min_occur_ratio = get_config(self.filter_config, 'min-occur-ratio')
-            max_occur_ratio = get_config(self.filter_config, 'max-occur-ratio')
+            min_occur_ratio = get_config(self.filter_config, 'min')
+            max_occur_ratio = get_config(self.filter_config, 'max')
             reversed_index = {k: v for k, v in reversed_index.items() if n * max_occur_ratio > len(v) > n * min_occur_ratio}
         elif filter_type == "count":
-            min_occur_count = get_config(self.filter_config, "min-occur-count")
-            max_occur_count = get_config(self.filter_config, "max-occur-count")
+            min_occur_count = get_config(self.filter_config, "min")
+            max_occur_count = get_config(self.filter_config, "max")
             reversed_index = {k: v for k, v in reversed_index.items() if max_occur_count > len(v) > min_occur_count}
         else:
             raise NotImplementedError("Don't support {} filter yet.".format(filter_type))

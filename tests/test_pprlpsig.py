@@ -11,13 +11,13 @@ class TestPSig(unittest.TestCase):
                 "blocking_features": [1],
                 "filter": {
                     "type": "ratio",
-                    "max-occur-ratio": 0.02,
-                    "min-occur-ratio": 0.001,
+                    "max": 0.02,
+                    "min": 0.001,
                 },
                 "blocking-filter": {
                     "type": "bloom filter",
-                    "number_hash_functions": 4,
-                    "bf_len": 4096,
+                    "number-hash-functions": 4,
+                    "bf-len": 4096,
                 },
             }
             PPRLIndexPSignature(config)
@@ -35,8 +35,8 @@ class TestPSig(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max-occur-ratio": 0.5,
-                "min-occur-ratio": 0.2,
+                "max": 0.5,
+                "min": 0.2,
             },
             "blocking-filter": {
                 "type": "bloom filter",

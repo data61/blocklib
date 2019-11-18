@@ -71,8 +71,8 @@ class TestBlocksGenerator(unittest.TestCase):
             "blocking_features": [1],
             "filter": {
                 "type": "count",
-                "max-occur-count": 5,
-                "min-occur-count": 0,
+                "max": 5,
+                "min": 0,
             },
             "blocking-filter": {
                 "type": "bloom filter",
