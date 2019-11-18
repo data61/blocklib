@@ -1,5 +1,5 @@
 import unittest
-from blocklib import PPRLIndexPSignature
+from blocklib import PPRLIndexPSignature, flip_bloom_filter
 
 
 class TestPSig(unittest.TestCase):
@@ -40,7 +40,7 @@ class TestPSig(unittest.TestCase):
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number_hash_functions": 20,
+                "number_hash_functions": 4,
                 "bf_len": 2048,
             },
             "signatureSpecs": [
@@ -52,4 +52,6 @@ class TestPSig(unittest.TestCase):
         }
         psig = PPRLIndexPSignature(config)
         reversed_index = psig.build_reversed_index(data)
-        assert reversed_index == {'Fred': ['id4', 'id5']}
+        bf_set = tuple(flip_bloom_filter("Fred", config['blocking-filter']['bf_len'],
+                                         config['blocking-filter']['number_hash_functions']))
+        assert reversed_index == {bf_set: ['id4', 'id5']}
