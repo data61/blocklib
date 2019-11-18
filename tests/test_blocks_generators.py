@@ -1,9 +1,16 @@
 import unittest
+import pytest
 from blocklib import generate_blocks_2party, generate_reverse_blocks
 from blocklib import generate_candidate_blocks
 
 
 class TestBlocksGenerator(unittest.TestCase):
+
+    def test_candidate_block_type(self):
+        """Test throw of type error when passing wrong candidate block types."""
+        with pytest.raises(TypeError):
+            generate_blocks_2party([{'Fr': [1, 2]}, {'Jo': [3, 4]}])
+
 
     def test_generate_reverse_block(self):
         """Test generating reverse block."""
@@ -64,20 +71,20 @@ class TestBlocksGenerator(unittest.TestCase):
             "blocking_features": [1],
             "filter": {
                 "type": "count",
-                "max_occur_count": 5,
-                "min_occur_count": 0,
+                "max-occur-count": 5,
+                "min-occur-count": 0,
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number_hash_functions": 20,
-                "bf_len": 2048,
+                "number-hash-functions": 20,
+                "bf-len": 2048,
             },
             "signatureSpecs": [
                 [
-                    {"type": "feature-value", "feature_idx": 1}
+                    {"type": "feature-value", "feature-idx": 1}
                 ],
                 [
-                    {"type": "characters_at", "config": {"pos": ["0:2"]}, "feature_idx": 1},
+                    {"type": "characters-at", "config": {"pos": ["0:2"]}, "feature-idx": 1},
                 ]
             ]
 

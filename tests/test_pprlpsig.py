@@ -11,8 +11,8 @@ class TestPSig(unittest.TestCase):
                 "blocking_features": [1],
                 "filter": {
                     "type": "ratio",
-                    "max_occur_ratio": 0.02,
-                    "min_occur_ratio": 0.001,
+                    "max-occur-ratio": 0.02,
+                    "min-occur-ratio": 0.001,
                 },
                 "blocking-filter": {
                     "type": "bloom filter",
@@ -35,17 +35,17 @@ class TestPSig(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max_occur_ratio": 0.5,
-                "min_occur_ratio": 0.2,
+                "max-occur-ratio": 0.5,
+                "min-occur-ratio": 0.2,
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number_hash_functions": 20,
-                "bf_len": 2048,
+                "number-hash-functions": 20,
+                "bf-len": 2048,
             },
             "signatureSpecs": [
                 [
-                    {"type": "feature-value", "feature_idx": 1}
+                    {"type": "feature-value", "feature-idx": 1}
                 ]
             ]
 

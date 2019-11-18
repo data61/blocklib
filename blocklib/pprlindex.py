@@ -58,7 +58,7 @@ class PPRLIndex:
 
         return self.stats
 
-    def load_reference_data(self, reference_data: Sequence[Sequence], ref_data_config: Dict):
+    def select_reference_value(self, reference_data: Sequence[Sequence], ref_data_config: Dict):
         """Load reference data for methods need reference."""
         # read configurations
         ref_default_features = get_config(ref_data_config, 'default_features')

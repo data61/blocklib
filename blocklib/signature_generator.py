@@ -97,7 +97,7 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 #################################################
 SIGNATURE_STRATEGIES = {
     'feature-value': generate_by_feature_value,
-    "characters_at": generate_by_char_at,
+    "characters-at": generate_by_char_at,
     # 'n-gram': generate_by_n_gram,
     'soundex': generate_by_soundex,
     'metaphone': generate_by_metaphone
@@ -125,7 +125,7 @@ def generate_signatures(signature_strategies: List[List],
         sig = []
         for spec in strategy:
             # arguments that we need to pass for any strategy
-            attr_ind = spec.get("feature_idx", -1)
+            attr_ind = spec.get("feature-idx", -1)
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
             config = spec.get('config', {})
 

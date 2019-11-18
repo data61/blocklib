@@ -66,12 +66,12 @@ class PPRLIndexPSignature(PPRLIndex):
         # filter blocks based on filter type
         filter_type = get_config(self.filter_config, "type")
         if filter_type == "ratio":
-            min_occur_ratio = get_config(self.filter_config, 'min_occur_ratio')
-            max_occur_ratio = get_config(self.filter_config, 'max_occur_ratio')
+            min_occur_ratio = get_config(self.filter_config, 'min-occur-ratio')
+            max_occur_ratio = get_config(self.filter_config, 'max-occur-ratio')
             reversed_index = {k: v for k, v in reversed_index.items() if n * max_occur_ratio > len(v) > n * min_occur_ratio}
         elif filter_type == "count":
-            min_occur_count = get_config(self.filter_config, "min_occur_count")
-            max_occur_count = get_config(self.filter_config, "max_occur_count")
+            min_occur_count = get_config(self.filter_config, "min-occur-count")
+            max_occur_count = get_config(self.filter_config, "max-occur-count")
             reversed_index = {k: v for k, v in reversed_index.items() if max_occur_count > len(v) > min_occur_count}
         else:
             raise NotImplementedError("Don't support {} filter yet.".format(filter_type))
@@ -92,8 +92,8 @@ class PPRLIndexPSignature(PPRLIndex):
 
     def __generate_bloom_filter__(self, reversed_index: Dict):
         """Generate bloom filter for inverted index."""
-        num_hash_funct = int(get_config(self.blocking_config, "number_hash_functions"))
-        bf_len = int(get_config(self.blocking_config, "bf_len"))
+        num_hash_funct = int(get_config(self.blocking_config, "number-hash-functions"))
+        bf_len = int(get_config(self.blocking_config, "bf-len"))
 
         candidate_block_filter, cbf_index_to_sig_map = generate_bloom_filter(reversed_index.keys(),
                                                                              bf_len, num_hash_funct,

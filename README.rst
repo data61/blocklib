@@ -2,9 +2,16 @@
 .. image:: https://codecov.io/gh/data61/blocklib/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/data61/blocklib
 
-Python implementations of record linkage blocking techniques.
+Blocklib
+========
+
+Python implementations of record linkage blocking techniques. Blocking is a technique that makes
+record linkage scalable. It is achieved by partitioning datasets into groups, called blocks and only
+comparing records in corresponding blocks. This can reduce the number of comparisons that need to be
+conducted to find which pairs of records should be linked.
 
 `blocklib` is part of the **Anonlink** project for privacy preserving record linkage.
+
 
 Installation
 ============

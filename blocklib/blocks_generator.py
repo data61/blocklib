@@ -14,15 +14,24 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
     :param candidate_block_objs
     :return: filtered_reversed_indices: List of dictionaries
     """
+    for obj in candidate_block_objs:
+        state_type = type(obj)
+        if state_type != CandidateBlockingResult:
+            raise TypeError(f'Unsupported blocking instance {state_type}')
+
     # check the PPRLIndex state is the same
     assert type(candidate_block_objs[0].state) == type(candidate_block_objs[1].state)
 
+    # obtain list of objects
     state_type = type(candidate_block_objs[0].state)
     reversed_indices = [obj.blocks for obj in candidate_block_objs]
     block_states = [obj.state for obj in candidate_block_objs]
 
+    if state_type == PPRLIndexPSignature:
+        filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=2)
+
     # normal blocking algorithm that do not need special generation
-    if state_type in {PPRLIndexLambdaFold}:
+    else:
         # decide final blocks keys - intersection of all reversed index keys
         block_keys = set(reversed_indices[0].keys())
         for reversed_index in reversed_indices[1:]:
@@ -32,12 +41,6 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
         for reversed_index in reversed_indices:
             reversed_index = {k: v for k, v in reversed_index.items() if k in block_keys}
             filtered_reversed_indices.append(reversed_index)
-
-    elif state_type == PPRLIndexPSignature:
-        filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=2)
-
-    else:
-        raise TypeError(f'Unsupported blocking instance {state_type}')
 
     return filtered_reversed_indices
 

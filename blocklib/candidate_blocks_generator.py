@@ -1,16 +1,13 @@
 """Class that implement candidate block generations."""
-from typing import Sequence, List, Dict, Tuple
-import numpy as np
-from collections import defaultdict
+from typing import Sequence, Dict, Tuple
 from .pprlindex import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
 from .pprllambdafold import PPRLIndexLambdaFold
-from .pprlkasn import PPRLIndexKAnonymousSortedNeighbour
 from .validation import validate_signature_config
 
 PPRLSTATES = {"p-sig": PPRLIndexPSignature,
               "lambda-fold": PPRLIndexLambdaFold,
-              "kasn": PPRLIndexKAnonymousSortedNeighbour}
+              }
 
 
 class CandidateBlockingResult:
@@ -66,14 +63,8 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config:
     # extract algorithm and its config
     algorithm = signature_config.get('type', 'not specified')
     config = signature_config.get('config', 'not specified')
-    if config == 'not specified':
-        raise ValueError('Please provide config for P-Sig from blocklib')
 
-    # build corresponding PPLRIndex instance
-    if algorithm == 'not specified':
-        raise ValueError("Compute signature type is not specified.")
-
-    elif algorithm in PPRLSTATES:
+    if algorithm in PPRLSTATES:
         state = PPRLSTATES[algorithm](config)
         reversed_index = state.build_reversed_index(data)
         state.summarize_reversed_index(reversed_index)
