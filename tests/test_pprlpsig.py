@@ -1,5 +1,5 @@
 import unittest
-from blocklib import PPRLIndexPSignature
+from blocklib import PPRLIndexPSignature, flip_bloom_filter
 
 
 class TestPSig(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestPSig(unittest.TestCase):
             }
             PPRLIndexPSignature(config)
 
-    def test_build_inverted_index(self):
+    def test_build_reversed_index(self):
         """Test build revert index."""
         data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
                 ('id2', 'Joyce', 'Hsu', 'Burwood'),
@@ -32,6 +32,7 @@ class TestPSig(unittest.TestCase):
                 ('id6', 'Lindsay', 'Jone', 'Narwee')]
         config = {
             "blocking_features": [1],
+            "record-id-col": 0,
             "filter": {
                 "type": "ratio",
                 "max_occur_ratio": 0.5,
@@ -39,7 +40,7 @@ class TestPSig(unittest.TestCase):
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number_hash_functions": 20,
+                "number_hash_functions": 4,
                 "bf_len": 2048,
             },
             "signatureSpecs": [
@@ -50,5 +51,7 @@ class TestPSig(unittest.TestCase):
 
         }
         psig = PPRLIndexPSignature(config)
-        invert_index = psig.build_inverted_index(data, rec_id_col=0)
-        assert invert_index == {'Fred': ['id4', 'id5']}
+        reversed_index = psig.build_reversed_index(data)
+        bf_set = tuple(flip_bloom_filter("Fred", config['blocking-filter']['bf_len'],
+                                         config['blocking-filter']['number_hash_functions']))
+        assert reversed_index == {bf_set: ['id4', 'id5']}

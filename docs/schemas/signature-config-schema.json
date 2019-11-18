@@ -1,0 +1,39 @@
+{
+  "$id": "https://data61.github.io/schemas/anonlink/signature-config-schema-v1dev.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "signature-config-schema",
+  "type": "object",
+  "required": [
+    "version",
+    "type",
+    "config"
+  ],
+  "properties": {
+    "version": {
+      "type": "number"
+    },
+    "type": {
+      "type": "string",
+      "description": "Identifier of the signature type.",
+      "examples": [
+        "p-sig",
+        "feature-value"
+      ]
+    },
+    "config": {
+      "$ref": "#/definitions/signatureConfig"
+    }
+  },
+  "definitions": {
+    "signatureConfig": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "default_features": {
+          "type": "array",
+          "description": "Indices of features to use for each signature generation strategy."
+        }
+      }
+    }
+  }
+}

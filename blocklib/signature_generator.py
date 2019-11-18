@@ -1,14 +1,14 @@
-from typing import List, Dict, Sequence
+from typing import List, Dict, Sequence, Tuple
 
 import fuzzy
 
 
-def generate_by_feature_value(attr_ind, dtuple):
+def generate_by_feature_value(attr_ind: int, dtuple: Sequence):
     """Generate signatures by simply return original feature at attr_ind."""
     return dtuple[attr_ind]
 
 
-def generate_by_char_at(attr_ind, dtuple, pos):
+def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[str]):
     """ Generate signatures by select subset of characters in original features.
     >>> res = generate_by_char_at(2, ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), [0, 3])
     >>> assert res == 'Lt'
@@ -51,7 +51,7 @@ def generate_by_char_at(attr_ind, dtuple, pos):
     return ''.join(sig)
 
 
-def generate_by_n_gram(attr_ind, dtuple, n):
+def generate_by_n_gram(attr_ind: int, dtuple: Sequence, n: int):
     """Generate signatures by constructing n-grams.
     >>> res = generate_by_n_gram([0, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), 2)
     >>> assert res == {'y ', 'ot', 'rS', 'Su', 'ry', 'er', 'ur', 'po', 're', 'ha', 'te', 'ar', 'tt', 'rr', ' p', 'ey'}
@@ -67,7 +67,7 @@ def generate_by_n_gram(attr_ind, dtuple, n):
     return signatures
 
 
-def generate_by_soundex(attr_ind, dtuple):
+def generate_by_soundex(attr_ind: int, dtuple: Sequence):
     """Generate a phonetic encoding of features using soundex.
 
     >>> sigs = generate_by_soundex(1, ('Joyce', 'Wang', 2134))
@@ -79,7 +79,7 @@ def generate_by_soundex(attr_ind, dtuple):
     return soundex(feature)
 
 
-def generate_by_metaphone(attr_ind, dtuple):
+def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
     """Generate a phonetic encoding of features using metaphone.
 
     >>> generate_by_metaphone(0, ('Smith', 'Schmidt', 2134))

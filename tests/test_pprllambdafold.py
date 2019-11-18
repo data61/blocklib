@@ -30,12 +30,13 @@ class TestLambdaFold(unittest.TestCase):
         bloom_filter = lambdafold.__record_to_bf__(record)
         assert sum(bloom_filter) == 6
 
-    def test_build_inverted_index(self):
+    def test_build_reversed_index(self):
         """Test building the inverted index."""
         config = {
             "blocking-features": [1, 2],
             "Lambda": 5,
             "bf-len": 2000,
+            "record-id-col": 0,
             "num-hash-funcs": 1000,
             "K": 30,
             "random_state": 0
@@ -43,13 +44,15 @@ class TestLambdaFold(unittest.TestCase):
         lambdafold = PPRLIndexLambdaFold(config)
         data = [[1, 'Xu', 'Li'],
                 [2, 'Fred', 'Yu']]
-        invert_index = lambdafold.build_inverted_index(data, 0)
-        assert len(invert_index) == 5 * 2
-        assert all([len(k) == 30 for k in invert_index])
-        assert all([len(v) == 1 for v in invert_index.values()])
+        reversed_index = lambdafold.build_reversed_index(data)
+        assert len(reversed_index) == 5 * 2
+        assert all([len(k) == 30 for k in reversed_index])
+        assert all([len(v) == 1 for v in reversed_index.values()])
 
         # build with row index
-        invert_index = lambdafold.build_inverted_index(data)
-        assert len(invert_index) == 5 * 2
-        assert all([len(k) == 30 for k in invert_index])
-        assert all([len(v) == 1 for v in invert_index.values()])
+        del config['record-id-col']
+        lambdafold = PPRLIndexLambdaFold(config)
+        reversed_index = lambdafold.build_reversed_index(data)
+        assert len(reversed_index) == 5 * 2
+        assert all([len(k) == 30 for k in reversed_index])
+        assert all([len(v) == 1 for v in reversed_index.values()])

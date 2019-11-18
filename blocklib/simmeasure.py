@@ -2,6 +2,7 @@
 from blocklib.configuration import get_config
 import logging
 from abc import ABC
+from typing import Dict
 
 
 class SimMeasure(ABC):
@@ -19,7 +20,7 @@ class SimMeasure(ABC):
 class EditSim(SimMeasure):
     """Class that implements Edit (or Levenshtein) distance for two strings."""
 
-    def __init__(self, config):
+    def __init__(self, config: Dict):
         """Initialize instance."""
         super().__init__()
         if 'min_threshold' in config:
@@ -27,7 +28,7 @@ class EditSim(SimMeasure):
         else:
             self.min_threshold = None
 
-    def sim(self, str1, str2, cache=False):
+    def sim(self, str1: str, str2: str, cache: bool = False):
         """Return sim score between 0 to 1.
         """
         min_threshold = self.min_threshold
@@ -93,7 +94,7 @@ class DiceSim(SimMeasure):
        will be stored in a dictionary to prevent their repeated computation.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Dict):
         """Initialise the cache."""
         self.ngram_len = int(get_config(config, 'ngram_len'))
         self.ngram_padding = get_config(config, 'ngram_padding')
@@ -105,7 +106,7 @@ class DiceSim(SimMeasure):
         self.sim_cache = {}  # Store the string pair and its similarity in a
         # cache as well
 
-    def sim(self, s1, s2, cache=False):
+    def sim(self, s1: str, s2: str, cache: bool = False):
         """Calculate the similarity between the given two strings. The method
            returns a value between 0.0 and 1.0.
 
@@ -134,7 +135,7 @@ class DiceSim(SimMeasure):
 
         return sim
 
-    def _convert_to_qgrams(self, inputstr, q_minus_1, cache):
+    def _convert_to_qgrams(self, inputstr: str, q_minus_1: int, cache: bool):
         if cache and (inputstr in self.q_gram_cache):
             qgrams = self.q_gram_cache[inputstr]
 

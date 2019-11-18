@@ -1,10 +1,10 @@
-import hashlib
 import time
 import numpy as np
+from typing import Dict, Sequence, Tuple
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
-from .encoding import generate_bloom_filter
+from .encoding import generate_bloom_filter, flip_bloom_filter
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -16,7 +16,7 @@ class PPRLIndexPSignature(PPRLIndex):
         This class includes an implementation of p-sig algorithm.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Dict):
         """Initialize the class and set the required parameters.
 
         Arguments:
@@ -28,37 +28,43 @@ class PPRLIndexPSignature(PPRLIndex):
         self.filter_config = get_config(config, "filter")
         self.blocking_config = get_config(config, "blocking-filter")
         self.signature_strategies = get_config(config, 'signatureSpecs')
+        self.rec_id_col = config.get("record-id-col", None)
 
-    def build_inverted_index(self, data, rec_id_col=None):
+    def build_reversed_index(self, data: Sequence[Sequence]):
         """Build inverted index given P-Sig method."""
-        start_time = time.time()
-        invert_index = {}
+        reversed_index = {}
         # Build index of records
-        if rec_id_col is not None:
-            rec_ids = [dtuple[rec_id_col] for dtuple in data]
+        if self.rec_id_col is None:
+            record_ids = np.arange(len(data))
         else:
-            rec_ids = range(len(data))
+            record_ids = [x[self.rec_id_col] for x in data]
 
         # Build inverted index
         # {signature -> record ids}
-        for rec_id, dtuple in zip(rec_ids, data):
+        for rec_id, dtuple in zip(record_ids, data):
 
             signatures = generate_signatures(self.signature_strategies, dtuple)
 
             for signature in signatures:
-                if signature in invert_index:
-                    invert_index[signature].append(rec_id)
+                if signature in reversed_index:
+                    reversed_index[signature].append(rec_id)
                 else:
-                    invert_index[signature] = [rec_id]
+                    reversed_index[signature] = [rec_id]
 
-        invert_index = self.filter_inverted_index(data, invert_index)
+        filtered_reversed_index = self.filter_reversed_index(data, reversed_index)
 
-        delta_time = time.time() - start_time
-        self.stats['blocking_time'] = delta_time
+        # map signatures in reversed_index into bloom filter
+        num_hash_func = int(self.blocking_config.get("number_hash_functions", None))
+        bf_len = int(self.blocking_config.get("bf_len", None))
 
-        return invert_index
+        reversed_index = {}
+        for signature, rec_ids in filtered_reversed_index.items():
+            bf_set = tuple(flip_bloom_filter(signature, bf_len, num_hash_func))
+            reversed_index[bf_set] = rec_ids
 
-    def filter_inverted_index(self, data, invert_index):
+        return reversed_index
+
+    def filter_reversed_index(self, data: Sequence[Sequence], reversed_index: Dict):
         # Filter inverted index based on ratio
         n = len(data)
 
@@ -67,35 +73,15 @@ class PPRLIndexPSignature(PPRLIndex):
         if filter_type == "ratio":
             min_occur_ratio = get_config(self.filter_config, 'min_occur_ratio')
             max_occur_ratio = get_config(self.filter_config, 'max_occur_ratio')
-            invert_index = {k: v for k, v in invert_index.items() if n * max_occur_ratio > len(v) > n * min_occur_ratio}
+            reversed_index = {k: v for k, v in reversed_index.items() if n * max_occur_ratio > len(v) > n * min_occur_ratio}
         elif filter_type == "count":
             min_occur_count = get_config(self.filter_config, "min_occur_count")
             max_occur_count = get_config(self.filter_config, "max_occur_count")
-            invert_index = {k: v for k, v in invert_index.items() if n * max_occur_count > len(v) > min_occur_count}
+            reversed_index = {k: v for k, v in reversed_index.items() if max_occur_count > len(v) > min_occur_count}
         else:
             raise NotImplementedError("Don't support {} filter yet.".format(filter_type))
 
         # check if final inverted index is empty
-        if len(invert_index) == 0:
+        if len(reversed_index) == 0:
             raise ValueError('P-Sig: All records are filtered out!')
-        return invert_index
-
-    def generate_block_filter(self, invert_index):
-        """Generate candidate blocking filter for inverted index e.g. bloom filter."""
-        blocking_type = get_config(self.blocking_config, "type")
-        if blocking_type == "bloom filter":
-            cbf, cbd_index_to_sig_map = self.__generate_bloom_filter__(invert_index)
-        else:
-            raise NotImplementedError("Don't support {} blocking filter yet.".format(blocking_type))
-        return cbf, cbd_index_to_sig_map
-
-    def __generate_bloom_filter__(self, invert_index):
-        """Generate bloom filter for inverted index."""
-        num_hash_funct = int(get_config(self.blocking_config, "number_hash_functions"))
-        bf_len = int(get_config(self.blocking_config, "bf_len"))
-
-        candidate_block_filter, cbf_index_to_sig_map = generate_bloom_filter(invert_index.keys(),
-                                                                             bf_len, num_hash_funct)
-
-        #print("number of unset bits in cbf:", len(set(range(bf_len)).difference(candidate_bloom_filter)))
-        return candidate_block_filter, cbf_index_to_sig_map
+        return reversed_index
