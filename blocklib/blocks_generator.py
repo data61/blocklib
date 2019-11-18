@@ -1,4 +1,4 @@
-"""Class that implement final block generations."""
+"""Module that implement final block generations."""
 from typing import Sequence, List, Dict, Tuple
 import numpy as np
 from collections import defaultdict
@@ -11,7 +11,7 @@ from .candidate_blocks_generator import CandidateBlockingResult
 def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResult]):
     """
     Generate final blocks given list of candidate block objects from 2 data providers.
-    :param candidate_block_objs
+    :param candidate_block_objs: A list of candidate block result objects from 2 data providers
     :return: filtered_reversed_indices: List of dictionaries
     """
     for obj in candidate_block_objs:
@@ -19,7 +19,7 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
         if state_type != CandidateBlockingResult:
             raise TypeError(f'Unsupported blocking instance {state_type}')
 
-    # check the PPRLIndex state is the same
+    # check if the states are of same type
     assert type(candidate_block_objs[0].state) == type(candidate_block_objs[1].state)
 
     # obtain list of objects
@@ -48,8 +48,8 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
 def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     """
     Return a dictionary of record to block key mapping
-    :param reversed_indices:
-    :return:
+    :param reversed_indices: A list of dictionaries where key is the block key and value is a list of record IDs.
+    :return: rec_to_blockkey: A list of dictionaries where key is the record ID and value is a list of block key the record belongs to
     """
     rec_to_blockkey = []
     for reversed_index in reversed_indices:
@@ -64,32 +64,34 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
 def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[PPRLIndex], threshold: int):
     """
     Generate final blocks for P-Sig.
-    :param reversed_indices:
-    :param block_states:
-    :param threshold: int
-    :return:
+    :param reversed_indices: A list of dictionaries where key is the block key and value is a list of record IDs.
+    :param block_states: A list of PPRLIndex objects that hold configuration of the blocking job
+    :param threshold: int which decides a pair when number of 1 bits in bloom filter is large than or equal to threshold
+    :return: reversed_indices: A list of dictionaries where blocks that don't contain any matches are deleted
     """
     # generate candidate bloom filters
     candidate_bloom_filters = []
-    cbf_index_to_sig_maps = []
     for reversed_index, state in zip(reversed_indices, block_states):
-        cbf, cbf_map = state.generate_block_filter(reversed_index)
-        candidate_bloom_filters.append(cbf)
-        cbf_index_to_sig_maps.append(cbf_map)
+        cbf = set()
+        for bf_set in reversed_index:
+            cbf = cbf.union(bf_set)
+
+        bf_len = int(block_states[0].blocking_config.get("bf-len", None))
+        bf_vector = np.zeros(bf_len, dtype=bool)
+        bf_vector[list(cbf)] = True
+        candidate_bloom_filters.append(bf_vector)
 
     # compute blocking filter (and operation)
     cbf = np.sum(candidate_bloom_filters, axis=0)
     block_filter = cbf >= threshold
 
     # filter reversed_indices with block filter
-    for reversed_index, cbf_map in zip(reversed_indices, cbf_index_to_sig_maps):
-        sig_pos = defaultdict(list)
-        for pos, sig_list in cbf_map.items():
-            for sig in sig_list:
-                sig_pos[sig].append(pos)
-        for sig, positions in sig_pos.items():
-            if not all(block_filter[i] for i in positions):
-                del reversed_index[sig]
+    for reversed_index in reversed_indices:
+
+        has_matches = {bf_set: all(block_filter[i] for i in bf_set) for bf_set in reversed_index}
+        for bf_set in has_matches:
+            if not has_matches[bf_set]:
+                del reversed_index[bf_set]
 
     return reversed_indices
 

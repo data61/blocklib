@@ -3,6 +3,7 @@ import pytest
 
 from blocklib import generate_candidate_blocks
 from blocklib import PPRLIndexPSignature
+from blocklib import flip_bloom_filter
 
 data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
         ('id2', 'Joyce', 'Hsu', 'Burwood'),
@@ -35,6 +36,8 @@ class TestCandidateBlockGenerator(unittest.TestCase):
     def test_generate_candidate_blocks_psig(self):
         """Test generation of candidate blocks for p-sig."""
         global data
+        num_hash_funcs = 4
+        bf_len = 2048
         config = {
             "blocking_features": [1],
             "record-id-col": 0,
@@ -45,8 +48,8 @@ class TestCandidateBlockGenerator(unittest.TestCase):
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number-hash-functions": 20,
-                "bf-len": 2048,
+                "number-hash-functions": num_hash_funcs,
+                "bf-len": bf_len,
             },
             "signatureSpecs": [
                 [
@@ -59,10 +62,6 @@ class TestCandidateBlockGenerator(unittest.TestCase):
                         'version': 1,
                         'config': config}
         candidate_block_obj = generate_candidate_blocks(data, block_config)
-        assert candidate_block_obj.blocks == {'Fred': ['id4', 'id5'], 'Lindsay': ['id6']}
-
-        psig = PPRLIndexPSignature(config)
-        reversed_index = psig.build_reversed_index(data)
-        cbf, cbf_map = psig.generate_block_filter(reversed_index)
-        assert all(candidate_block_obj.extra['candidate_block_filter'] == cbf)
-        assert candidate_block_obj.extra['cbf_map'] == cbf_map
+        bf_set_fred = tuple(flip_bloom_filter('Fred', bf_len, num_hash_funcs))
+        bf_set_lindsay = tuple(flip_bloom_filter('Lindsay', bf_len, num_hash_funcs))
+        assert candidate_block_obj.blocks == {bf_set_fred: ['id4', 'id5'], bf_set_lindsay: ['id6']}

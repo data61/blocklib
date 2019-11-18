@@ -13,35 +13,14 @@ PPRLSTATES = {"p-sig": PPRLIndexPSignature,
 class CandidateBlockingResult:
     """Object for holding candidate blocking results."""
 
-    def __init__(self, blocks: Dict, state: PPRLIndex, extra: Dict = {}):
+    def __init__(self, blocks: Dict, state: PPRLIndex):
         """
         Initialise a blocking result object.
-        :param blocks:
-        :param state:
-        :param extra:
+        :param blocks: A dictionary where key is set of 1 bits in bloom filter and value is a list of record IDs
+        :param state: A PPRLIndex state that contains configuration of blocking
         """
         self.blocks = blocks
         self.state = state
-        self.extra = extra
-
-
-def make_candidate_block_object(reversed_index: Dict, state: PPRLIndex, algorithm: str):
-    """
-    Make candidate block object from reversed index and state.
-    :param reversed_index:
-    :param state:
-    :param algorithm:
-    :return:
-    """
-    assert algorithm in PPRLSTATES
-    # make candidate block result object
-    if algorithm == 'p-sig':
-        cbf, cbf_index_to_sig_map = state.generate_block_filter(reversed_index)
-        extra = dict(candidate_block_filter=cbf, cbf_map=cbf_index_to_sig_map)
-        candidate_block_obj = CandidateBlockingResult(reversed_index, state, extra=extra)
-    else:
-        candidate_block_obj = CandidateBlockingResult(reversed_index, state)
-    return candidate_block_obj
 
 
 def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict):
@@ -70,7 +49,7 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config:
         state.summarize_reversed_index(reversed_index)
 
         # make candidate blocking result object
-        candidate_block_obj = make_candidate_block_object(reversed_index, state, algorithm)
+        candidate_block_obj = CandidateBlockingResult(reversed_index, state)
 
     else:
         raise NotImplementedError(f'The algorithm {algorithm} is not supported yet')

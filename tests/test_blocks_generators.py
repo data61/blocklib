@@ -1,7 +1,7 @@
 import unittest
 import pytest
 from blocklib import generate_blocks_2party, generate_reverse_blocks
-from blocklib import generate_candidate_blocks
+from blocklib import generate_candidate_blocks, flip_bloom_filter
 
 
 class TestBlocksGenerator(unittest.TestCase):
@@ -102,6 +102,13 @@ class TestBlocksGenerator(unittest.TestCase):
         filtered_records = generate_blocks_2party([candidate_obj_alice, candidate_obj_bob])
         filtered_alice = filtered_records[0]
         filtered_bob = filtered_records[1]
-        assert sorted(list(filtered_alice.keys())) == ['Fr', 'Fred', 'Li']
+
+        expected_bf_sets = {}
+        for string in ['Fr', 'Fred', 'Li']:
+            bf_set = flip_bloom_filter(string, config['blocking-filter']['bf-len'],
+                                       config['blocking-filter']['number-hash-functions'])
+            expected_bf_sets[tuple(bf_set)] = True
+
+        assert all(key in expected_bf_sets for key in filtered_alice)
         assert filtered_alice.keys() == filtered_bob.keys()
 
