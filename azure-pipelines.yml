@@ -1,0 +1,60 @@
+# This pipeline should be triggered by every push to any branches, but should not be used
+# for external PRs.
+pr: none
+trigger:
+  branches:
+    include:
+    - '*'
+
+jobs:
+- job: test_and_build
+  displayName: 'Test and build'
+  strategy:
+    matrix:
+      python35:
+        PYTHON_VERSION: '3.5'
+      python36:
+        PYTHON_VERSION: '3.6'
+      python37:
+        PYTHON_VERSION: '3.7'
+      python38:
+        PYTHON_VERSION: '3.8'
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: $(PYTHON_VERSION)
+  - script: |
+      pip install -U pip
+      pip install -U -r requirements.txt
+    displayName: 'Install requirements'
+  - script: |
+      pytest --cov=blocklib --junitxml=testResults.xml --cov-report=xml:coverageReport.xml
+    displayName: 'Tests'
+  - task: PublishTestResults@2
+    displayName: 'Publish test results in Azure'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: 'testResults.xml'
+      testRunTitle: 'Test results for Python $(PYTHON_VERSION)'
+      failTaskOnFailedTests: true
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage in Azure'
+    condition: succeededOrFailed()
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: 'coverageReport.xml'
+      failIfCoverageEmpty: true
+  - script: |
+      pip install wheel setuptools
+      python setup.py bdist_wheel
+    displayName: 'Package'
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish intermediate build artifacts'
+    inputs:
+      path: 'dist'
+      artifact: '$(PYTHON_VERSION)'
+    condition: succeeded()
+  
