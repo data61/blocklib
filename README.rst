@@ -16,10 +16,14 @@ conducted to find which pairs of records should be linked.
 Installation
 ============
 
-`blocklib` isn't yet on PyPi, so for now install directly from GitHub::
+Install with pip:
 
-    pip install git+https://github.com/data61/blocklib
+    pip install blocklib
 
+Documents
+=========
+
+You can find comprehensive documentation and tutorials in folder `docs/`.
 
 Tests
 =====
@@ -27,6 +31,8 @@ Tests
 Run unit tests with `pytest`::
 
     $ pytest
+
+
 
 
 Discussion
