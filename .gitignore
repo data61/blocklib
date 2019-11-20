@@ -12,4 +12,6 @@ venv/*
 *.jpg
 .coverage
 */*/.ipynb_checkpoints
-
+dist/*
+blocklib.egg-info/*
+build/*
