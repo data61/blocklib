@@ -11,4 +11,5 @@ venv/*
 *.png
 *.jpg
 .coverage
+*/*/.ipynb_checkpoints
 
