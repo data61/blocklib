@@ -1,4 +1,4 @@
-from typing import List, Dict, Sequence, Tuple
+from typing import List, Sequence
 
 import fuzzy
 

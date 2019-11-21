@@ -1,4 +1,3 @@
-import random
 import statistics
 import numpy as np
 from typing import Sequence, Tuple, Dict

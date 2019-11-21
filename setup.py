@@ -3,6 +3,11 @@ import setuptools
 with open('README.rst', 'r', encoding='utf-8') as f:
     readme = f.read()
 
+requirements = [
+    "jsonschema>=3.1.1",
+    "Fuzzy>=1.2.2",
+    "numpy>=1.17.2",
+]
 
 setuptools.setup(
     name="blocklib",

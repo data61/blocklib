@@ -1,10 +1,9 @@
-import time
 import numpy as np
-from typing import Dict, Sequence, Tuple
+from typing import Dict, Sequence
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
-from .encoding import generate_bloom_filter, flip_bloom_filter
+from .encoding import flip_bloom_filter
 
 
 class PPRLIndexPSignature(PPRLIndex):

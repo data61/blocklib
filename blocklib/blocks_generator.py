@@ -1,10 +1,9 @@
 """Module that implement final block generations."""
-from typing import Sequence, List, Dict, Tuple
+from typing import Sequence, Dict
 import numpy as np
 from collections import defaultdict
 from .pprlindex import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
-from .pprllambdafold import PPRLIndexLambdaFold
 from .candidate_blocks_generator import CandidateBlockingResult
 
 

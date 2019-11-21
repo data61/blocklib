@@ -1,6 +1,6 @@
 import numpy as np
 from collections import defaultdict
-from typing import Dict, Sequence, Tuple
+from typing import Dict, Sequence
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .encoding import generate_bloom_filter
