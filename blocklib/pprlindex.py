@@ -1,5 +1,6 @@
 import random
 import statistics
+import numpy as np
 from typing import Sequence, Tuple, Dict
 from blocklib.configuration import get_config
 
@@ -61,21 +62,17 @@ class PPRLIndex:
     def select_reference_value(self, reference_data: Sequence[Sequence], ref_data_config: Dict):
         """Load reference data for methods need reference."""
         # read configurations
-        ref_default_features = get_config(ref_data_config, 'default_features')
-        ref_random_seed = get_config(ref_data_config, 'random_seed')
-        num_vals = get_config(ref_data_config, 'num_vals')
+        ref_default_features = get_config(ref_data_config, 'blocking-features')
+        ref_random_seed = get_config(ref_data_config, 'random-state')
+        num_vals = get_config(ref_data_config, 'num-reference-values')
 
         # extract features in config
         rec_features = [''.join([dtuple[x] for x in ref_default_features]) for dtuple in reference_data]
 
         # generate reference values
-        random.seed(ref_random_seed)
-        ref_val_list = set()
-
-        while len(ref_val_list) < num_vals:
-            # random select one reference value allow repeat
-            rand_ref_val = random.choice(rec_features)
-            ref_val_list.add(rand_ref_val)
+        rnd = np.random.RandomState(ref_random_seed)
+        index = rnd.choice(range(len(rec_features)), num_vals, replace=False)
+        ref_val_list = [rec_features[x] for x in index]
 
         print('  Selected %d random reference values' % (len(ref_val_list)))
         return ref_val_list
