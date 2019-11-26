@@ -83,6 +83,7 @@ stages:
         summaryFileLocation: 'coverageReport.xml'
         failIfCoverageEmpty: true
     - bash: |
+        pip install -U pip codecov
         report_name="ubuntu18-04_$(PYTHON_VERSION)"
         python -m codecov --token $(CODECOV_TOKEN) \
           --file coverageReport.xml \
