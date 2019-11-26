@@ -84,7 +84,7 @@ stages:
         failIfCoverageEmpty: true
     - script: |
         pip install wheel setuptools
-        python setup.py bdist_wheel
+        python setup.py bdist_wheel --universal
       displayName: 'Package'
     - task: PublishPipelineArtifact@1
       displayName: 'Publish intermediate build artifacts'
@@ -92,4 +92,42 @@ stages:
         path: 'dist'
         artifact: '$(PYTHON_VERSION)'
       condition: succeeded()
+  - job:
+    displayName: 'Package Source Distribution'
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.7'
+        displayName: 'Init Python'
+      - script: |
+          python -m pip install -U pip
+      - script: python setup.py sdist
+        displayName: 'Package sdist'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifact: 'sdist'
+          targetPath: 'dist/'
 
+- stage: package
+  displayName: Package Artifacts
+  dependsOn: ['test_and_build']
+  jobs:
+  - job:
+    displayName: 'Package Artifacts'
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        path: $(Pipeline.Workspace)
+    - script: |
+        cd $(Pipeline.Workspace)
+        mkdir artifacts
+        mv 3.7/*.whl artifacts
+        mv sdist/* artifacts
+        ls artifacts
+      displayName: 'List Artifacts'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        artifact: 'release'
+        targetPath: '$(Pipeline.Workspace)/artifacts'
