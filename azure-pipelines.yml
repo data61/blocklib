@@ -82,6 +82,13 @@ stages:
         codeCoverageTool: Cobertura
         summaryFileLocation: 'coverageReport.xml'
         failIfCoverageEmpty: true
+    - bash: |
+        report_name="ubuntu18-04_$(PYTHON_VERSION)"
+        python -m codecov --token $(CODECOV_TOKEN) \
+          --file coverageReport.xml \
+          -n ${report_name}
+      displayName: 'Send coverage to codecov'
+      condition: succeededOrFailed()
     - script: |
         pip install wheel setuptools
         python setup.py bdist_wheel --universal
