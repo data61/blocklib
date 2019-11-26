@@ -6,55 +6,90 @@ trigger:
     include:
     - '*'
 
-jobs:
-- job: test_and_build
+stages:
+- stage: static_checks
+  displayName: Static Checks
+  dependsOn: []
+  jobs:
+  - job:
+    displayName: 'Typechecking'
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.7'
+    - script: |
+        python -m pip install -U mypy==0.730
+        mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
+      displayName: 'mypy (pinned)'
+
+    - script: |
+        python -m pip install -U mypy
+        mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
+      displayName: 'mypy (latest)'
+      continueOnError: true
+
+  - job:
+    displayName: "Check Git Tags"
+    steps:
+    # In this step, if this build is triggered by a tag, it will add a tag 'Automated' to the current build. Used to
+    # trigger the release pipeline.
+    - script: echo "##vso[build.addbuildtag]Automated"
+      condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+
+- stage: test_and_build
   displayName: 'Test and build'
-  strategy:
-    matrix:
-      python35:
-        PYTHON_VERSION: '3.5'
-      python36:
-        PYTHON_VERSION: '3.6'
-      python37:
-        PYTHON_VERSION: '3.7'
-      python38:
-        PYTHON_VERSION: '3.8'
-  pool:
-    vmImage: 'ubuntu-18.04'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: $(PYTHON_VERSION)
-  - script: |
-      pip install -U pip
-      pip install -U -r requirements.txt
-    displayName: 'Install requirements'
-  - script: |
-      pytest --cov=blocklib --junitxml=testResults.xml --cov-report=xml:coverageReport.xml
-    displayName: 'Tests'
-  - task: PublishTestResults@2
-    displayName: 'Publish test results in Azure'
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: 'testResults.xml'
-      testRunTitle: 'Test results for Python $(PYTHON_VERSION)'
-      failTaskOnFailedTests: true
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage in Azure'
-    condition: succeededOrFailed()
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: 'coverageReport.xml'
-      failIfCoverageEmpty: true
-  - script: |
-      pip install wheel setuptools
-      python setup.py bdist_wheel
-    displayName: 'Package'
-  - task: PublishPipelineArtifact@1
-    displayName: 'Publish intermediate build artifacts'
-    inputs:
-      path: 'dist'
-      artifact: '$(PYTHON_VERSION)'
-    condition: succeeded()
-  
+  dependsOn: []
+  jobs:
+  - job:
+    displayName: ' '
+    strategy:
+      matrix:
+        python35:
+          PYTHON_VERSION: '3.5'
+        python36:
+          PYTHON_VERSION: '3.6'
+        python37:
+          PYTHON_VERSION: '3.7'
+        python38:
+          PYTHON_VERSION: '3.8'
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: $(PYTHON_VERSION)
+    - script: |
+        pip install -U pip
+        pip install -U -r requirements.txt
+      displayName: 'Install requirements'
+    - script: |
+        pytest --cov=blocklib --junitxml=testResults.xml --cov-report=xml:coverageReport.xml
+      displayName: 'Tests'
+    - task: PublishTestResults@2
+      displayName: 'Publish test results in Azure'
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: 'testResults.xml'
+        testRunTitle: 'Test results for Python $(PYTHON_VERSION)'
+        failTaskOnFailedTests: true
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage in Azure'
+      condition: succeededOrFailed()
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: 'coverageReport.xml'
+        failIfCoverageEmpty: true
+    - script: |
+        pip install wheel setuptools
+        python setup.py bdist_wheel
+      displayName: 'Package'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish intermediate build artifacts'
+      inputs:
+        path: 'dist'
+        artifact: '$(PYTHON_VERSION)'
+      condition: succeeded()
+
