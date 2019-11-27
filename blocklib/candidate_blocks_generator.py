@@ -54,6 +54,6 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config:
         candidate_block_obj = CandidateBlockingResult(reversed_index, state)
 
     else:
-        raise NotImplementedError(f'The algorithm {algorithm} is not supported yet')
+        raise NotImplementedError('The algorithm {} is not supported yet'.format(algorithm))
 
     return candidate_block_obj

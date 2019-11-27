@@ -14,8 +14,8 @@ class TestBlocksGenerator(unittest.TestCase):
              'Xu': [2, 3, 4]}
         ]
         record_to_blocks = generate_reverse_blocks(reversed_indices)
-        assert record_to_blocks[0] == {'r1': ['Fr'], 'r2': ['Fr'], 'r3': ['Jo'], 'r4': ['Jo']}
-        assert record_to_blocks[1] == {1: ['Li'], 2: ['Li', 'Xu'], 3: ['Li', 'Xu'], 4: ['Xu']}
+        assert record_to_blocks[0] == {'r1': {'Fr'}, 'r2': {'Fr'}, 'r3': {'Jo'}, 'r4': {'Jo'}}
+        assert record_to_blocks[1] == {1: {'Li'}, 2: {'Li', 'Xu'}, 3: {'Li', 'Xu'}, 4: {'Xu'}}
 
     def test_lambdafold(self):
         """Test block generator for PPRLLambdaFold method."""
