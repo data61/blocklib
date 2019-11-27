@@ -44,16 +44,16 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
 
 def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     """
-    Return a dictionary of record to block key mapping
+    Return a list of dictionaries of record to block key mapping
     :param reversed_indices: A list of dictionaries where key is the block key and value is a list of record IDs.
-    :return: rec_to_blockkey: A list of dictionaries where key is the record ID and value is a list of block key the record belongs to
+    :return: rec_to_blockkey: A list of dictionaries where key is the record ID and value is a set of block key the record belongs to
     """
     rec_to_blockkey = []
     for reversed_index in reversed_indices:
-        map_rec_block = defaultdict(list)
+        map_rec_block = defaultdict(set)
         for blk_key, rec_list in reversed_index.items():
             for rec in rec_list:
-                map_rec_block[rec].append(blk_key)
+                map_rec_block[rec].add(blk_key)
         rec_to_blockkey.append(map_rec_block)
     return rec_to_blockkey
 
