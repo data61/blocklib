@@ -15,3 +15,4 @@ venv/*
 dist/*
 blocklib.egg-info/*
 build/*
+.mypy_cache/*
