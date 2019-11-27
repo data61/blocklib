@@ -95,7 +95,7 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 #################################################
 ########## Add strategy here ####################
 #################################################
-SIGNATURE_STRATEGIES: Dict[str, Callable] = {
+SIGNATURE_STRATEGIES: Dict[str, Callable[..., str]] = {
     'feature-value': generate_by_feature_value,
     "characters_at": generate_by_char_at,
     # 'n-gram': generate_by_n_gram,
