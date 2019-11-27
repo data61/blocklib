@@ -5,7 +5,7 @@ def assess_blocks_2party(filtered_reverse_indices, data):
     """Assess pair completeness and reduction ratio of blocking result.
 
     :ivar filtered_reverse_indices for each data provider, a dict containing the mapping from block id to corresponding record ids.
-    :ivar data for each data provider, a list of tuples which only contains entity ID
+    :ivar data: a list of tuples of (row_index, entity_id) for 2 data providers
     """
     # currently just support for two party
     dp1_signature, dp2_signature = filtered_reverse_indices
