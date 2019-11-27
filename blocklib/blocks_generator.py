@@ -37,7 +37,7 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
         filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=2)
 
     else:
-        raise TypeError(f'Unsupported blocking instance {state_type}')
+        raise TypeError('Unsupported blocking instance {}'.format(state_type))
 
     return filtered_reversed_indices
 

@@ -12,5 +12,5 @@ def get_config(config: Dict, arg_name: str):
     """
     value = config.get(arg_name, 'not specified')
     if value == 'not specified':
-        raise ValueError(f'Argument "{arg_name}" was not specified\n\n{config}')
+        raise ValueError('Argument "{}" was not specified\n\n{}'.format(arg_name, config))
     return value
