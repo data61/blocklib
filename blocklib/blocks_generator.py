@@ -1,8 +1,10 @@
 """Module that implement final block generations."""
-from typing import Sequence, List, Dict, Any, Set
-import numpy as np
 from collections import defaultdict
-from .pprlindex import PPRLIndex
+from typing import Any, Dict, Sequence, Set
+
+import numpy as np
+
+from blocklib import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
 from .pprllambdafold import PPRLIndexLambdaFold
 from .candidate_blocks_generator import CandidateBlockingResult
@@ -50,7 +52,7 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     """
     rec_to_blockkey = []
     for reversed_index in reversed_indices:
-        map_rec_block: Dict[Any, List[Any]] = defaultdict(list)
+        map_rec_block: Dict[Any, Set[Any]] = defaultdict(set)
         for blk_key, rec_list in reversed_index.items():
             for rec in rec_list:
                 map_rec_block[rec].add(blk_key)
@@ -72,7 +74,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
         cbf: Set[int] = set()
         for bf_set in reversed_index:
             cbf = cbf.union(bf_set)
-
+        assert isinstance(block_states[0], PPRLIndexPSignature)
         bf_len = int(block_states[0].blocking_config.get("bf_len", None))
         bf_vector = np.zeros(bf_len, dtype=bool)
         bf_vector[list(cbf)] = True
@@ -91,5 +93,3 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
                 del reversed_index[bf_set]
 
     return reversed_indices
-
-

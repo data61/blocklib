@@ -1,19 +1,19 @@
 import random
 import statistics
-from typing import Sequence, Any, Dict, List, Set
+from typing import Any, Dict, List, Sequence, Set
+
 from blocklib.configuration import get_config
 
 
 class PPRLIndex:
     """Base class for PPRL indexing/blocking."""
 
-    def __init__(self):
+    def __init__(self, config: Dict = {}) -> None:
         """Initialise base class."""
         self.rec_dict = None
         self.ent_id_col = None
         self.rec_id_col = None
-        self.revert_index = {}
-        self.stats = {}
+        self.stats: Dict[str, Any] = {}
 
     def build_reversed_index(self, data: Sequence[Sequence]):
         """Method which builds the index for all database.

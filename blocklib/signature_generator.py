@@ -1,4 +1,4 @@
-from typing import List, Dict, Sequence, Tuple, Any
+from typing import Any, Callable, Dict, List, Sequence
 
 import fuzzy
 
@@ -95,7 +95,7 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 #################################################
 ########## Add strategy here ####################
 #################################################
-SIGNATURE_STRATEGIES = {
+SIGNATURE_STRATEGIES: Dict[str, Callable] = {
     'feature-value': generate_by_feature_value,
     "characters_at": generate_by_char_at,
     # 'n-gram': generate_by_n_gram,
