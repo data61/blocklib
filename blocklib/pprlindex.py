@@ -1,6 +1,6 @@
 import random
 import statistics
-from typing import Sequence, Tuple, Dict
+from typing import Sequence, Any, Dict, List, Set
 from blocklib.configuration import get_config
 
 
@@ -39,7 +39,7 @@ class PPRLIndex:
         self.stats['med_size'] = int(statistics.median(lengths))
         self.stats['std_size'] = statistics.stdev(lengths)
         # find how many blocks each entity / record is a member of
-        rec_to_block = {}
+        rec_to_block: Dict[Any, List[Any]] = {}
         for block_id, block in reversed_index.items():
             for rec in block:
                 if rec in rec_to_block:
@@ -70,7 +70,7 @@ class PPRLIndex:
 
         # generate reference values
         random.seed(ref_random_seed)
-        ref_val_list = set()
+        ref_val_list: Set[str] = set()
 
         while len(ref_val_list) < num_vals:
             # random select one reference value allow repeat

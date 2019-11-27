@@ -2,7 +2,7 @@
 from blocklib.configuration import get_config
 import logging
 from abc import ABC
-from typing import Dict
+from typing import Dict, List, Tuple
 
 
 class SimMeasure(ABC):
@@ -100,10 +100,10 @@ class DiceSim(SimMeasure):
         self.ngram_padding = get_config(config, 'ngram_padding')
         self.padding_start_char = get_config(config, 'padding_start_char')
         self.padding_end_char = get_config(config, 'padding_end_char')
-        self.q_gram_cache = {}  # Store strings converted into q-grams. Keys in
+        self.q_gram_cache: Dict[str, List[str]] = {}  # Store strings converted into q-grams. Keys in
         # this will be strings and their values their
         # q-gram list
-        self.sim_cache = {}  # Store the string pair and its similarity in a
+        self.sim_cache: Dict[Tuple[str, str], float] = {}  # Store the string pair and its similarity in a
         # cache as well
 
     def sim(self, s1: str, s2: str, cache: bool = False):

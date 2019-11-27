@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from typing import Dict, Sequence, Tuple
+from typing import Dict, Sequence, Any, List
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
@@ -32,7 +32,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
     def build_reversed_index(self, data: Sequence[Sequence]):
         """Build inverted index given P-Sig method."""
-        reversed_index = {}
+        reversed_index: Dict[Any, List[Any]] = {}
         # Build index of records
         if self.rec_id_col is None:
             record_ids = np.arange(len(data))
