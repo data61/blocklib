@@ -1,10 +1,9 @@
-import unittest
 import pytest
 from blocklib import generate_blocks_2party, generate_reverse_blocks
 from blocklib import generate_candidate_blocks, flip_bloom_filter
 
 
-class TestBlocksGenerator(unittest.TestCase):
+class TestBlocksGenerator:
 
     def test_candidate_block_type(self):
         """Test throw of type error when passing wrong candidate block types."""

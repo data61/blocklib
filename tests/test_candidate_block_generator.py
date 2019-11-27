@@ -1,4 +1,3 @@
-import unittest
 import pytest
 
 from blocklib import generate_candidate_blocks
@@ -13,7 +12,7 @@ data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
         ('id6', 'Lindsay', 'Jone', 'Narwee')]
 
 
-class TestCandidateBlockGenerator(unittest.TestCase):
+class TestCandidateBlockGenerator:
 
     def test_generate_candidate_blocks_assertion(self):
         global data

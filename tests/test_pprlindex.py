@@ -1,5 +1,5 @@
 from blocklib import PPRLIndex
-import numpy as np
+import random
 
 def test_init():
     """Test constructor for base class PPRLIndex."""
@@ -48,6 +48,7 @@ def test_select_reference_value():
     ]
     pprl = PPRLIndex()
     ref_val_list = pprl.select_reference_value(reference_data, reference_config)
-    index = np.random.RandomState(0).choice(range(len(reference_data)), 3, replace=False)
-    expected = [reference_data[x][1] + reference_data[x][2] for x in index]
+    combined = [reference_data[i][1] + reference_data[i][2] for i in range(len(reference_data))]
+    random.seed(0)
+    expected = random.sample(combined, 3)
     assert ref_val_list == expected

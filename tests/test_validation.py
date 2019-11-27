@@ -1,9 +1,8 @@
-import unittest
 import pytest
 from blocklib import validate_signature_config
 
 
-class TestValidation(unittest.TestCase):
+class TestValidation:
 
     def test_validate_signature_config(self):
         """Test validation on signature config."""

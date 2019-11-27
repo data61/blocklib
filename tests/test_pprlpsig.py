@@ -1,8 +1,7 @@
-import unittest
 from blocklib import PPRLIndexPSignature, flip_bloom_filter
 
 
-class TestPSig(unittest.TestCase):
+class TestPSig:
 
     def test_config(self):
         """Test p-sig configuration."""
