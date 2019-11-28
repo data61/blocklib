@@ -60,9 +60,9 @@ class PPRLIndexLambdaFold(PPRLIndex):
             record_ids = [x[self.record_id_col] for x in data]
         rnd = np.random.RandomState(self.random_state)
         # build Lambda fold tables and add to the invert index
-        invert_index: Dict[Any, List[Any]] = {}
+        invert_index = {}  # type: Dict[Any, List[Any]]
         for i in range(self.mylambda):
-            lambda_table: Dict[Any, Any] = defaultdict(list)
+            lambda_table = defaultdict(list)  # type: Dict[Any, Any]
             # sample K indices from [0, bf-len]
             indices = rnd.choice(range(self.bf_len), self.K, replace=False)
             for rec_id, rec in zip(record_ids, data):

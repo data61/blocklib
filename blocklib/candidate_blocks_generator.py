@@ -6,9 +6,9 @@ from .pprllambdafold import PPRLIndexLambdaFold
 from .pprlkasn import PPRLIndexKAnonymousSortedNeighbour
 from .validation import validate_signature_config
 
-PPRLSTATES: Dict[str, Type[PPRLIndex]] = {"p-sig": PPRLIndexPSignature,
-                                          "lambda-fold": PPRLIndexLambdaFold,
-                                          "kasn": PPRLIndexKAnonymousSortedNeighbour}
+PPRLSTATES = {"p-sig": PPRLIndexPSignature,
+              "lambda-fold": PPRLIndexLambdaFold,
+              "kasn": PPRLIndexKAnonymousSortedNeighbour}  # type: Dict[str, Type[PPRLIndex]]
 
 
 class CandidateBlockingResult:
