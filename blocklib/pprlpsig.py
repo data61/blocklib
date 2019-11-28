@@ -1,10 +1,10 @@
-import time
 import numpy as np
-from typing import Dict, Sequence, Tuple
-from blocklib.configuration import get_config
+from typing import Any, Dict, List, Sequence
+
+from .configuration import get_config
+from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
-from .encoding import generate_bloom_filter, flip_bloom_filter
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -16,7 +16,7 @@ class PPRLIndexPSignature(PPRLIndex):
         This class includes an implementation of p-sig algorithm.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict) -> None:
         """Initialize the class and set the required parameters.
 
         Arguments:
@@ -32,7 +32,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
     def build_reversed_index(self, data: Sequence[Sequence]):
         """Build inverted index given P-Sig method."""
-        reversed_index = {}
+        reversed_index: Dict[Any, List[Any]] = {}
         # Build index of records
         if self.rec_id_col is None:
             record_ids = np.arange(len(data))

@@ -1,4 +1,4 @@
-from typing import List, Dict, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Sequence
 
 import fuzzy
 
@@ -8,7 +8,7 @@ def generate_by_feature_value(attr_ind: int, dtuple: Sequence):
     return dtuple[attr_ind]
 
 
-def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[str]):
+def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
     """ Generate signatures by select subset of characters in original features.
     >>> res = generate_by_char_at(2, ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), [0, 3])
     >>> assert res == 'Lt'
@@ -51,7 +51,7 @@ def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[str]):
     return ''.join(sig)
 
 
-def generate_by_n_gram(attr_ind: int, dtuple: Sequence, n: int):
+def generate_by_n_gram(attr_ind: List[int], dtuple: Sequence, n: int):
     """Generate signatures by constructing n-grams.
     >>> res = generate_by_n_gram([0, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), 2)
     >>> assert res == {'y ', 'ot', 'rS', 'Su', 'ry', 'er', 'ur', 'po', 're', 'ha', 'te', 'ar', 'tt', 'rr', ' p', 'ey'}
@@ -95,7 +95,7 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 #################################################
 ########## Add strategy here ####################
 #################################################
-SIGNATURE_STRATEGIES = {
+SIGNATURE_STRATEGIES: Dict[str, Callable[..., str]] = {
     'feature-value': generate_by_feature_value,
     "characters_at": generate_by_char_at,
     # 'n-gram': generate_by_n_gram,
