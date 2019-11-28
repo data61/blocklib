@@ -1,5 +1,5 @@
 import statistics
-import numpy as np
+import random
 from typing import Sequence, Tuple, Dict
 from blocklib.configuration import get_config
 
@@ -69,9 +69,8 @@ class PPRLIndex:
         rec_features = [''.join([dtuple[x] for x in ref_default_features]) for dtuple in reference_data]
 
         # generate reference values
-        rnd = np.random.RandomState(ref_random_seed)
-        index = rnd.choice(range(len(rec_features)), num_vals, replace=False)
-        ref_val_list = [rec_features[x] for x in index]
+        random.seed(ref_random_seed)
+        ref_val_list = random.sample(rec_features, num_vals)
 
         print('  Selected %d random reference values' % (len(ref_val_list)))
         return ref_val_list
