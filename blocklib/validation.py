@@ -8,7 +8,7 @@ def load_schema(file_name: str):
     path = pathlib.Path(__file__).parent / '../docs/schemas' / file_name
 
     # schema_bytes = pkgutil.get_data('anonlinkclient', 'docs/schemas/{}'.format(file_name))
-    with open(path.resolve(), 'rt') as schema_file:
+    with open(str(path.resolve()), 'rt') as schema_file:
         try:
             return json.load(schema_file)
         except json.decoder.JSONDecodeError as e:
