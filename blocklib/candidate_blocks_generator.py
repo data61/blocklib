@@ -1,13 +1,15 @@
 """Class that implement candidate block generations."""
-from typing import Sequence, Dict, Tuple
+from typing import Dict, Sequence, Tuple, Type
 from .pprlindex import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
 from .pprllambdafold import PPRLIndexLambdaFold
 from .validation import validate_signature_config
 
-PPRLSTATES = {"p-sig": PPRLIndexPSignature,
-              "lambda-fold": PPRLIndexLambdaFold,
-              }
+
+PPRLSTATES: Dict[str, Type[PPRLIndex]] = {
+    "p-sig": PPRLIndexPSignature,
+    "lambda-fold": PPRLIndexLambdaFold,
+}
 
 
 class CandidateBlockingResult:

@@ -1,19 +1,18 @@
 import statistics
 import random
-from typing import Sequence, Tuple, Dict
+from typing import Any, Dict, List, Sequence, Set
 from blocklib.configuration import get_config
 
 
 class PPRLIndex:
     """Base class for PPRL indexing/blocking."""
 
-    def __init__(self):
+    def __init__(self, config: Dict = {}) -> None:
         """Initialise base class."""
         self.rec_dict = None
         self.ent_id_col = None
         self.rec_id_col = None
-        self.revert_index = {}
-        self.stats = {}
+        self.stats: Dict[str, Any] = {}
 
     def build_reversed_index(self, data: Sequence[Sequence]):
         """Method which builds the index for all database.
@@ -39,7 +38,7 @@ class PPRLIndex:
         self.stats['med_size'] = int(statistics.median(lengths))
         self.stats['std_size'] = statistics.stdev(lengths)
         # find how many blocks each entity / record is a member of
-        rec_to_block = {}
+        rec_to_block: Dict[Any, List[Any]] = {}
         for block_id, block in reversed_index.items():
             for rec in block:
                 if rec in rec_to_block:

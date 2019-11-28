@@ -1,8 +1,10 @@
 """Module that implement final block generations."""
-from typing import Sequence, Dict
-import numpy as np
 from collections import defaultdict
-from .pprlindex import PPRLIndex
+from typing import Any, Dict, Sequence, Set
+
+import numpy as np
+
+from blocklib import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
 from .candidate_blocks_generator import CandidateBlockingResult
 
@@ -52,7 +54,7 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     """
     rec_to_blockkey = []
     for reversed_index in reversed_indices:
-        map_rec_block = defaultdict(set)
+        map_rec_block: Dict[Any, Set[Any]] = defaultdict(set)
         for blk_key, rec_list in reversed_index.items():
             for rec in rec_list:
                 map_rec_block[rec].add(blk_key)
@@ -71,7 +73,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
     # generate candidate bloom filters
     candidate_bloom_filters = []
     for reversed_index, state in zip(reversed_indices, block_states):
-        cbf = set()
+        cbf: Set[int] = set()
         for bf_set in reversed_index:
             cbf = cbf.union(bf_set)
 
@@ -81,8 +83,8 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
         candidate_bloom_filters.append(bf_vector)
 
     # compute blocking filter (and operation)
-    cbf = np.sum(candidate_bloom_filters, axis=0)
-    block_filter = cbf >= threshold
+    cbf_array = np.sum(candidate_bloom_filters, axis=0)
+    block_filter = cbf_array >= threshold
 
     # filter reversed_indices with block filter
     for reversed_index in reversed_indices:
@@ -93,5 +95,3 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
                 del reversed_index[bf_set]
 
     return reversed_indices
-
-
