@@ -12,7 +12,7 @@ class PPRLIndex:
         self.rec_dict = None
         self.ent_id_col = None
         self.rec_id_col = None
-        self.stats: Dict[str, Any] = {}
+        self.stats = {}  # type: Dict[str, Any]
 
     def build_reversed_index(self, data: Sequence[Sequence]):
         """Method which builds the index for all database.
@@ -38,7 +38,7 @@ class PPRLIndex:
         self.stats['med_size'] = int(statistics.median(lengths))
         self.stats['std_size'] = statistics.stdev(lengths)
         # find how many blocks each entity / record is a member of
-        rec_to_block: Dict[Any, List[Any]] = {}
+        rec_to_block = {}  # type: Dict[Any, List[Any]]
         for block_id, block in reversed_index.items():
             for rec in block:
                 if rec in rec_to_block:

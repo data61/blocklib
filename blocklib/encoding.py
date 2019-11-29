@@ -43,7 +43,7 @@ def generate_bloom_filter(list_of_strs: List[str], bf_len: int, num_hash_funct: 
     """
     # go through each signature and generate bloom filter of it
     # -- we only store the set of index that flipped to 1
-    candidate_bloom_filter: Set[int] = set()
+    candidate_bloom_filter = set()  # type: Set[int]
 
     for signature in list_of_strs:
         bfset = flip_bloom_filter(signature, bf_len, num_hash_funct)

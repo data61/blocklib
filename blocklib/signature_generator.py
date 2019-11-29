@@ -55,18 +55,6 @@ def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
     return ''.join(sig)
 
 
-def generate_by_soundex(attr_ind: int, dtuple: Sequence):
-    """Generate a phonetic encoding of features using soundex.
-
-    >>> sigs = generate_by_soundex(1, ('Joyce', 'Wang', 2134))
-    >>> assert sigs == 'W52'
-
-    """
-    feature = dtuple[attr_ind]
-    soundex = fuzzy.Soundex(4)
-    return soundex(feature)
-
-
 def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
     """Generate a phonetic encoding of features using metaphone.
 
@@ -83,12 +71,12 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 #################################################
 ########## Add strategy here ####################
 #################################################
-SIGNATURE_STRATEGIES: Dict[str, Callable[..., str]] = {
+SIGNATURE_STRATEGIES = {
     'feature-value': generate_by_feature_value,
     "characters-at": generate_by_char_at,
-    'soundex': generate_by_soundex,
-    'metaphone': generate_by_metaphone
-}
+    "characters_at": generate_by_char_at,
+    'metaphone': generate_by_metaphone,
+}  # type: Dict[str, Callable[..., str]]
 
 
 def generate_signatures(signature_strategies: List[List],

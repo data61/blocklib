@@ -6,10 +6,11 @@ from .pprllambdafold import PPRLIndexLambdaFold
 from .validation import validate_signature_config
 
 
-PPRLSTATES: Dict[str, Type[PPRLIndex]] = {
+PPRLSTATES = {
     "p-sig": PPRLIndexPSignature,
     "lambda-fold": PPRLIndexLambdaFold,
-}
+}  # type: Dict[str, Type[PPRLIndex]]
+
 
 
 class CandidateBlockingResult:

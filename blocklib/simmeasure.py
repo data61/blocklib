@@ -100,11 +100,12 @@ class DiceSim(SimMeasure):
         self.ngram_padding = get_config(config, 'ngram_padding')
         self.padding_start_char = get_config(config, 'padding_start_char')
         self.padding_end_char = get_config(config, 'padding_end_char')
-        self.q_gram_cache: Dict[str, List[str]] = {}  # Store strings converted into q-grams. Keys in
-        # this will be strings and their values their
-        # q-gram list
-        self.sim_cache: Dict[Tuple[str, str], float] = {}  # Store the string pair and its similarity in a
-        # cache as well
+
+        # Store strings converted into q-grams. Keys in this will be strings and their values their q-gram list
+        self.q_gram_cache = {}  # type: Dict[str, List[str]]
+
+        # Store the string pair and its similarity in a cache as well
+        self.sim_cache = {}  # type: Dict[Tuple[str, str], float]
 
     def sim(self, s1: str, s2: str, cache: bool = False):
         """Calculate the similarity between the given two strings. The method

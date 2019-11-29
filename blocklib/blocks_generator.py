@@ -54,7 +54,7 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     """
     rec_to_blockkey = []
     for reversed_index in reversed_indices:
-        map_rec_block: Dict[Any, Set[Any]] = defaultdict(set)
+        map_rec_block = defaultdict(set)  # type: Dict[Any, Set[Any]]
         for blk_key, rec_list in reversed_index.items():
             for rec in rec_list:
                 map_rec_block[rec].add(blk_key)
@@ -73,7 +73,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
     # generate candidate bloom filters
     candidate_bloom_filters = []
     for reversed_index, state in zip(reversed_indices, block_states):
-        cbf: Set[int] = set()
+        cbf = set()  # type: Set[int]
         for bf_set in reversed_index:
             cbf = cbf.union(bf_set)
 
