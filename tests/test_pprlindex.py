@@ -33,4 +33,7 @@ def test_summarize_reversed_index():
     assert stats['max_size'] == 3
     assert stats['avg_size'] == 2
     assert stats['med_size'] == 2
-    assert stats['num_of_blocks_per_rec'] == [1, 2, 1, 1, 1]
+    # Same comment as the block length.
+    num_of_blocks_per_rec = stats['num_of_blocks_per_rec']
+    num_of_blocks_per_rec.sort()
+    assert num_of_blocks_per_rec == [1, 1, 1, 1, 2]
