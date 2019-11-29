@@ -95,13 +95,13 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 #################################################
 ########## Add strategy here ####################
 #################################################
-SIGNATURE_STRATEGIES: Dict[str, Callable[..., str]] = {
+SIGNATURE_STRATEGIES = {
     'feature-value': generate_by_feature_value,
     "characters_at": generate_by_char_at,
     # 'n-gram': generate_by_n_gram,
     'soundex': generate_by_soundex,
     'metaphone': generate_by_metaphone
-}
+}  # type: Dict[str, Callable[..., str]]
 
 
 def generate_signatures(signature_strategies: List[List],
