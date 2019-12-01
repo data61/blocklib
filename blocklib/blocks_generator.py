@@ -18,7 +18,7 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
     for obj in candidate_block_objs:
         state_type = type(obj)
         if state_type != CandidateBlockingResult:
-            raise TypeError(f'Unsupported blocking instance {state_type}')
+            raise TypeError('Unsupported blocking instance {}'.format(state_type))
 
     # check if the states are of same type
     assert type(candidate_block_objs[0].state) == type(candidate_block_objs[1].state)
