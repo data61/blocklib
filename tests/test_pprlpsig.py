@@ -11,13 +11,13 @@ class TestPSig(unittest.TestCase):
                 "blocking_features": [1],
                 "filter": {
                     "type": "ratio",
-                    "max_occur_ratio": 0.02,
-                    "min_occur_ratio": 0.001,
+                    "max": 0.02,
+                    "min": 0.001,
                 },
                 "blocking-filter": {
                     "type": "bloom filter",
-                    "number_hash_functions": 4,
-                    "bf_len": 4096,
+                    "number-hash-functions": 4,
+                    "bf-len": 4096,
                 },
             }
             PPRLIndexPSignature(config)
@@ -35,23 +35,23 @@ class TestPSig(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max_occur_ratio": 0.5,
-                "min_occur_ratio": 0.2,
+                "max": 0.5,
+                "min": 0.2,
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number_hash_functions": 4,
-                "bf_len": 2048,
+                "number-hash-functions": 20,
+                "bf-len": 2048,
             },
             "signatureSpecs": [
                 [
-                    {"type": "feature-value", "feature_idx": 1}
+                    {"type": "feature-value", "feature-idx": 1}
                 ]
             ]
 
         }
         psig = PPRLIndexPSignature(config)
         reversed_index = psig.build_reversed_index(data)
-        bf_set = tuple(flip_bloom_filter("Fred", config['blocking-filter']['bf_len'],
-                                         config['blocking-filter']['number_hash_functions']))
+        bf_set = tuple(flip_bloom_filter("Fred", config['blocking-filter']['bf-len'],
+                                         config['blocking-filter']['number-hash-functions']))
         assert reversed_index == {bf_set: ['id4', 'id5']}

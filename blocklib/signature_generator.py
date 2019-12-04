@@ -27,6 +27,10 @@ def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
         if type(p) == int:
             p = min(p, max_ind - 1)
             sig.append(feature[p])
+        elif ':' not in p:
+            p = int(p)
+            p = min(p, max_ind - 1)
+            sig.append(feature[p])
         else:
             start_ind, end_ind = p.split(":")
             if start_ind != '' and end_ind != '':
@@ -51,22 +55,6 @@ def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
     return ''.join(sig)
 
 
-def generate_by_n_gram(attr_ind: List[int], dtuple: Sequence, n: int):
-    """Generate signatures by constructing n-grams.
-    >>> res = generate_by_n_gram([0, 3], ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), 2)
-    >>> assert res == {'y ', 'ot', 'rS', 'Su', 'ry', 'er', 'ur', 'po', 're', 'ha', 'te', 'ar', 'tt', 'rr', ' p', 'ey'}
-    """
-    # concatenate all attributes as 1 string
-    attribute = ''.join([dtuple[x] for x in attr_ind])
-
-    # generate ngrams
-    signatures = set()
-    for i in range(len(attribute) - n + 1):
-        gram = attribute[i: i + n]
-        signatures.add(gram)
-    return signatures
-
-
 def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
     """Generate a phonetic encoding of features using metaphone.
 
@@ -85,8 +73,9 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 #################################################
 SIGNATURE_STRATEGIES = {
     'feature-value': generate_by_feature_value,
+    "characters-at": generate_by_char_at,
     "characters_at": generate_by_char_at,
-    'metaphone': generate_by_metaphone
+    'metaphone': generate_by_metaphone,
 }  # type: Dict[str, Callable[..., str]]
 
 
@@ -111,7 +100,7 @@ def generate_signatures(signature_strategies: List[List],
         sig = []
         for spec in strategy:
             # arguments that we need to pass for any strategy
-            attr_ind = spec.get("feature_idx", -1)
+            attr_ind = spec.get("feature-idx", -1)
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
             config = spec.get('config', {})
 

@@ -54,8 +54,8 @@ class PPRLIndexPSignature(PPRLIndex):
         filtered_reversed_index = self.filter_reversed_index(data, reversed_index)
 
         # map signatures in reversed_index into bloom filter
-        num_hash_func = int(self.blocking_config.get("number_hash_functions", None))
-        bf_len = int(self.blocking_config.get("bf_len", None))
+        num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
+        bf_len = int(self.blocking_config.get("bf-len", None))
 
         reversed_index = {}
         for signature, rec_ids in filtered_reversed_index.items():
@@ -71,12 +71,12 @@ class PPRLIndexPSignature(PPRLIndex):
         # filter blocks based on filter type
         filter_type = get_config(self.filter_config, "type")
         if filter_type == "ratio":
-            min_occur_ratio = get_config(self.filter_config, 'min_occur_ratio')
-            max_occur_ratio = get_config(self.filter_config, 'max_occur_ratio')
+            min_occur_ratio = get_config(self.filter_config, 'min')
+            max_occur_ratio = get_config(self.filter_config, 'max')
             reversed_index = {k: v for k, v in reversed_index.items() if n * max_occur_ratio > len(v) > n * min_occur_ratio}
         elif filter_type == "count":
-            min_occur_count = get_config(self.filter_config, "min_occur_count")
-            max_occur_count = get_config(self.filter_config, "max_occur_count")
+            min_occur_count = get_config(self.filter_config, "min")
+            max_occur_count = get_config(self.filter_config, "max")
             reversed_index = {k: v for k, v in reversed_index.items() if max_occur_count > len(v) > min_occur_count}
         else:
             raise NotImplementedError("Don't support {} filter yet.".format(filter_type))

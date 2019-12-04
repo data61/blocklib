@@ -1,12 +1,11 @@
 """Module that implement final block generations."""
 from collections import defaultdict
-from typing import Any, Dict, Sequence, Set
+from typing import Any, Dict, Sequence, Set, cast
 
 import numpy as np
 
 from blocklib import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
-from .pprllambdafold import PPRLIndexLambdaFold
 from .candidate_blocks_generator import CandidateBlockingResult
 
 
@@ -16,15 +15,25 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
     :param candidate_block_objs: A list of candidate block result objects from 2 data providers
     :return: filtered_reversed_indices: List of dictionaries
     """
+    for obj in candidate_block_objs:
+        state_type = type(obj)
+        if state_type != CandidateBlockingResult:
+            raise TypeError('Unsupported blocking instance {}'.format(state_type))
+
     # check if the states are of same type
     assert type(candidate_block_objs[0].state) == type(candidate_block_objs[1].state)
 
-    state_type = type(candidate_block_objs[0].state)
+    # obtain list of objects
+    pprl_state_type = type(candidate_block_objs[0].state)
     reversed_indices = [obj.blocks for obj in candidate_block_objs]
-    block_states = [obj.state for obj in candidate_block_objs]
+    block_states = [obj.state for obj in candidate_block_objs]  # type: Sequence[PPRLIndex]
+
+    if pprl_state_type == PPRLIndexPSignature:
+        block_states = cast(Sequence[PPRLIndexPSignature], block_states)
+        filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=2)
 
     # normal blocking algorithm that do not need special generation
-    if state_type in {PPRLIndexLambdaFold}:
+    else:
         # decide final blocks keys - intersection of all reversed index keys
         block_keys = set(reversed_indices[0].keys())
         for reversed_index in reversed_indices[1:]:
@@ -34,12 +43,6 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
         for reversed_index in reversed_indices:
             reversed_index = {k: v for k, v in reversed_index.items() if k in block_keys}
             filtered_reversed_indices.append(reversed_index)
-
-    elif state_type == PPRLIndexPSignature:
-        filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=2)
-
-    else:
-        raise TypeError('Unsupported blocking instance {}'.format(state_type))
 
     return filtered_reversed_indices
 
@@ -60,7 +63,7 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     return rec_to_blockkey
 
 
-def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[PPRLIndex], threshold: int):
+def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[PPRLIndexPSignature], threshold: int):
     """
     Generate final blocks for P-Sig.
     :param reversed_indices: A list of dictionaries where key is the block key and value is a list of record IDs.
@@ -74,8 +77,8 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
         cbf = set()  # type: Set[int]
         for bf_set in reversed_index:
             cbf = cbf.union(bf_set)
-        assert isinstance(block_states[0], PPRLIndexPSignature)
-        bf_len = int(block_states[0].blocking_config.get("bf_len", None))
+
+        bf_len = int(block_states[0].blocking_config.get("bf-len", None))
         bf_vector = np.zeros(bf_len, dtype=bool)
         bf_vector[list(cbf)] = True
         candidate_bloom_filters.append(bf_vector)

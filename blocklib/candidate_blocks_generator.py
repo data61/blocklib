@@ -3,12 +3,14 @@ from typing import Dict, Sequence, Tuple, Type
 from .pprlindex import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
 from .pprllambdafold import PPRLIndexLambdaFold
-from .pprlkasn import PPRLIndexKAnonymousSortedNeighbour
 from .validation import validate_signature_config
 
-PPRLSTATES = {"p-sig": PPRLIndexPSignature,
-              "lambda-fold": PPRLIndexLambdaFold,
-              "kasn": PPRLIndexKAnonymousSortedNeighbour}  # type: Dict[str, Type[PPRLIndex]]
+
+PPRLSTATES = {
+    "p-sig": PPRLIndexPSignature,
+    "lambda-fold": PPRLIndexLambdaFold,
+}  # type: Dict[str, Type[PPRLIndex]]
+
 
 
 class CandidateBlockingResult:
@@ -43,6 +45,7 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config:
     # extract algorithm and its config
     algorithm = signature_config.get('type', 'not specified')
     config = signature_config.get('config', 'not specified')
+
     if algorithm in PPRLSTATES:
         state = PPRLSTATES[algorithm](config)
         reversed_index = state.build_reversed_index(data)

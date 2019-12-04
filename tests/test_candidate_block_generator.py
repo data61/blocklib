@@ -1,4 +1,3 @@
-import unittest
 import pytest
 
 from blocklib import generate_candidate_blocks
@@ -13,16 +12,24 @@ data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
         ('id6', 'Lindsay', 'Jone', 'Narwee')]
 
 
-class TestCandidateBlockGenerator(unittest.TestCase):
+class TestCandidateBlockGenerator:
 
     def test_generate_candidate_blocks_assertion(self):
         global data
+
+        # test when type of blocking is not specified
         with pytest.raises(ValueError):
             block_config = {'version': 1, 'config': {}}
             generate_candidate_blocks(data, block_config)
 
+        # test when type of blocking is not implemented
         with pytest.raises(NotImplementedError):
-            block_config = {'type': 'fancyblock', 'version': 1, 'config': {}}
+            block_config = {'type': 'fancy-block', 'version': 1, 'config': {}}
+            generate_candidate_blocks(data, block_config)
+
+        # test when config of blocking is not specified
+        with pytest.raises(ValueError):
+            block_config = {'type': 'p-sig', 'version': 1}
             generate_candidate_blocks(data, block_config)
 
     def test_generate_candidate_blocks_psig(self):
@@ -35,17 +42,17 @@ class TestCandidateBlockGenerator(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max_occur_ratio": 0.5,
-                "min_occur_ratio": 0.0,
+                "max": 0.5,
+                "min": 0.0,
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number_hash_functions": num_hash_funcs,
-                "bf_len": bf_len,
+                "number-hash-functions": num_hash_funcs,
+                "bf-len": bf_len,
             },
             "signatureSpecs": [
                 [
-                    {"type": "feature-value", "feature_idx": 1}
+                    {"type": "feature-value", "feature-idx": 1}
                 ]
             ]
         }

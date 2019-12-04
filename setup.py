@@ -3,6 +3,11 @@ import setuptools
 with open('README.rst', 'r', encoding='utf-8') as f:
     readme = f.read()
 
+requirements = [
+    "jsonschema>=3.1.1",
+    "Fuzzy>=1.2.2",
+    "numpy>=1.17.2",
+]
 
 setuptools.setup(
     name="blocklib",
@@ -15,12 +20,14 @@ setuptools.setup(
     url='https://github.com/data61/blocklib',
     license='Apache',
     packages=setuptools.find_packages(),
+    package_data={'blocklib': ['docs/schemas/*.json*']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
+
     install_requires=[
         "Fuzzy>=1.2"
     ],

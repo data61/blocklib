@@ -1,9 +1,15 @@
-import unittest
+import pytest
 from blocklib import generate_blocks_2party, generate_reverse_blocks
 from blocklib import generate_candidate_blocks, flip_bloom_filter
 
 
-class TestBlocksGenerator(unittest.TestCase):
+class TestBlocksGenerator:
+
+    def test_candidate_block_type(self):
+        """Test throw of type error when passing wrong candidate block types."""
+        with pytest.raises(TypeError):
+            generate_blocks_2party([{'Fr': [1, 2]}, {'Jo': [3, 4]}])
+
 
     def test_generate_reverse_block(self):
         """Test generating reverse block."""
@@ -64,20 +70,20 @@ class TestBlocksGenerator(unittest.TestCase):
             "blocking_features": [1],
             "filter": {
                 "type": "count",
-                "max_occur_count": 5,
-                "min_occur_count": 0,
+                "max": 5,
+                "min": 0,
             },
             "blocking-filter": {
                 "type": "bloom filter",
-                "number_hash_functions": 4,
-                "bf_len": 2048,
+                "number-hash-functions": 20,
+                "bf-len": 2048,
             },
             "signatureSpecs": [
                 [
-                    {"type": "feature-value", "feature_idx": 1}
+                    {"type": "feature-value", "feature-idx": 1}
                 ],
                 [
-                    {"type": "characters_at", "config": {"pos": ["0:2"]}, "feature_idx": 1},
+                    {"type": "characters-at", "config": {"pos": ["0:2"]}, "feature-idx": 1},
                 ]
             ]
 
@@ -98,8 +104,8 @@ class TestBlocksGenerator(unittest.TestCase):
 
         expected_bf_sets = {}
         for string in ['Fr', 'Fred', 'Li']:
-            bf_set = flip_bloom_filter(string, config['blocking-filter']['bf_len'],
-                                       config['blocking-filter']['number_hash_functions'])
+            bf_set = flip_bloom_filter(string, config['blocking-filter']['bf-len'],
+                                       config['blocking-filter']['number-hash-functions'])
             expected_bf_sets[tuple(bf_set)] = True
 
         assert all(key in expected_bf_sets for key in filtered_alice)
