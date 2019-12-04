@@ -1,6 +1,6 @@
 """Module that implement final block generations."""
 from collections import defaultdict
-from typing import Any, Dict, Sequence, Set, List
+from typing import Any, Dict, Sequence, Set, cast
 
 import numpy as np
 
@@ -29,6 +29,7 @@ def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResul
     block_states = [obj.state for obj in candidate_block_objs]  # type: Sequence[PPRLIndex]
 
     if pprl_state_type == PPRLIndexPSignature:
+        block_states = cast(Sequence[PPRLIndexPSignature], block_states)
         filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=2)
 
     # normal blocking algorithm that do not need special generation
@@ -62,7 +63,7 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
     return rec_to_blockkey
 
 
-def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[Any], threshold: int):
+def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[PPRLIndexPSignature], threshold: int):
     """
     Generate final blocks for P-Sig.
     :param reversed_indices: A list of dictionaries where key is the block key and value is a list of record IDs.
