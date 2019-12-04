@@ -20,12 +20,14 @@ setuptools.setup(
     url='https://github.com/data61/blocklib',
     license='Apache',
     packages=setuptools.find_packages(),
+    package_data={'blocklib': ['docs/schemas/*.json*']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
+
     install_requires=[
         "Fuzzy>=1.2"
     ],
