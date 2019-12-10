@@ -11,7 +11,7 @@ from .candidate_blocks_generator import CandidateBlockingResult
 
 def check_block_object(candidate_block_objs: Sequence[CandidateBlockingResult]):
     """
-    Check candidate block objects type and their states type
+    Check candidate block objects type and their states type. Raise TypeError if conditions aren't met.
     :param candidate_block_objs: A list of candidate block result objects from 2 data providers
     :return:
     """
@@ -23,7 +23,6 @@ def check_block_object(candidate_block_objs: Sequence[CandidateBlockingResult]):
     for obj in candidate_block_objs:
         if type(obj.state) != state_type:
             raise TypeError('Unexpected state type found: {} where we expect: {}'.format(type(obj.state), state_type))
-    return True
 
 
 def generate_blocks(candidate_block_objs: Sequence[CandidateBlockingResult], K: int):
@@ -32,7 +31,7 @@ def generate_blocks(candidate_block_objs: Sequence[CandidateBlockingResult], K: 
 
     :param candidate_block_objs: A list of CandidateBlockingResult from multiple data providers
     :param K: it specifies the minimum number of occurrence for records to be included in the final blocks
-    :return: filtered_reversed_indices: List of dictionaries
+    :return: filtered_reversed_indices: List of dictionaries, filter out records that appear in less than K parties
     """
     check_block_object(candidate_block_objs)
     assert len(candidate_block_objs) >= K >= 2
@@ -49,13 +48,10 @@ def generate_blocks(candidate_block_objs: Sequence[CandidateBlockingResult], K: 
 
     # default strategy: use key in reversed index as block keys
     else:
-        block_keys = {}  # type: Dict[Any, int]
+        block_keys = defaultdict(int)  # type: Dict[Any, int]
         for reversed_index in reversed_indices:
             for key in reversed_index:
-                if key in block_keys:
-                    block_keys[key] += 1
-                else:
-                    block_keys[key] = 1
+                block_keys[key] += 1
         final_block_keys = [key for key, count in block_keys.items() if count >= K]
         for reversed_index in reversed_indices:
             reversed_index = {k: v for k, v in reversed_index.items() if k in final_block_keys}
