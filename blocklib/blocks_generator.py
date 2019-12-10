@@ -1,6 +1,6 @@
 """Module that implement final block generations."""
 from collections import defaultdict
-from typing import Any, Dict, Sequence, Set, cast
+from typing import Any, Dict, Sequence, Set, List, cast
 
 import numpy as np
 
@@ -9,39 +9,52 @@ from .pprlpsig import PPRLIndexPSignature
 from .candidate_blocks_generator import CandidateBlockingResult
 
 
-def generate_blocks_2party(candidate_block_objs: Sequence[CandidateBlockingResult]):
+def check_block_object(candidate_block_objs: Sequence[CandidateBlockingResult]):
     """
-    Generate final blocks given list of candidate block objects from 2 data providers.
+    Check candidate block objects type and their states type. Raise TypeError if conditions aren't met.
     :param candidate_block_objs: A list of candidate block result objects from 2 data providers
-    :return: filtered_reversed_indices: List of dictionaries
+    :return:
     """
     for obj in candidate_block_objs:
-        state_type = type(obj)
-        if state_type != CandidateBlockingResult:
-            raise TypeError('Unsupported blocking instance {}'.format(state_type))
+        if type(obj) != CandidateBlockingResult:
+            raise TypeError('Unsupported blocking instance {}'.format(type(obj)))
 
-    # check if the states are of same type
-    assert type(candidate_block_objs[0].state) == type(candidate_block_objs[1].state)
+    state_type = type(candidate_block_objs[0].state)
+    for obj in candidate_block_objs:
+        if type(obj.state) != state_type:
+            raise TypeError('Unexpected state type found: {} where we expect: {}'.format(type(obj.state), state_type))
+
+
+def generate_blocks(candidate_block_objs: Sequence[CandidateBlockingResult], K: int):
+    """
+    Generate final blocks given list of candidate block objects from 2 or more than 2 data providers.
+
+    :param candidate_block_objs: A list of CandidateBlockingResult from multiple data providers
+    :param K: it specifies the minimum number of occurrence for records to be included in the final blocks
+    :return: filtered_reversed_indices: List of dictionaries, filter out records that appear in less than K parties
+    """
+    check_block_object(candidate_block_objs)
+    assert len(candidate_block_objs) >= K >= 2
 
     # obtain list of objects
-    pprl_state_type = type(candidate_block_objs[0].state)
+    state_type = type(candidate_block_objs[0].state)
     reversed_indices = [obj.blocks for obj in candidate_block_objs]
     block_states = [obj.state for obj in candidate_block_objs]  # type: Sequence[PPRLIndex]
 
-    if pprl_state_type == PPRLIndexPSignature:
+    filtered_reversed_indices = []  # type: List[Dict[Any, List[Any]]]
+    if state_type == PPRLIndexPSignature:
         block_states = cast(Sequence[PPRLIndexPSignature], block_states)
-        filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=2)
+        filtered_reversed_indices = generate_blocks_psig(reversed_indices, block_states, threshold=K)
 
-    # normal blocking algorithm that do not need special generation
+    # default strategy: use key in reversed index as block keys
     else:
-        # decide final blocks keys - intersection of all reversed index keys
-        block_keys = set(reversed_indices[0].keys())
-        for reversed_index in reversed_indices[1:]:
-            block_keys = block_keys.intersection(set(reversed_index.keys()))
-        # filter reversed indices if keys not in block_keys
-        filtered_reversed_indices = []
+        block_keys = defaultdict(int)  # type: Dict[Any, int]
         for reversed_index in reversed_indices:
-            reversed_index = {k: v for k, v in reversed_index.items() if k in block_keys}
+            for key in reversed_index:
+                block_keys[key] += 1
+        final_block_keys = [key for key, count in block_keys.items() if count >= K]
+        for reversed_index in reversed_indices:
+            reversed_index = {k: v for k, v in reversed_index.items() if k in final_block_keys}
             filtered_reversed_indices.append(reversed_index)
 
     return filtered_reversed_indices

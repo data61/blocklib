@@ -1,5 +1,5 @@
 import pytest
-from blocklib import generate_blocks_2party, generate_reverse_blocks
+from blocklib import generate_blocks, generate_reverse_blocks
 from blocklib import generate_candidate_blocks, flip_bloom_filter
 
 
@@ -8,7 +8,7 @@ class TestBlocksGenerator:
     def test_candidate_block_type(self):
         """Test throw of type error when passing wrong candidate block types."""
         with pytest.raises(TypeError):
-            generate_blocks_2party([{'Fr': [1, 2]}, {'Jo': [3, 4]}])
+            generate_blocks([{'Fr': [1, 2]}, {'Jo': [3, 4]}], K=2)
 
 
     def test_generate_reverse_block(self):
@@ -48,7 +48,7 @@ class TestBlocksGenerator:
         candidate_obj_bob = generate_candidate_blocks(records_bob, blocking_config)
 
         # blocks generator
-        filtered_records = generate_blocks_2party([candidate_obj_alice, candidate_obj_bob])
+        filtered_records = generate_blocks([candidate_obj_alice, candidate_obj_bob], K=2)
         filtered_alice = filtered_records[0]
         filtered_bob = filtered_records[1]
         assert list(filtered_alice.values()) == [['id1'], ['id1'], ['id1'], ['id1'], ['id1']]
@@ -98,7 +98,7 @@ class TestBlocksGenerator:
         candidate_obj_bob = generate_candidate_blocks(data2, blocking_config)
 
         # blocks generator
-        filtered_records = generate_blocks_2party([candidate_obj_alice, candidate_obj_bob])
+        filtered_records = generate_blocks([candidate_obj_alice, candidate_obj_bob], K=2)
         filtered_alice = filtered_records[0]
         filtered_bob = filtered_records[1]
 
@@ -110,4 +110,82 @@ class TestBlocksGenerator:
 
         assert all(key in expected_bf_sets for key in filtered_alice)
         assert filtered_alice.keys() == filtered_bob.keys()
+
+    def test_psig_multiparty(self):
+        """Test block generator for PPRLPsig method."""
+        data1 = [
+            ('m1-1', 'Joyce', 'Wang', 'Ashfield'),
+            ('m1-2', 'Fred', 'Yu', 'Strathfield'),
+            ('m1-3', 'Max', 'Zhang', 'Chippendale'),
+        ]
+        data2 = [
+             ('m2-1', 'Fred', 'Yu', 'Strathfield'),
+             ('m2-2', 'Jone', 'Zhang', 'Chippendale'),
+             ('m2-3', 'Li', 'Jone', 'Narwee')
+        ]
+        data3 = [
+            ('m3-1', 'Joyce', 'Hsu', 'Burwood'),
+            ('m3-2', 'Max', 'Shan', 'Lewishm'),
+        ]
+        data4 = [
+            ('m4-1', 'Lindsay', 'Jone', 'Narwee'),
+            ('m4-2', 'Fredrick', 'Cheung', 'Narwee'),
+        ]
+
+        config = {
+            "blocking_features": [1],
+            "record-id-col": 0,
+            "filter": {
+                "type": "count",
+                "max": 5,
+                "min": 0,
+            },
+            "blocking-filter": {
+                "type": "bloom filter",
+                "number-hash-functions": 20,
+                "bf-len": 2048,
+            },
+            "signatureSpecs": [
+                [
+                    {"type": "feature-value", "feature-idx": 1}
+                ],
+                [
+                    {"type": "characters-at", "config": {"pos": ["0:2"]}, "feature-idx": 1},
+                ]
+            ]
+
+        }
+
+        blocking_config = {'type': 'p-sig',
+                           'version': 1,
+                           'config': config}
+
+        # generate candidate blocks
+        candidate_obj_m1 = generate_candidate_blocks(data1, blocking_config)
+        candidate_obj_m2 = generate_candidate_blocks(data2, blocking_config)
+        candidate_obj_m3 = generate_candidate_blocks(data3, blocking_config)
+        candidate_obj_m4 = generate_candidate_blocks(data4, blocking_config)
+        candidate_objs = [
+            candidate_obj_m1, candidate_obj_m2, candidate_obj_m3, candidate_obj_m4
+        ]
+        # blocks generator
+        filtered_records = generate_blocks(candidate_objs, K=3)
+        filtered_m1, filtered_m2, filtered_m3, filtered_m4 = filtered_records
+
+        expected_bf_sets = {}
+        for string in ['Fr', 'Jo']:
+            bf_set = flip_bloom_filter(string, config['blocking-filter']['bf-len'],
+                                       config['blocking-filter']['number-hash-functions'])
+            expected_bf_sets[string] = tuple(bf_set)
+
+        expected_m1 = {expected_bf_sets['Fr']: ['m1-2'], expected_bf_sets['Jo']: ['m1-1']}
+        expected_m2 = {expected_bf_sets['Fr']: ['m2-1'], expected_bf_sets['Jo']: ['m2-2']}
+        expected_m3 = {expected_bf_sets['Jo']: ['m3-1']}
+        expected_m4 = {expected_bf_sets['Fr']: ['m4-2']}
+
+        assert expected_m1 == filtered_m1
+        assert expected_m2 == filtered_m2
+        assert expected_m3 == filtered_m3
+        assert expected_m4 == filtered_m4
+
 

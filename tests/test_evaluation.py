@@ -1,4 +1,4 @@
-from blocklib import assess_blocks_2party, generate_blocks_2party, generate_candidate_blocks
+from blocklib import assess_blocks_2party, generate_blocks, generate_candidate_blocks
 
 
 def test_assess_blocks_2party():
@@ -45,7 +45,7 @@ def test_assess_blocks_2party():
     candidate_obj_bob = generate_candidate_blocks(data2, blocking_config)
 
     # blocks generator
-    filtered_records = generate_blocks_2party([candidate_obj_alice, candidate_obj_bob])
+    filtered_records = generate_blocks([candidate_obj_alice, candidate_obj_bob], K=2)
 
     # assess blocks
     subdata1 = [r[0] for r in data1]
