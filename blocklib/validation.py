@@ -5,7 +5,7 @@ import pathlib
 
 
 def load_schema(file_name: str):
-    path = pathlib.Path(__file__).parent / '../docs/schemas' / file_name
+    path = pathlib.Path(__file__).parent / 'schemas' / file_name
 
     # schema_bytes = pkgutil.get_data('anonlinkclient', 'docs/schemas/{}'.format(file_name))
     with open(str(path.resolve()), 'rt') as schema_file:
