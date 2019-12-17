@@ -20,7 +20,7 @@ setuptools.setup(
     url='https://github.com/data61/blocklib',
     license='Apache',
     packages=setuptools.find_packages(),
-    package_data={'blocklib': ['../docs/schemas/*.json*']},
+    package_data={'blocklib': ['schemas/*.json*']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Intended Audience :: Developers",
