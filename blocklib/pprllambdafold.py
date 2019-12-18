@@ -1,6 +1,9 @@
+import base64
+import random
 import numpy as np
 from collections import defaultdict
 from typing import Dict, Sequence, Any, List
+from bitarray import bitarray
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .encoding import generate_bloom_filter
@@ -56,20 +59,27 @@ class PPRLIndexLambdaFold(PPRLIndex):
         """
         # create record index lists
         if self.record_id_col is None:
-            record_ids = np.arange(len(data))
+            record_ids = range(len(data))
         else:
             record_ids = [x[self.record_id_col] for x in data]
-        rnd = np.random.RandomState(self.random_state)
+
+        random.seed(self.random_state)
+
+        bf_len = self.bf_len
+        if self.input_clks:
+            data = self.deserialize_filters(data)
+            bf_len = len(data[0])
+
         # build Lambda fold tables and add to the invert index
         invert_index = {}  # type: Dict[Any, List[Any]]
         for i in range(self.mylambda):
             lambda_table = defaultdict(list)  # type: Dict[Any, Any]
             # sample K indices from [0, bf-len]
-            indices = rnd.choice(range(self.bf_len), self.K, replace=False)
+            indices = random.sample(range(bf_len), self.K)
             for rec_id, rec in zip(record_ids, data):
                 if self.input_clks:
-                    block_key = ''.join(['1' if data[ind] else '0' for ind in indices])
-                    lambda_table['{}{}'.format(i, block_key)].append(rec_id)
+                    block_key = ''.join(['1' if rec[ind] else '0' for ind in indices])
+                    lambda_table['{}'.format(block_key)].append(rec_id)
                 else:
                     bloom_filter = self.__record_to_bf__(rec)
                     block_key = ''.join(bloom_filter[indices].astype(np.int8).astype(str))
@@ -77,6 +87,19 @@ class PPRLIndexLambdaFold(PPRLIndex):
             invert_index.update(lambda_table)
 
         return invert_index
+
+    def deserialize_bitarray(self, bytes_data):
+        ba = bitarray(endian='big')
+        data_as_bytes = base64.decodebytes(bytes_data.encode())
+        ba.frombytes(data_as_bytes)
+        return ba
+
+    def deserialize_filters(self, filters):
+        res = []
+        for i, f in enumerate(filters):
+            ba = self.deserialize_bitarray(f)
+            res.append(ba)
+        return res
 
 
 
