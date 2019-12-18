@@ -1,4 +1,6 @@
 """Module to evaluate blocking when ground truth is available."""
+from tqdm import tqdm
+from collections import defaultdict
 
 
 def assess_blocks_2party(filtered_reverse_indices, data, print_result=False):
@@ -16,7 +18,7 @@ def assess_blocks_2party(filtered_reverse_indices, data, print_result=False):
     num_block_false_matches = 0
 
     keys = set(dp1_signature.keys()).intersection(dp2_signature.keys())
-    for key in keys:
+    for key in tqdm(keys):
         dp1_recs = dp1_signature.get(key, None)
         dp2_recs = dp2_signature.get(key, None)
         if dp1_recs is None or dp2_recs is None:
@@ -37,8 +39,8 @@ def assess_blocks_2party(filtered_reverse_indices, data, print_result=False):
     num_cand_rec_pairs = num_block_true_matches + num_block_false_matches
     total_rec = len(dp1_data) * len(dp2_data)
 
-    entity1 = set([r[0] for r in dp1_data])
-    entity2 = set([r[0] for r in dp2_data])
+    entity1 = set(dp1_data)
+    entity2 = set(dp2_data)
     num_all_true_matches = len(entity1.intersection(entity2))
 
     # pair completeness is the "recall" before matching stage

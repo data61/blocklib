@@ -23,7 +23,8 @@ class TestLambdaFold(unittest.TestCase):
                 "bf-len": 2000,
                 "num-hash-funcs": 2,
                 "K": 30,
-                "random_state": 0
+                "random_state": 0,
+                "input-clks": False
         }
         lambdafold = PPRLIndexLambdaFold(config)
         record = [1, 'Xu', 'Li']
@@ -39,7 +40,8 @@ class TestLambdaFold(unittest.TestCase):
             "record-id-col": 0,
             "num-hash-funcs": 1000,
             "K": 30,
-            "random_state": 0
+            "random_state": 0,
+            "input-clks": False
         }
         lambdafold = PPRLIndexLambdaFold(config)
         data = [[1, 'Xu', 'Li'],
