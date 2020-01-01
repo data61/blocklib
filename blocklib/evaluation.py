@@ -1,6 +1,5 @@
 """Module to evaluate blocking when ground truth is available."""
 from tqdm import tqdm
-from collections import defaultdict
 
 
 def assess_blocks_2party(filtered_reverse_indices, data, print_result=False):
@@ -18,7 +17,7 @@ def assess_blocks_2party(filtered_reverse_indices, data, print_result=False):
     num_block_false_matches = 0
 
     keys = set(dp1_signature.keys()).intersection(dp2_signature.keys())
-    for key in tqdm(keys):
+    for key in tqdm(keys, desc='assessing blocks', total=len(keys), unit='key'):
         dp1_recs = dp1_signature.get(key, None)
         dp2_recs = dp2_signature.get(key, None)
         if dp1_recs is None or dp2_recs is None:

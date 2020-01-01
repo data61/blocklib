@@ -48,7 +48,7 @@ class TestLambdaFold(unittest.TestCase):
                 [2, 'Fred', 'Yu']]
         reversed_index = lambdafold.build_reversed_index(data)
         assert len(reversed_index) == 5 * 2
-        assert all([len(k) == 30 for k in reversed_index])
+        assert all([len(k) == 31 for k in reversed_index])
         assert all([len(v) == 1 for v in reversed_index.values()])
 
         # build with row index
@@ -56,5 +56,5 @@ class TestLambdaFold(unittest.TestCase):
         lambdafold = PPRLIndexLambdaFold(config)
         reversed_index = lambdafold.build_reversed_index(data)
         assert len(reversed_index) == 5 * 2
-        assert all([len(k) == 30 for k in reversed_index])
+        assert all([len(k) == 31 for k in reversed_index])
         assert all([len(v) == 1 for v in reversed_index.values()])
