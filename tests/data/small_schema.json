@@ -1,0 +1,69 @@
+{
+  "version": 3,
+  "clkConfig": {
+    "l": 1024,
+    "kdf": {
+      "type": "HKDF",
+      "hash": "SHA256",
+      "salt": "SCbL2zHNnmsckfzchsNkZY9XoHk96P/G5nUBrM7ybymlEFsMV6PAeDZCNp3rfNUPCtLDMOGQHG4pCQpfhiHCyA==",
+      "info": "c2NoZW1hX2V4YW1wbGU=",
+      "keySize": 64
+    }
+  },
+  "features": [
+    {
+      "identifier": "firstname",
+      "format": {
+        "type": "string",
+        "encoding": "utf-8",
+        "maxLength": 30
+      },
+      "hashing": {
+        "hash": {"type": "doubleHash"},
+        "comparison": {
+          "type": "ngram",
+          "n": 2
+        },
+        "strategy": {
+          "bitsPerFeature": 200
+        }
+      }
+    },
+    {
+      "identifier": "lastname",
+      "format": {
+        "type": "string",
+        "encoding": "utf-8",
+        "maxLength": 30
+      },
+      "hashing": {
+        "hash": {"type": "doubleHash"},
+        "comparison": {
+          "type": "ngram",
+          "n": 2
+        },
+        "strategy": {
+          "bitsPerFeature": 200
+        }
+      }
+    },
+    {
+      "identifier": "suburb",
+      "format": {
+        "type": "string",
+        "encoding": "utf-8",
+        "maxLength": 30
+      },
+      "hashing": {
+        "hash": {"type": "doubleHash"},
+        "comparison": {
+          "type": "ngram",
+          "n": 2
+        },
+        "strategy": {
+          "bitsPerFeature": 200
+        }
+      }
+    }
+  ]
+}
