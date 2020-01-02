@@ -33,6 +33,7 @@ class TestBlocksGenerator:
             "K": 30,
             "random_state": 0,
             "record-id-col": 0,
+            "input-clks": False
         }
         blocking_config = {'type': 'lambda-fold',
                            'version': 1,

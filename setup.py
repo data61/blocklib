@@ -7,6 +7,8 @@ requirements = [
     "jsonschema>=3.1.1",
     "Fuzzy>=1.2.2",
     "numpy>=1.17.2",
+    "tqdm>=4.36.1",
+    "bitarray>=1.2.0"
 ]
 
 setuptools.setup(
