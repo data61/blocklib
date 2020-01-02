@@ -57,14 +57,14 @@ class PPRLIndexLambdaFold(PPRLIndex):
         """
         # create record index lists
         if self.record_id_col is None:
-            record_ids = range(len(data))
+            record_ids = list(range(len(data)))
         else:
             record_ids = [x[self.record_id_col] for x in data]
 
         random.seed(self.random_state)
 
         if self.input_clks:
-            clks = self.deserialize_filters(data)
+            clks = deserialize_filters(data)
         else:
             clks = [self.__record_to_bf__(rec) for rec in data]
         bf_len = len(clks[0])
