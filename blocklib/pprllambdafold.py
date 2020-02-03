@@ -1,11 +1,12 @@
 import random
-import numpy as np
 from collections import defaultdict
 from typing import Dict, Sequence, Any, List
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
-from .encoding import generate_bloom_filter
 from .utils import deserialize_filters
+from .encoding import generate_bloom_filter
+from bitarray import bitarray
+import hashlib
 
 
 class PPRLIndexLambdaFold(PPRLIndex):
@@ -30,7 +31,38 @@ class PPRLIndexLambdaFold(PPRLIndex):
         # bf-len: length of bloom filter
         self.bf_len = int(get_config(config, "bf-len"))
         # num_hash_function
-        self.num_hash_function = int(get_config(config, "num-hash-funcs"))
+        num_hash_fun = get_config(config, "num-hash-funcs")
+        if num_hash_fun == 'opt':
+            print('determining the optimal number of hash functions...')
+
+            def expected_popcount(n, k):
+                """ return the expected popcount of a Bloomfilter of length 'n' after 'k' insertions.
+                Note that in this context, k does not mean the number of hash functions.
+
+                :param (int) n: the length of the Bloom filter
+                :param (int) k: the number of insertions
+                :return: expected popcount
+                """
+                sum = 0
+                for i in range(k):
+                    sum += (1 - 1 / n) ** i
+                return sum
+
+            def find_optimal_k(n):
+                best_diff = n
+                best_k = -1
+                for k in range(n):
+                    diff = abs(expected_popcount(n, k) - n / 2)
+                    if diff < best_diff:
+                        best_diff = diff
+                        best_k = k
+                return best_k
+
+            self.num_insertions = find_optimal_k(self.bf_len)
+            self.num_hash_function = 'opt'
+            print(f'set num_insertions to {self.num_insertions}')
+        else:
+            self.num_hash_function = int(num_hash_fun)
         # K: number of base Hamming LSH hashing functions
         self.K = int(get_config(config, "K"))
         # blocking-features: list of blocking feature indices
@@ -39,13 +71,42 @@ class PPRLIndexLambdaFold(PPRLIndex):
         self.random_state = get_config(config, "random_state")
         self.record_id_col = config.get("record-id-col", None)
 
+    def generate_bloom_filter(self, list_of_strs: List[str]):
+        # go through each signature and generate bloom filter of it
+        # -- we only store the set of index that flipped to 1
+        bf = bitarray(self.bf_len)
+        bf.setall(False)
+
+        def bits_per_token(num_tokens, total_bits):
+            k = int(total_bits / num_tokens)
+            residue = total_bits % num_tokens
+            return ([k + 1] * residue) + ([k] * (num_tokens - residue))
+
+        for token, num_insertions in zip(list_of_strs, bits_per_token(len(list_of_strs), self.num_insertions)):
+            # config for hashing
+            h1 = hashlib.sha1
+            h2 = hashlib.md5
+
+            sha_bytes = h1(token.encode('utf-8')).digest()
+            md5_bytes = h2(token.encode('utf-8')).digest()
+            int1 = int.from_bytes(sha_bytes, 'big') % self.bf_len
+            int2 = int.from_bytes(md5_bytes, 'big') % self.bf_len
+
+            for i in range(num_insertions):
+                gi = (int1 + i * int2) % self.bf_len
+                bf[gi] = 1
+        return bf
+
     def __record_to_bf__(self, record: Sequence):
         """Convert a record to list of bigrams and then map to a bloom filter."""
         s = ''.join([record[i] for i in self.blocking_features])
         # generate list of bigram of s. hash each bigram to position of bit 1 and flip bloom filter
         ngram = 2
         grams = [s[i: i + ngram] for i in range(len(s) - ngram + 1)]
-        bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
+        if self.num_hash_function == 'opt':
+            bloom_filter = self.generate_bloom_filter(grams)
+        else:
+            bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
         return bloom_filter
 
     def build_reversed_index(self, data: Sequence[Any]):
