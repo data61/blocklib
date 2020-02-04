@@ -1,6 +1,6 @@
 bitarray==1.2.0
 Fuzzy==1.2.2
-jsonschema==3.1.1
+jsonschema==3.2.0
 numpy==1.17.2
 tqdm==4.36.1
 pytest==5.2.1
