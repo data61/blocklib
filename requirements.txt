@@ -1,4 +1,4 @@
-bitarray==1.2.0
+bitarray==1.2.1
 Fuzzy==1.2.2
 jsonschema==3.2.0
 numpy==1.18.1
