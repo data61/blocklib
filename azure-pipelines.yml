@@ -70,7 +70,7 @@ stages:
 
 
     # Test tutorial jupyter notebooks
-    - scripts:
+    - script:
         pip install -e .
         python -m pip install -U -r docs/doc-doc-requirements.txt
         pytest --nbval docs/tutorial
