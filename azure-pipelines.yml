@@ -72,7 +72,7 @@ stages:
     # Test tutorial jupyter notebooks
     - script:
         pip install -e .
-        python -m pip install -U -r docs/doc-doc-requirements.txt
+        python -m pip install -U -r docs/doc-requirements.txt
         pytest --nbval docs/tutorial
 
     # Send report to codecov
@@ -87,7 +87,7 @@ stages:
 
 - stage: package
   displayName: Build Wheel Packages
-  dependsOn: [test_and_build]
+  dependsOn: ['test_and_build']
   jobs:
     - job: linux
       pool: {vmImage: 'Ubuntu-16.04'}
