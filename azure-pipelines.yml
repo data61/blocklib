@@ -72,7 +72,9 @@ stages:
     # Test tutorial jupyter notebooks
     - script:
         pip install -e .
+    - script:
         python -m pip install -U -r docs/doc-requirements.txt
+    - script:
         pytest --nbval docs/tutorial
 
     # Send report to codecov
