@@ -2,3 +2,4 @@ sphinx
 ipython
 blocklib
 pandas
+nbsphinx

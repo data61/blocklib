@@ -16,3 +16,10 @@ dist/*
 blocklib.egg-info/*
 build/*
 .mypy_cache/*
+
+# readthedocs build
+docs/_build/*
+docs/_static/*
+docs/_templates/*
+docs/Makefile
+docs/make.bat
