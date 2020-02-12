@@ -65,77 +65,66 @@ stages:
         pip install -U -r requirements.txt
       displayName: 'Install requirements'
     - script: |
-        pytest --cov=blocklib --junitxml=testResults.xml --cov-report=xml:coverageReport.xml
+        pytest --cov=blocklib --junitxml=testResults.xml  --cov-report=xml:coverage.xml
       displayName: 'Tests'
-    - task: PublishTestResults@2
-      displayName: 'Publish test results in Azure'
-      condition: succeededOrFailed()
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: 'testResults.xml'
-        testRunTitle: 'Test results for Python $(PYTHON_VERSION)'
-        failTaskOnFailedTests: true
-    - task: PublishCodeCoverageResults@1
-      displayName: 'Publish code coverage in Azure'
-      condition: succeededOrFailed()
-      inputs:
-        codeCoverageTool: Cobertura
-        summaryFileLocation: 'coverageReport.xml'
-        failIfCoverageEmpty: true
+
+
+    # Test tutorial jupyter notebooks
+    - script:
+        pip install -e .
+    - script:
+        python -m pip install -U -r docs/doc-requirements.txt
+    - script:
+        pytest --nbval docs/tutorial
+
+    # Send report to codecov
     - bash: |
         pip install -U pip codecov
         report_name="ubuntu18-04_$(PYTHON_VERSION)"
         python -m codecov --token $(CODECOV_TOKEN) \
-          --file coverageReport.xml \
+          --file coverage.xml \
           -n ${report_name}
       displayName: 'Send coverage to codecov'
       condition: succeededOrFailed()
-    - script: |
-        pip install wheel setuptools
-        python setup.py bdist_wheel --universal
-      displayName: 'Package'
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish intermediate build artifacts'
-      inputs:
-        path: 'dist'
-        artifact: '$(PYTHON_VERSION)'
-      condition: succeeded()
-  - job:
-    displayName: 'Package Source Distribution'
-    steps:
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: '3.7'
-        displayName: 'Init Python'
-      - script: |
-          python -m pip install -U pip
-      - script: python setup.py sdist
-        displayName: 'Package sdist'
-      - task: PublishPipelineArtifact@1
-        inputs:
-          artifact: 'sdist'
-          targetPath: 'dist/'
 
 - stage: package
-  displayName: Package Artifacts
+  displayName: Build Wheel Packages
   dependsOn: ['test_and_build']
   jobs:
-  - job:
-    displayName: 'Package Artifacts'
-    pool:
-      vmImage: 'ubuntu-18.04'
-    steps:
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        path: $(Pipeline.Workspace)
-    - script: |
-        cd $(Pipeline.Workspace)
-        mkdir artifacts
-        mv 3.7/*.whl artifacts
-        mv sdist/* artifacts
-        ls artifacts
-      displayName: 'List Artifacts'
-    - task: PublishPipelineArtifact@1
-      inputs:
-        artifact: 'release'
-        targetPath: '$(Pipeline.Workspace)/artifacts'
+    - job: linux
+      pool: {vmImage: 'Ubuntu-16.04'}
+      strategy:
+        matrix:
+          Python36:
+            python.version: '3.6'
+          Python37:
+            python.version: '3.7'
+          Python38:
+            python.version: '3.8'
+
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(python.version)'
+          displayName: 'Use Python $(python.version)'
+
+        - script:
+            pip install wheel
+          displayName: 'Install wheel'
+
+        # artifact creation
+        - script:
+            python setup.py sdist bdist_wheel
+          displayName: 'Artifact creation'
+
+        # copy artifact
+        - task: CopyFiles@2
+          inputs:
+            targetFolder: $(Build.ArtifactStagingDirectory)
+
+        # publish artifact
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'dist'
+            publishLocation: 'Container'
