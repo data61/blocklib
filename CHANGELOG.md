@@ -1,8 +1,10 @@
-## Change Log
+# Change Log
+
+# new version
 
 ## 0.1.0
 
 Support two blocking methods that works for multiparty record linkage
 
 * Probabilistic signature
-* LSH based $\Lambda$-fold
+* LSH based λ-fold
