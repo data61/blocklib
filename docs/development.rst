@@ -21,7 +21,7 @@ Type Checking
 -------------
 
 
-``anonlink-client`` uses static typechecking with ``mypy``. To run the type checker (in Python 3.5 or later)::
+``blocklib`` uses static typechecking with ``mypy``. To run the type checker (in Python 3.5 or later)::
 
     $ pip install mypy
     $ mypy blocklib --ignore-missing-imports --strict-optional --no-implicit-optional --disallow-untyped-calls

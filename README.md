@@ -1,11 +1,12 @@
 
 [![codecov](https://codecov.io/gh/data61/blocklib/branch/master/graph/badge.svg)](https://codecov.io/gh/data61/blocklib)
+[![Documentation Status](https://readthedocs.org/projects/blocklib/badge/?version=latest)](http://blocklib.readthedocs.io/en/latest/?badge=latest)
 ![Build Status](https://dev.azure.com/data61/Anonlink/_apis/build/status/data61.blocklib?branchName=master)
 [![Requirements Status](https://requires.io/github/data61/blocklib/requirements.svg?branch=master)](https://requires.io/github/data61/blocklib/requirements/?branch=master)
 [![Downloads](https://pepy.tech/badge/blocklib)](https://pepy.tech/project/blocklib)
 
 
-#Blocklib
+# Blocklib
 
 
 Python implementations of record linkage blocking techniques. Blocking is a technique that makes
@@ -16,35 +17,35 @@ conducted to find which pairs of records should be linked.
 `blocklib` is part of the **Anonlink** project for privacy preserving record linkage.
 
 
-###Installation
+### Installation
 
 Install with pip:
 
     pip install blocklib
 
-###Documents
+### Documents
 
-You can find comprehensive documentation and tutorials in folder `docs/`.
+You can find comprehensive documentation and tutorials in [readthedocs](http://blocklib.readthedocs.io/en/latest)
 
-###Tests
+### Tests
 
 Run unit tests with `pytest`::
 
     $ pytest
 
 
-###Discussion
+### Discussion
 
-If you run into bugs, you can file them in our `issue tracker <https://github.com/data61/blocklib/issues>`__
+If you run into bugs, you can file them in our [issue tracker](https://github.com/data61/blocklib/issues)
 on GitHub.
 
-There is also an `anonlink mailing list <https://groups.google.com/forum/#!forum/anonlink>`__
+There is also an [anonlink mailing list](https://groups.google.com/forum/#!forum/anonlink)
 for development discussion and release announcements.
 
-Wherever we interact, we strive to follow the `Python Community Code of Conduct <https://www.python.org/psf/codeofconduct/>`__.
+Wherever we interact, we strive to follow the [Python Community Code of Conduct](https://www.python.org/psf/codeofconduct/)
 
 
-###License and Copyright
+### License and Copyright
 
 `blocklib` is copyright (c) Commonwealth Scientific and Industrial Research Organisation (CSIRO).
 

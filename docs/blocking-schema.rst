@@ -8,7 +8,7 @@ features to use in generating blocks and hyperparameters etc.
 
 Currently we support two blocking methods:
 
-* "`p-sig`": Probability signature
+* "`p-sig`": Probabilistic signature
 
 * "`lambda-fold`": LSH based :math:`\lambda`-fold
 
@@ -82,8 +82,8 @@ Next we will detail the specific configuration for supported blocking methods.
 
 Specific configuration of supported blocking methods can be found here:
 
-- `config of p-sig <blocking-schema/p-sig>`
-- `config of lambda-fold <blocking-schema/lambda-fold>`
+- :ref:`config of p-sig <blocking-schema/p-sig>`
+- :ref:`config of lambda-fold <blocking-schema/lambda-fold>`
 
 .. _blocking-schema/p-sig:
 
