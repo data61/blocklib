@@ -1,6 +1,10 @@
 # Change Log
 
-# new version
+## new version
+
+## 0.1.1
+
+Correct markdown rendering in Pypi
 
 ## 0.1.0
 
