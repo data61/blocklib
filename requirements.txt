@@ -2,7 +2,7 @@ bitarray==1.2.1
 Fuzzy==1.2.2
 jsonschema==3.2.0
 numpy==1.18.1
-tqdm==4.42.1
+tqdm==4.43.0
 pytest==5.3.5
 pytest-cov==2.8.1
 pytest-azurepipelines==0.8.0
