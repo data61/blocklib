@@ -2,7 +2,7 @@
 from tqdm import tqdm
 
 
-def assess_blocks_2party(filtered_reverse_indices, data, print_result=False):
+def assess_blocks_2party(filtered_reverse_indices, data):
     """Assess pair completeness and reduction ratio of blocking result.
 
     :ivar filtered_reverse_indices for each data provider, a dict containing the mapping from block id to corresponding record ids.
@@ -45,7 +45,4 @@ def assess_blocks_2party(filtered_reverse_indices, data, print_result=False):
     # pair completeness is the "recall" before matching stage
     rr = 1.0 - float(num_cand_rec_pairs) / total_rec
     pc = float(num_block_true_matches) / num_all_true_matches
-    if print_result:
-        print('rr = {}'.format(round(rr, 4)))
-        print('pc = {}'.format(round(pc, 4)))
     return rr, pc
