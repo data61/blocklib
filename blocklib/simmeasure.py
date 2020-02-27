@@ -55,7 +55,7 @@ class EditSim(SimMeasure):
                     max_dist = (1.0 - min_threshold) * max_len
 
             else:
-                msg = f'Illegal value for minimum threshold (not between 0 and 1): {min_threshold}'
+                msg = 'Illegal value for minimum threshold (not between 0 and 1): {}'.format(min_threshold)
                 raise ValueError(msg)
 
         if n > m:  # Make sure n <= m, to use O(min(n,m)) space
