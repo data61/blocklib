@@ -43,7 +43,7 @@ class EditSim(SimMeasure):
         max_len = max(n, m)
 
         if min_threshold is not None:
-            if isinstance(min_threshold, float) and (min_threshold > 0.0):
+            if isinstance(min_threshold, float) and 0 <= min_threshold <= 1:
 
                 len_diff = abs(n - m)
                 w = 1.0 - float(len_diff) / float(max_len)
@@ -55,9 +55,8 @@ class EditSim(SimMeasure):
                     max_dist = (1.0 - min_threshold) * max_len
 
             else:
-                logging.exception('Illegal value for minimum threshold (not between' + \
-                                  ' 0 and 1): %f' % (min_threshold))
-                raise Exception
+                msg = 'Illegal value for minimum threshold (not between 0 and 1): {}'.format(min_threshold)
+                raise ValueError(msg)
 
         if n > m:  # Make sure n <= m, to use O(min(n,m)) space
             str1, str2 = str2, str1
