@@ -3,7 +3,7 @@ jsonschema==3.2.0
 numpy==1.18.1
 metaphone==0.6
 tqdm==4.43.0
-pytest==5.3.5
+pytest==5.4.0
 pytest-cov==2.8.1
 pytest-azurepipelines==0.8.0
 nbval==0.9.5
