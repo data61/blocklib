@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Sequence
 
-import fuzzy
+from metaphone import doublemetaphone
 
 
 def generate_by_feature_value(attr_ind: int, dtuple: Sequence):
@@ -63,9 +63,8 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
 
     """
     feature = dtuple[attr_ind]
-    metaphone = fuzzy.DMetaphone()
-    phonetic_encoding = metaphone(feature)
-    return ''.join(p.decode() for p in phonetic_encoding if p is not None)
+    phonetic_encoding = doublemetaphone(feature)
+    return ''.join(phonetic_encoding)
 
 
 #################################################

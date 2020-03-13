@@ -58,7 +58,7 @@ class TestPSig:
         'SM0XMT'
 
     def test_generate_signatures(self):
-        """Test a multi-stragegy signatures."""
+        """Test a multi-strategy signatures."""
         dtuple = ('Joyce', 'Wang', 2134)
         signatures = [
             [
@@ -71,7 +71,7 @@ class TestPSig:
             ]
         ]
         signatures = generate_signatures(signatures, dtuple)
-        assert signatures == {"JKAKANKFNK", "JoyceWang"}
+        assert signatures == {"JSASANKFNK", "JoyceWang"}
 
     def test_invalid_signature_type(self):
         dtuple = ('Joyce', 'Wang', 2134)
