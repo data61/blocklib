@@ -102,10 +102,18 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
 
     # filter reversed_indices with block filter
     for reversed_index in reversed_indices:
-
         has_matches = {bf_set: all(block_filter[i] for i in bf_set) for bf_set in reversed_index}
         for bf_set in has_matches:
             if not has_matches[bf_set]:
                 del reversed_index[bf_set]
-
+    # because of collisions in counting bloom filter, there are blocks only unique to one filtered index
+    # only keep blocks that exist in at least threshold many reversed indices
+    keys = defaultdict(int)
+    for reversed_index in reversed_indices:
+        for k in reversed_index:
+            keys[k] += 1
+    common_keys = [k for k in keys if keys[k] >= threshold]
+    for i in range(len(reversed_indices)):
+        reversed_index = reversed_indices[i]
+        reversed_indices[i] = dict((k, reversed_index[k]) for k in common_keys if k in reversed_index)
     return reversed_indices
