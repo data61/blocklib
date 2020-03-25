@@ -53,6 +53,17 @@ class PPRLIndexPSignature(PPRLIndex):
 
         filtered_reversed_index = self.filter_reversed_index(data, reversed_index)
 
+        # compute coverage information
+        entities = set()
+        for recids in filtered_reversed_index.values():
+            for rid in recids:
+                entities.add(rid)
+        coverage = round(len(entities) / len(record_ids) * 100, 2)
+        if coverage == 100:
+            print(f'P-Sig: Good signatures! {coverage}% records are covered in blocks')
+        else:
+            print(f'P-Sig: Warning! only {coverage}% records are covered in blocks. Please consider improve signatures')
+
         # map signatures in reversed_index into bloom filter
         num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
         bf_len = int(self.blocking_config.get("bf-len", None))
