@@ -62,7 +62,7 @@ class PPRLIndexPSignature(PPRLIndex):
         if coverage == 100:
             print('P-Sig: Good signatures! {}% records are covered in blocks'.format(coverage))
         else:
-            print('P-Sig: Warning! only {}% records are covered in blocks. Please consider improve signatures'
+            print('P-Sig: Warning! only {}% records are covered in blocks. Please consider to improve signatures'
                   .format(coverage))
 
         # map signatures in reversed_index into bloom filter
