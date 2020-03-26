@@ -4,8 +4,8 @@ with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
 
 requirements = [
-    "jsonschema>=3.1.1",
-    "numpy>=1.17.2",
+    "jsonschema>=3.1",
+    "numpy>=1.17",
     "metaphone>=0.6",
     "tqdm>=4.36.1",
     "bitarray>=1.2.0"
@@ -29,10 +29,7 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-
-    install_requires=[
-        "Fuzzy>=1.2"
-    ],
+    install_requires=requirements,
     tests_require=[
         "pytest>=5.0",
     ]
