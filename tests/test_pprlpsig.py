@@ -85,3 +85,13 @@ class TestPSig(unittest.TestCase):
         bf_set = tuple(flip_bloom_filter("0_Fred", config['blocking-filter']['bf-len'],
                                          config['blocking-filter']['number-hash-functions']))
         assert reversed_index == {bf_set: ['id4', 'id5']}
+
+    def test_compute_strategies_stats(self):
+        psig = PPRLIndexPSignature({"filter":{}, "blocking-filter": {}, 'signatureSpecs': {}})
+        #empty
+        reversed_index_per_strategy = [{}, {}]
+        stats = psig.compute_strategies_stats(reversed_index_per_strategy, 0)
+        for stat in stats:
+            for k, val in stat.items():
+                if not k == 'strategy_idx':
+                    assert val == 0
