@@ -8,7 +8,7 @@ requirements = [
     "numpy>=1.17",
     "metaphone>=0.6",
     "tqdm>=4.36.1",
-    "bitarray>=1.2.0"
+    "bitarray-hardbyte>=1.2"
 ]
 
 setuptools.setup(
