@@ -42,7 +42,8 @@ class PPRLIndexPSignature(PPRLIndex):
         else:
             record_ids = [x[self.rec_id_col] for x in data]
 
-        reversed_index_per_strategy = [defaultdict(list) for _ in range(len(self.signature_strategies))]
+        reversed_index_per_strategy: List[Dict[str, List[Any]]] = \
+            [defaultdict(list) for _ in range(len(self.signature_strategies))]
         # Build inverted index
         # {signature -> record ids}
         for rec_id, dtuple in zip(record_ids, data):
@@ -78,7 +79,7 @@ class PPRLIndexPSignature(PPRLIndex):
         num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
         bf_len = int(self.blocking_config.get("bf-len", None))
 
-        reversed_index = {}
+        reversed_index: Dict[Any, List[Any]] = {}
 
         for signature, rec_ids in filtered_reversed_index.items():
             bf_set = tuple(flip_bloom_filter(signature, bf_len, num_hash_func))
@@ -89,7 +90,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
         return reversed_index
 
-    def compute_strategies_stats(self, reversed_index_per_strategy: List[Dict], num_elements: int):
+    def compute_strategies_stats(self, reversed_index_per_strategy: Sequence[Dict[str, List[Any]]], num_elements: int):
         strat_stats = []
         for i, reversed_index in enumerate(reversed_index_per_strategy):
             lengths = [len(rv) for rv in reversed_index.values()]
