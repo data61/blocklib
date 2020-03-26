@@ -98,13 +98,13 @@ class PPRLIndexPSignature(PPRLIndex):
             stats = {
                 'strategy_idx': i,
                 'num_of_blocks': len(lengths),
-                'min_size': min(lengths),
-                'max_size': max(lengths),
-                'avg_size': int(statistics.mean(lengths)),
-                'med_size': int(statistics.median(lengths)),
-                'std_size': statistics.stdev(lengths),
+                'min_size': 0 if len(lengths) == 0 else min(lengths),
+                'max_size': 0 if len(lengths) == 0 else max(lengths),
+                'avg_size': 0 if len(lengths) == 0 else int(statistics.mean(lengths)),
+                'med_size': 0 if len(lengths) == 0 else int(statistics.median(lengths)),
+                'std_size': 0 if len(lengths) == 0 else statistics.stdev(lengths),
                 'num_filtered_elements': num_elements - sum(lengths),
-                'coverage': sum(lengths) / num_elements}
+                'coverage': 0 if len(lengths) == 0 else sum(lengths) / num_elements}
             strat_stats.append(stats)
         return strat_stats
 
