@@ -60,12 +60,13 @@ class PPRLIndexPSignature(PPRLIndex):
             strat_stats = self.compute_strategies_stats(reversed_index_per_strategy, n)
             print("Statistics for the individual strategies:")
             for strat_stat in strat_stats:
-                print(f'Strategy {strat_stat["strategy_idx"]}:')
-                print(f'\tblock size {strat_stat["min_size"]} min, {strat_stat["max_size"]} max, '
-                      + f'{strat_stat["avg_size"]:.2f} avg, {strat_stat["med_size"]} median, '
-                      + f'{strat_stat["std_size"]:.2f} std')
-                print(f'\t {strat_stat["num_of_blocks"]} blocks, {strat_stat["num_filtered_elements"]} filtered '
-                      + f'elements, {(strat_stat["coverage"] * 100):.2f}% coverage')
+                print('Strategy {}:'.format(strat_stat["strategy_idx"]))
+                print('\tblock size {} min, {} max, {:.2f} avg, {} median, {:.2f} std'
+                      .format(strat_stat["min_size"], strat_stat["max_size"], strat_stat["avg_size"],
+                              strat_stat["med_size"], strat_stat["std_size"]))
+                print('\t {} blocks, {} filtered elements, {:.2f}% coverage'
+                      .format(strat_stat["num_of_blocks"], strat_stat["num_filtered_elements"],
+                              (strat_stat["coverage"] * 100)))
 
         # combine the reversed indices into one
         filtered_reversed_index = reversed_index_per_strategy[0]
