@@ -60,7 +60,7 @@ class PPRLIndexPSignature(PPRLIndex):
                 entities.add(rid)
         coverage = round(len(entities) / len(record_ids) * 100, 2)
         if coverage == 100:
-            print('P-Sig: Good signatures! {}% records are covered in blocks'.format(coverage))
+            print('P-Sig: {}% records are covered in blocks'.format(coverage))
         else:
             print('P-Sig: Warning! only {}% records are covered in blocks. Please consider to improve signatures'
                   .format(coverage))
