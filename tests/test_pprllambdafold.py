@@ -76,7 +76,7 @@ class TestLambdaFold(unittest.TestCase):
         }
         lambdafold = PPRLIndexLambdaFold(config)
         clk_filepath = Path(__file__).parent / 'data' / 'small_clk.json'
-        with open(clk_filepath, 'r') as f:
+        with clk_filepath.open() as f:
             data = json.load(f)['clks']
         reversed_index = lambdafold.build_reversed_index(data)
         assert len(reversed_index) == 5 * 4
