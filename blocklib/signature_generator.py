@@ -114,6 +114,6 @@ def generate_signatures(signature_strategies: List[List],
                 config.update(args)
                 s = func(**config)
                 sig.append(s)
-        signatures.add(f'{i}_{"_".join([x for x in sig if x is not None])}')
+        signatures.add('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
 
     return signatures
