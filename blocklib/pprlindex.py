@@ -1,20 +1,20 @@
 import statistics
 import random
-from typing import Any, Dict, List, Sequence, Set
+from typing import Any, Dict, List, Sequence
 from blocklib.configuration import get_config
 
 
 class PPRLIndex:
     """Base class for PPRL indexing/blocking."""
 
-    def __init__(self, config: Dict = {}) -> None:
+    def __init__(self, config: Dict = None) -> None:
         """Initialise base class."""
         self.rec_dict = None
         self.ent_id_col = None
         self.rec_id_col = None
-        self.stats = {}  # type: Dict[str, Any]
+        self.stats: Dict[str, Any] = {}
 
-    def build_reversed_index(self, data: Sequence[Sequence]):
+    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool):
         """Method which builds the index for all database.
 
            Argument:
@@ -38,7 +38,7 @@ class PPRLIndex:
         self.stats['med_size'] = int(statistics.median(lengths))
         self.stats['std_size'] = statistics.stdev(lengths)
         # find how many blocks each entity / record is a member of
-        rec_to_block = {}  # type: Dict[Any, List[Any]]
+        rec_to_block: Dict[Any, List[Any]] = {}
         for block_id, block in reversed_index.items():
             for rec in block:
                 if rec in rec_to_block:
@@ -48,12 +48,13 @@ class PPRLIndex:
         num_of_blocks_per_rec = [len(x) for x in rec_to_block.values()]
         self.stats['num_of_blocks_per_rec'] = num_of_blocks_per_rec
 
-        print('Number of Blocks:   {}'.format(self.stats['num_of_blocks']))
-        print('Minimum Block Size: {}'.format(self.stats['min_size']))
-        print('Maximum Block Size: {}'.format(self.stats['max_size']))
-        print('Average Block Size: {}'.format(self.stats['avg_size']))
-        print('Median Block Size:  {}'.format(self.stats['med_size']))
-        print('Standard Deviation of Block Size:  {}'.format(self.stats['std_size']))
+        print('Statistics for the generated blocks:')
+        print('\tNumber of Blocks:   {}'.format(self.stats['num_of_blocks']))
+        print('\tMinimum Block Size: {}'.format(self.stats['min_size']))
+        print('\tMaximum Block Size: {}'.format(self.stats['max_size']))
+        print('\tAverage Block Size: {}'.format(self.stats['avg_size']))
+        print('\tMedian Block Size:  {}'.format(self.stats['med_size']))
+        print('\tStandard Deviation of Block Size:  {}'.format(self.stats['std_size']))
 
         return self.stats
 
