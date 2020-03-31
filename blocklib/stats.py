@@ -26,7 +26,7 @@ def reversed_index_stats(reversed_index: Dict[str, List[Any]]):
         'max_size': 0 if len(lengths) == 0 else max(lengths),
         'avg_size': 0 if len(lengths) == 0 else statistics.mean(lengths),
         'med_size': 0 if len(lengths) == 0 else int(statistics.median(lengths)),
-        'std_size': 0 if len(lengths) == 0 else statistics.stdev(lengths),
+        'std_size': 0 if 0 <= len(lengths) <= 1 else statistics.stdev(lengths),
         'sum_of_blocks': sum(lengths)
     }
     return stats
