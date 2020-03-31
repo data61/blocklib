@@ -8,6 +8,7 @@ from .configuration import get_config
 from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
+from .stats import reversed_index_per_strategy_stats
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -57,7 +58,7 @@ class PPRLIndexPSignature(PPRLIndex):
         reversed_index_per_strategy = [self.filter_reversed_index(data, reversed_index) for reversed_index in
                                        reversed_index_per_strategy]
         if verbose:
-            strat_stats = self.compute_strategies_stats(reversed_index_per_strategy, n)
+            strat_stats = reversed_index_per_strategy_stats(reversed_index_per_strategy, n)
             print("Statistics for the individual strategies:")
             for strat_stat in strat_stats:
                 print('Strategy {}:'.format(strat_stat["strategy_idx"]))
@@ -90,23 +91,6 @@ class PPRLIndexPSignature(PPRLIndex):
                 reversed_index[bf_set] = rec_ids
 
         return reversed_index
-
-    def compute_strategies_stats(self, reversed_index_per_strategy: Sequence[Dict[str, List[Any]]], num_elements: int):
-        strat_stats = []
-        for i, reversed_index in enumerate(reversed_index_per_strategy):
-            lengths = [len(rv) for rv in reversed_index.values()]
-            stats = {
-                'strategy_idx': i,
-                'num_of_blocks': len(lengths),
-                'min_size': 0 if len(lengths) == 0 else min(lengths),
-                'max_size': 0 if len(lengths) == 0 else max(lengths),
-                'avg_size': 0 if len(lengths) == 0 else int(statistics.mean(lengths)),
-                'med_size': 0 if len(lengths) == 0 else int(statistics.median(lengths)),
-                'std_size': 0 if len(lengths) == 0 else statistics.stdev(lengths),
-                'num_filtered_elements': num_elements - sum(lengths),
-                'coverage': 0 if len(lengths) == 0 else sum(lengths) / num_elements}
-            strat_stats.append(stats)
-        return strat_stats
 
     def filter_reversed_index(self, data: Sequence[Sequence], reversed_index: Dict):
         # Filter inverted index based on ratio
