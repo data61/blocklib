@@ -77,6 +77,19 @@ class PPRLIndexPSignature(PPRLIndex):
         # check if final inverted index is empty
         if len(filtered_reversed_index) == 0:
             raise ValueError('P-Sig: All records are filtered out!')
+
+        # compute coverage information
+        entities = set()
+        for recids in filtered_reversed_index.values():
+            for rid in recids:
+                entities.add(rid)
+        coverage = round(len(entities) / len(record_ids) * 100, 2)
+        if coverage == 100:
+            print('P-Sig: {}% records are covered in blocks'.format(coverage))
+        else:
+            print('P-Sig: Warning! only {}% records are covered in blocks. Please consider to improve signatures'
+                  .format(coverage))
+
         # map signatures in reversed_index into bloom filter
         num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
         bf_len = int(self.blocking_config.get("bf-len", None))
