@@ -2,6 +2,8 @@
 
 ## new version
 
+* added ability to display statistics of individual blocking strategies in P-Sig. #62
+
 ## 0.1.3
 
 * Urgent bugfix: Setup now requires dependencies correctly. 
