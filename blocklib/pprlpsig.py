@@ -1,10 +1,14 @@
+import statistics
+from collections import defaultdict
+from typing import Dict, List, Sequence, Any
+
 import numpy as np
-from typing import Any, Dict, List, Sequence
 
 from .configuration import get_config
 from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
+from .stats import reversed_index_per_strategy_stats
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -30,28 +34,49 @@ class PPRLIndexPSignature(PPRLIndex):
         self.signature_strategies = get_config(config, 'signatureSpecs')
         self.rec_id_col = config.get("record-id-col", None)
 
-    def build_reversed_index(self, data: Sequence[Sequence]):
+    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False):
         """Build inverted index given P-Sig method."""
-        reversed_index = {}  # type: Dict[Any, List[Any]]
+
         # Build index of records
         if self.rec_id_col is None:
             record_ids = np.arange(len(data))
         else:
             record_ids = [x[self.rec_id_col] for x in data]
 
+        reversed_index_per_strategy = \
+            [defaultdict(list) for _ in range(len(self.signature_strategies))]  # type: List[Dict[str, List[Any]]]
         # Build inverted index
         # {signature -> record ids}
         for rec_id, dtuple in zip(record_ids, data):
 
             signatures = generate_signatures(self.signature_strategies, dtuple)
 
-            for signature in signatures:
-                if signature in reversed_index:
-                    reversed_index[signature].append(rec_id)
-                else:
-                    reversed_index[signature] = [rec_id]
+            for i, signature in enumerate(signatures):
+                reversed_index_per_strategy[i][signature].append(rec_id)
 
-        filtered_reversed_index = self.filter_reversed_index(data, reversed_index)
+        n = len(data)
+        reversed_index_per_strategy = [self.filter_reversed_index(data, reversed_index) for reversed_index in
+                                       reversed_index_per_strategy]
+        if verbose:
+            strat_stats = reversed_index_per_strategy_stats(reversed_index_per_strategy, n)
+            print("Statistics for the individual strategies:")
+            for strat_stat in strat_stats:
+                print('Strategy {}:'.format(strat_stat["strategy_idx"]))
+                print('\tblock size {} min, {} max, {:.2f} avg, {} median, {:.2f} std'
+                      .format(strat_stat["min_size"], strat_stat["max_size"], strat_stat["avg_size"],
+                              strat_stat["med_size"], strat_stat["std_size"]))
+                print('\t {} blocks, {} filtered elements, {:.2f}% coverage'
+                      .format(strat_stat["num_of_blocks"], strat_stat["num_filtered_elements"],
+                              (strat_stat["coverage"] * 100)))
+
+        # combine the reversed indices into one
+        filtered_reversed_index = reversed_index_per_strategy[0]
+        for rev_idx in reversed_index_per_strategy[1:]:
+            filtered_reversed_index.update(rev_idx)
+
+        # check if final inverted index is empty
+        if len(filtered_reversed_index) == 0:
+            raise ValueError('P-Sig: All records are filtered out!')
 
         # compute coverage information
         entities = set()
@@ -69,7 +94,8 @@ class PPRLIndexPSignature(PPRLIndex):
         num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
         bf_len = int(self.blocking_config.get("bf-len", None))
 
-        reversed_index = {}
+        reversed_index = {}  # type: Dict[Any, List[Any]]
+
         for signature, rec_ids in filtered_reversed_index.items():
             bf_set = tuple(flip_bloom_filter(signature, bf_len, num_hash_func))
             if bf_set in reversed_index:
@@ -96,7 +122,4 @@ class PPRLIndexPSignature(PPRLIndex):
         else:
             raise NotImplementedError("Don't support {} filter yet.".format(filter_type))
 
-        # check if final inverted index is empty
-        if len(reversed_index) == 0:
-            raise ValueError('P-Sig: All records are filtered out!')
         return reversed_index

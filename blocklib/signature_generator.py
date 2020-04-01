@@ -91,11 +91,11 @@ def generate_signatures(signature_strategies: List[List],
     :return signatures: set of str
     """
     # signatures to return
-    signatures = set()
+    signatures = []
 
     # loop through each strategy
 
-    for strategy in signature_strategies:
+    for i, strategy in enumerate(signature_strategies):
         sig = []
         for spec in strategy:
             # arguments that we need to pass for any strategy
@@ -114,6 +114,6 @@ def generate_signatures(signature_strategies: List[List],
                 config.update(args)
                 s = func(**config)
                 sig.append(s)
-        signatures.add(''.join([x for x in sig if x is not None]))
+        signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
 
     return signatures

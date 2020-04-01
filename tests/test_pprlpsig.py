@@ -81,7 +81,7 @@ class TestPSig(unittest.TestCase):
 
         }
         psig = PPRLIndexPSignature(config)
-        reversed_index = psig.build_reversed_index(data)
-        bf_set = tuple(flip_bloom_filter("Fred", config['blocking-filter']['bf-len'],
+        reversed_index = psig.build_reversed_index(data, verbose=True)
+        bf_set = tuple(flip_bloom_filter("0_Fred", config['blocking-filter']['bf-len'],
                                          config['blocking-filter']['number-hash-functions']))
         assert reversed_index == {bf_set: ['id4', 'id5']}

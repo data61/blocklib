@@ -104,7 +104,7 @@ class TestBlocksGenerator:
         filtered_bob = filtered_records[1]
 
         expected_bf_sets = {}
-        for string in ['Fr', 'Fred', 'Li']:
+        for string in ['1_Fr', '0_Fred', '1_Li']:
             bf_set = flip_bloom_filter(string, config['blocking-filter']['bf-len'],
                                        config['blocking-filter']['number-hash-functions'])
             expected_bf_sets[tuple(bf_set)] = True
@@ -174,15 +174,15 @@ class TestBlocksGenerator:
         filtered_m1, filtered_m2, filtered_m3, filtered_m4 = filtered_records
 
         expected_bf_sets = {}
-        for string in ['Fr', 'Jo']:
+        for string in ['1_Fr', '1_Jo']:
             bf_set = flip_bloom_filter(string, config['blocking-filter']['bf-len'],
                                        config['blocking-filter']['number-hash-functions'])
             expected_bf_sets[string] = tuple(bf_set)
 
-        expected_m1 = {expected_bf_sets['Fr']: ['m1-2'], expected_bf_sets['Jo']: ['m1-1']}
-        expected_m2 = {expected_bf_sets['Fr']: ['m2-1'], expected_bf_sets['Jo']: ['m2-2']}
-        expected_m3 = {expected_bf_sets['Jo']: ['m3-1']}
-        expected_m4 = {expected_bf_sets['Fr']: ['m4-2']}
+        expected_m1 = {expected_bf_sets['1_Fr']: ['m1-2'], expected_bf_sets['1_Jo']: ['m1-1']}
+        expected_m2 = {expected_bf_sets['1_Fr']: ['m2-1'], expected_bf_sets['1_Jo']: ['m2-2']}
+        expected_m3 = {expected_bf_sets['1_Jo']: ['m3-1']}
+        expected_m4 = {expected_bf_sets['1_Fr']: ['m4-2']}
 
         assert expected_m1 == filtered_m1
         assert expected_m2 == filtered_m2
