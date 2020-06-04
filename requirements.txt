@@ -2,7 +2,7 @@ bitarray-hardbyte==1.2.2
 jsonschema==3.2.0
 numpy==1.18.4
 metaphone==0.6
-tqdm==4.46.0
+tqdm==4.46.1
 pytest==5.4.3
 pytest-cov==2.9.0
 pytest-azurepipelines==0.8.0
