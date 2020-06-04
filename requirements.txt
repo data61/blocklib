@@ -1,6 +1,6 @@
 bitarray-hardbyte==1.2.2
 jsonschema==3.2.0
-numpy==1.18.4
+numpy==1.18.5
 metaphone==0.6
 tqdm==4.46.0
 pytest==5.4.3
