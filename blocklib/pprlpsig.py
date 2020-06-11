@@ -60,7 +60,7 @@ class PPRLIndexPSignature(PPRLIndex):
         reversed_index = {}
         for signature, rec_ids in filtered_reversed_index.items():
             bf_set = tuple(flip_bloom_filter(signature, bf_len, num_hash_func))
-            reversed_index[bf_set] = rec_ids
+            reversed_index[str(bf_set)] = rec_ids
 
         return reversed_index
 

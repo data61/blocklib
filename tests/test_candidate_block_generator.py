@@ -61,6 +61,6 @@ class TestCandidateBlockGenerator:
                         'version': 1,
                         'config': config}
         candidate_block_obj = generate_candidate_blocks(data, block_config)
-        bf_set_fred = tuple(flip_bloom_filter('Fred', bf_len, num_hash_funcs))
-        bf_set_lindsay = tuple(flip_bloom_filter('Lindsay', bf_len, num_hash_funcs))
+        bf_set_fred = str(tuple(flip_bloom_filter('Fred', bf_len, num_hash_funcs)))
+        bf_set_lindsay = str(tuple(flip_bloom_filter('Lindsay', bf_len, num_hash_funcs)))
         assert candidate_block_obj.blocks == {bf_set_fred: ['id4', 'id5'], bf_set_lindsay: ['id6']}

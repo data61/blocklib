@@ -54,4 +54,4 @@ class TestPSig(unittest.TestCase):
         reversed_index = psig.build_reversed_index(data)
         bf_set = tuple(flip_bloom_filter("Fred", config['blocking-filter']['bf-len'],
                                          config['blocking-filter']['number-hash-functions']))
-        assert reversed_index == {bf_set: ['id4', 'id5']}
+        assert reversed_index == {str(bf_set): ['id4', 'id5']}

@@ -107,7 +107,7 @@ class TestBlocksGenerator:
         for string in ['Fr', 'Fred', 'Li']:
             bf_set = flip_bloom_filter(string, config['blocking-filter']['bf-len'],
                                        config['blocking-filter']['number-hash-functions'])
-            expected_bf_sets[tuple(bf_set)] = True
+            expected_bf_sets[str(tuple(bf_set))] = True
 
         assert all(key in expected_bf_sets for key in filtered_alice)
         assert filtered_alice.keys() == filtered_bob.keys()
@@ -177,7 +177,7 @@ class TestBlocksGenerator:
         for string in ['Fr', 'Jo']:
             bf_set = flip_bloom_filter(string, config['blocking-filter']['bf-len'],
                                        config['blocking-filter']['number-hash-functions'])
-            expected_bf_sets[string] = tuple(bf_set)
+            expected_bf_sets[string] = str(tuple(bf_set))
 
         expected_m1 = {expected_bf_sets['Fr']: ['m1-2'], expected_bf_sets['Jo']: ['m1-1']}
         expected_m2 = {expected_bf_sets['Fr']: ['m2-1'], expected_bf_sets['Jo']: ['m2-2']}
