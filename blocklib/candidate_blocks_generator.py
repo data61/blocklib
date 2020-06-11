@@ -26,13 +26,14 @@ class CandidateBlockingResult:
         self.state = state
 
 
-def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict):
+def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict, verbose: bool = False):
     """
     :param data: list of tuples E.g. ('0', 'Kenneth Bain', '1964/06/17', 'M')
     :param signature_config:
         A description of how the signatures should be generated.
         Schema for the signature config is found in
         ``docs/schema/signature-config-schema.json``
+    :param verbose: print additional information to std out.
 
     :return: A 2-tuple containing
         A list of "signatures" per record in data.
@@ -48,7 +49,7 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config:
 
     if algorithm in PPRLSTATES:
         state = PPRLSTATES[algorithm](config)
-        reversed_index = state.build_reversed_index(data)
+        reversed_index = state.build_reversed_index(data, verbose)
         state.summarize_reversed_index(reversed_index)
 
         # make candidate blocking result object

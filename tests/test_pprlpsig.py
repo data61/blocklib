@@ -22,6 +22,36 @@ class TestPSig(unittest.TestCase):
             }
             PPRLIndexPSignature(config)
 
+    def test_combine_blocks_in_blocking_filter(self):
+        """During blocking filter generation, if there is an index collision, then we should combine the blocks
+        of the colliding signatures."""
+        data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
+                ('id2', 'Brian', 'Hsu', 'Burwood')]
+        config = {
+            "blocking_features": [1],
+            "record-id-col": 0,
+            "filter": {
+                "type": "ratio",
+                "max": 1.0,
+                "min": 0.0,
+            },
+            "blocking-filter": {
+                "type": "bloom filter",
+                "number-hash-functions": 1,
+                "bf-len": 1,
+            },
+            "signatureSpecs": [
+                [
+                    {"type": "feature-value", "feature-idx": 1}
+                ]
+            ]
+
+        }
+        psig = PPRLIndexPSignature(config)
+        reversed_index = psig.build_reversed_index(data)
+        assert len(reversed_index) == 1
+        assert set(next(iter(reversed_index.values()))) == {'id1', 'id2'}
+
     def test_build_reversed_index(self):
         """Test build revert index."""
         data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
@@ -51,7 +81,7 @@ class TestPSig(unittest.TestCase):
 
         }
         psig = PPRLIndexPSignature(config)
-        reversed_index = psig.build_reversed_index(data)
-        bf_set = tuple(flip_bloom_filter("Fred", config['blocking-filter']['bf-len'],
+        reversed_index = psig.build_reversed_index(data, verbose=True)
+        bf_set = tuple(flip_bloom_filter("0_Fred", config['blocking-filter']['bf-len'],
                                          config['blocking-filter']['number-hash-functions']))
         assert reversed_index == {str(bf_set): ['id4', 'id5']}
