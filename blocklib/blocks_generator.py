@@ -1,7 +1,7 @@
 """Module that implement final block generations."""
 from collections import defaultdict
 from typing import Any, Dict, Sequence, Set, List, cast
-
+import ast
 import numpy as np
 
 from blocklib import PPRLIndex
@@ -89,7 +89,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
     for reversed_index, state in zip(reversed_indices, block_states):
         cbf = set()  # type: Set[int]
         for bf_set in reversed_index:
-            bf_set = eval(bf_set)
+            bf_set = ast.literal_eval(bf_set)
             cbf = cbf.union(bf_set)
 
         bf_len = int(block_states[0].blocking_config.get("bf-len", None))
@@ -103,7 +103,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
 
     # filter reversed_indices with block filter
     for reversed_index in reversed_indices:
-        has_matches = {bf_set: all(block_filter[i] for i in eval(bf_set)) for bf_set in reversed_index}
+        has_matches = {bf_set: all(block_filter[i] for i in ast.literal_eval(bf_set)) for bf_set in reversed_index}
         for bf_set in has_matches:
             if not has_matches[bf_set]:
                 del reversed_index[bf_set]
