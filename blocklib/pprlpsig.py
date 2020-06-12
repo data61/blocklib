@@ -94,10 +94,10 @@ class PPRLIndexPSignature(PPRLIndex):
         num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
         bf_len = int(self.blocking_config.get("bf-len", None))
 
-        reversed_index = {}  # type: Dict[Any, List[Any]]
+        reversed_index = {}  # type: Dict[str, List[Any]]
 
         for signature, rec_ids in filtered_reversed_index.items():
-            bf_set = tuple(flip_bloom_filter(signature, bf_len, num_hash_func))
+            bf_set = str(tuple(flip_bloom_filter(signature, bf_len, num_hash_func)))
             if bf_set in reversed_index:
                 reversed_index[bf_set].extend(rec_ids)
             else:
