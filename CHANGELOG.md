@@ -4,6 +4,10 @@
 
 * added ability to display statistics of individual blocking strategies in P-Sig. #62
 
+## 0.1.4
+
+* Convert block key of P-Sig to string type
+
 ## 0.1.3
 
 * Urgent bugfix: Setup now requires dependencies correctly. 
