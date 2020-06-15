@@ -4,6 +4,6 @@ numpy==1.18.5
 metaphone==0.6
 tqdm==4.46.1
 pytest==5.4.3
-pytest-cov==2.9.0
+pytest-cov==2.10.0
 pytest-azurepipelines==0.8.0
 nbval==0.9.5
