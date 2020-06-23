@@ -46,8 +46,6 @@ stages:
     displayName: ' '
     strategy:
       matrix:
-        python35:
-          PYTHON_VERSION: '3.5'
         python36:
           PYTHON_VERSION: '3.6'
         python37:
