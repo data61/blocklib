@@ -1,6 +1,6 @@
 import statistics
 from collections import defaultdict
-from typing import Dict, List, Sequence, Any
+from typing import Dict, List, Sequence, Any, Optional
 
 import numpy as np
 
@@ -35,7 +35,7 @@ class PPRLIndexPSignature(PPRLIndex):
         self.signature_strategies = get_config(config, 'signatureSpecs')
         self.rec_id_col = config.get("record-id-col", None)
 
-    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False, header: List[str] = None):
+    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False, header: Optional[List[str]] = None):
         """Build inverted index given P-Sig method."""
         # find blocking feature index if blocking feature type is string
         feature_to_index = None

@@ -1,9 +1,9 @@
 import base64
 from bitarray import bitarray
-from typing import Sequence, Any
+from typing import Sequence, Any, List
 
 
-def check_header(header, row):
+def check_header(header: List[str], row: Sequence[Any]):
     """Check if header is consistent with data dimension."""
     error_msg = f'There are {len(header)} features specified in header, but each row has {len(row)} fields'
     assert len(header) == len(row), error_msg

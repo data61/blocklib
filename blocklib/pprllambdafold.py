@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from collections import defaultdict
-from typing import Dict, Sequence, Any, List
+from typing import Dict, Sequence, Any, List, Optional
 from blocklib.configuration import get_config
 from .pprlindex import PPRLIndex
 from .encoding import generate_bloom_filter
@@ -48,7 +48,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
         return bloom_filter
 
-    def build_reversed_index(self, data: Sequence[Any], verbose: bool = False, header: List[str] = None):
+    def build_reversed_index(self, data: Sequence[Any], verbose: bool = False, header: Optional[List[str]] = None):
         """Build inverted index for PPRL Lambda-fold blocking method.
 
         :param data: list of lists

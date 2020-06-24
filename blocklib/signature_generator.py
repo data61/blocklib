@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Sequence
+from typing import Any, Callable, Dict, List, Sequence, Optional
 
 from metaphone import doublemetaphone
 
@@ -80,7 +80,7 @@ SIGNATURE_STRATEGIES = {
 
 def generate_signatures(signature_strategies: List[List],
                         dtuple: Sequence,
-                        feature_to_index: Dict[str, int] = None):
+                        feature_to_index: Optional[Dict[str, int]] = None):
     """Generate signatures for one record.
 
     :param signature_strategies:

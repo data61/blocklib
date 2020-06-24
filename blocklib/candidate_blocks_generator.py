@@ -1,5 +1,5 @@
 """Class that implement candidate block generations."""
-from typing import Dict, Sequence, Tuple, Type, List
+from typing import Dict, Sequence, Tuple, Type, List, Optional
 from .configuration import get_config
 from .pprlindex import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
@@ -27,7 +27,7 @@ class CandidateBlockingResult:
         self.state = state
 
 
-def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict, header: List[str] = None,
+def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict, header: Optional[List[str]] = None,
                               verbose: bool = False):
     """
     :param data: list of tuples E.g. ('0', 'Kenneth Bain', '1964/06/17', 'M')
