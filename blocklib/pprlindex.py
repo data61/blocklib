@@ -14,11 +14,12 @@ class PPRLIndex:
         self.rec_id_col = None
         self.stats = {}  # type: Dict[str, Any]
 
-    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool):
+    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool, header: List[str] = None):
         """Method which builds the index for all database.
 
            :param data: list of tuples, PII dataset
            :param verbose: print additional information to std out.
+           :param header: file header, optional
 
            See derived classes for actual implementations.
         """

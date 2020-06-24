@@ -9,6 +9,7 @@ from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
 from .stats import reversed_index_per_strategy_stats
+from .utils import check_header
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -34,8 +35,13 @@ class PPRLIndexPSignature(PPRLIndex):
         self.signature_strategies = get_config(config, 'signatureSpecs')
         self.rec_id_col = config.get("record-id-col", None)
 
-    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False):
+    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False, header: List[str] = None):
         """Build inverted index given P-Sig method."""
+        # find blocking feature index if blocking feature type is string
+        feature_to_index = None
+        if header:
+            check_header(header, data[0])
+            feature_to_index = {name: ind for ind, name in enumerate(header)}
 
         # Build index of records
         if self.rec_id_col is None:
@@ -49,7 +55,7 @@ class PPRLIndexPSignature(PPRLIndex):
         # {signature -> record ids}
         for rec_id, dtuple in zip(record_ids, data):
 
-            signatures = generate_signatures(self.signature_strategies, dtuple)
+            signatures = generate_signatures(self.signature_strategies, dtuple, feature_to_index)
 
             for i, signature in enumerate(signatures):
                 reversed_index_per_strategy[i][signature].append(rec_id)

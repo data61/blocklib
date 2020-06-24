@@ -14,7 +14,7 @@ def test_assess_blocks_2party():
              ('id9', 'Li', 'Jone', 'Narwee')]
 
     config = {
-        "blocking_features": [1],
+        "blocking-features": [1],
         "filter": {
             "type": "count",
             "max": 5,
@@ -27,10 +27,10 @@ def test_assess_blocks_2party():
         },
         "signatureSpecs": [
             [
-                {"type": "feature-value", "feature-idx": 1}
+                {"type": "feature-value", "feature": 1}
             ],
             [
-                {"type": "characters-at", "config": {"pos": ["0:2"]}, "feature-idx": 1},
+                {"type": "characters-at", "config": {"pos": ["0:2"]}, "feature": 1},
             ]
         ]
 

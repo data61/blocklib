@@ -24,12 +24,22 @@ class TestCandidateBlockGenerator:
 
         # test when type of blocking is not implemented
         with pytest.raises(NotImplementedError):
-            block_config = {'type': 'fancy-block', 'version': 1, 'config': {}}
+            block_config = {'type': 'fancy-block', 'version': 1, 'config': {'blocking-features': [1, 2]}}
             generate_candidate_blocks(data, block_config)
 
         # test when config of blocking is not specified
         with pytest.raises(ValueError):
             block_config = {'type': 'p-sig', 'version': 1}
+            generate_candidate_blocks(data, block_config)
+
+        # test when blocking feature is a mix of integer and string
+        with pytest.raises(AssertionError):
+            block_config = {'type': 'p-sig', 'version': 1, 'config': {'blocking-features': [1, 'name']}}
+            generate_candidate_blocks(data, block_config)
+
+        # test when blocking features are string but header is not given
+        with pytest.raises(AssertionError):
+            block_config = {'type': 'p-sig', 'version': 1, 'config': {'blocking-features': ['name']}}
             generate_candidate_blocks(data, block_config)
 
     def test_generate_candidate_blocks_psig(self):
@@ -38,7 +48,7 @@ class TestCandidateBlockGenerator:
         num_hash_funcs = 4
         bf_len = 2048
         config = {
-            "blocking_features": [1],
+            "blocking-features": [1],
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
@@ -52,7 +62,7 @@ class TestCandidateBlockGenerator:
             },
             "signatureSpecs": [
                 [
-                    {"type": "feature-value", "feature-idx": 1}
+                    {"type": "feature-value", "feature": 1}
                 ]
             ]
         }
