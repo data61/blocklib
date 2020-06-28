@@ -1,5 +1,5 @@
 import random
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Sequence, Optional
 from blocklib.configuration import get_config
 from blocklib.stats import reversed_index_stats
 
@@ -14,11 +14,12 @@ class PPRLIndex:
         self.rec_id_col = None
         self.stats = {}  # type: Dict[str, Any]
 
-    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool):
+    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool, header: Optional[List[str]]  = None):
         """Method which builds the index for all database.
 
            :param data: list of tuples, PII dataset
            :param verbose: print additional information to std out.
+           :param header: file header, optional
 
            See derived classes for actual implementations.
         """

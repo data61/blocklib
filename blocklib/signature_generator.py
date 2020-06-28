@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Sequence
+from typing import Any, Callable, Dict, List, Sequence, Optional
 
 from metaphone import doublemetaphone
 
@@ -79,7 +79,8 @@ SIGNATURE_STRATEGIES = {
 
 
 def generate_signatures(signature_strategies: List[List],
-                        dtuple: Sequence):
+                        dtuple: Sequence,
+                        feature_to_index: Optional[Dict[str, int]] = None):
     """Generate signatures for one record.
 
     :param signature_strategies:
@@ -87,6 +88,9 @@ def generate_signatures(signature_strategies: List[List],
 
     :param dtuple:
         Raw data to generate signatures from
+
+    :param feature_to_index:
+        Mapping from feature name to feature index
 
     :return signatures: set of str
     """
@@ -99,7 +103,14 @@ def generate_signatures(signature_strategies: List[List],
         sig = []
         for spec in strategy:
             # arguments that we need to pass for any strategy
-            attr_ind = spec.get("feature-idx", -1)
+            attr = spec.get("feature", -1)
+            if type(attr) == str:
+                assert feature_to_index
+                attr_ind = feature_to_index.get(attr, None)
+                if attr_ind is None:
+                    raise ValueError(f'Feature {attr} is not in the dataset')
+            else:
+                attr_ind = attr
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
             config = spec.get('config', {})
 

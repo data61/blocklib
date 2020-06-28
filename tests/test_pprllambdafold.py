@@ -62,6 +62,23 @@ class TestLambdaFold(unittest.TestCase):
         assert all([len(k) == 31 for k in reversed_index])
         assert all([len(v) == 1 for v in reversed_index.values()])
 
+        # build given headers
+        config = {
+            "blocking-features": ['firstname', 'lastname'],
+            "Lambda": 5,
+            "bf-len": 2000,
+            "num-hash-funcs": 1000,
+            "K": 30,
+            "random_state": 0,
+            "input-clks": False
+        }
+        header = ['ID', 'firstname', 'lastname']
+        lambdafold = PPRLIndexLambdaFold(config)
+        reversed_index = lambdafold.build_reversed_index(data, header=header)
+        assert len(reversed_index) == 5 * 2
+        assert all([len(k) == 31 for k in reversed_index])
+        assert all([len(v) == 1 for v in reversed_index.values()])
+
     def test_build_reversed_index_clks(self):
         """Test building the inverted index with CLKs input."""
         config = {
