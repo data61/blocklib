@@ -2,7 +2,10 @@
 
 ## new version
 
-* added ability to display statistics of individual blocking strategies in P-Sig. #62
+## 0.1.5
+
+* Support column names in blocking schema
+* Fix inconsistent field names in blocking schema
 
 ## 0.1.4
 
@@ -10,6 +13,7 @@
 * Make individual strategy statistics available for P-Sig blocking #62
 * Add coverage ratio to P-Sig blocking statistics #59
 * Remove collision blocks in P-Sig filtered reverse indices #57
+* Added ability to display statistics of individual blocking strategies in P-Sig. #62
 
 ## 0.1.3
 
