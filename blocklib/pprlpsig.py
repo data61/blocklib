@@ -30,6 +30,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
         """
         super().__init__()
+        self.blocking_features = get_config(config, "blocking-features")
         self.filter_config = get_config(config, "filter")
         self.blocking_config = get_config(config, "blocking-filter")
         self.signature_strategies = get_config(config, 'signatureSpecs')
@@ -38,8 +39,9 @@ class PPRLIndexPSignature(PPRLIndex):
     def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False, header: Optional[List[str]] = None):
         """Build inverted index given P-Sig method."""
         # find blocking feature index if blocking feature type is string
+        feature_type = type(self.blocking_features[0])
         feature_to_index = None
-        if header:
+        if header and feature_type == str:
             check_header(header, data[0])
             feature_to_index = {name: ind for ind, name in enumerate(header)}
 

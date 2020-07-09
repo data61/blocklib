@@ -15,7 +15,7 @@ class TestPSig(unittest.TestCase):
         """Test p-sig configuration."""
         with self.assertRaises(ValueError):
             config = {
-                "blocking_features": [1],
+                "blocking-features": [1],
                 "filter": {
                     "type": "ratio",
                     "max": 0.02,
@@ -35,7 +35,7 @@ class TestPSig(unittest.TestCase):
         data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
                 ('id2', 'Brian', 'Hsu', 'Burwood')]
         config = {
-            "blocking_features": [1],
+            "blocking-features": [1],
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
@@ -63,7 +63,7 @@ class TestPSig(unittest.TestCase):
         """Test build revert index."""
         global data
         config = {
-            "blocking_features": [1],
+            "blocking-features": [1],
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
@@ -93,7 +93,7 @@ class TestPSig(unittest.TestCase):
         global data
         header = ['ID', 'firstname', 'lastname', 'suburb']
         config = {
-            "blocking_features": ['firstname'],
+            "blocking-features": ['firstname'],
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
@@ -124,7 +124,7 @@ class TestPSig(unittest.TestCase):
         global data
         header = ['ID', 'firstname', 'lastname', 'suburb', 'postcode']  # extra feature - postcode
         config = {
-            "blocking_features": ['firstname'],
+            "blocking-features": ['firstname'],
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",

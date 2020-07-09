@@ -56,7 +56,8 @@ class PPRLIndexLambdaFold(PPRLIndex):
         :return:
         """
         # convert blocking feature to index if header is given
-        if header:
+        feature_type = type(self.blocking_features[0])
+        if header and feature_type == str and len(data[0]) > 1:
             check_header(header, data[0])
             feature_to_index = {name: ind for ind, name in enumerate(header)}
             self.blocking_features = [feature_to_index[x] for x in self.blocking_features]
