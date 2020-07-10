@@ -36,7 +36,7 @@ class TestLambdaFold(unittest.TestCase):
 
     def test_build_reversed_index(self):
         """Test building the inverted index."""
-        config = {
+        config_index = {
             "blocking-features": [1, 2],
             "Lambda": 5,
             "bf-len": 2000,
@@ -46,7 +46,7 @@ class TestLambdaFold(unittest.TestCase):
             "random_state": 0,
             "input-clks": False
         }
-        lambdafold = PPRLIndexLambdaFold(config)
+        lambdafold = PPRLIndexLambdaFold(config_index)
         data = [[1, 'Xu', 'Li'],
                 [2, 'Fred', 'Yu']]
         reversed_index = lambdafold.build_reversed_index(data)
@@ -55,15 +55,15 @@ class TestLambdaFold(unittest.TestCase):
         assert all([len(v) == 1 for v in reversed_index.values()])
 
         # build with row index
-        del config['record-id-col']
-        lambdafold = PPRLIndexLambdaFold(config)
+        del config_index['record-id-col']
+        lambdafold = PPRLIndexLambdaFold(config_index)
         reversed_index = lambdafold.build_reversed_index(data)
         assert len(reversed_index) == 5 * 2
         assert all([len(k) == 31 for k in reversed_index])
         assert all([len(v) == 1 for v in reversed_index.values()])
 
         # build given headers
-        config = {
+        config_name = {
             "blocking-features": ['firstname', 'lastname'],
             "Lambda": 5,
             "bf-len": 2000,
@@ -73,11 +73,12 @@ class TestLambdaFold(unittest.TestCase):
             "input-clks": False
         }
         header = ['ID', 'firstname', 'lastname']
-        lambdafold = PPRLIndexLambdaFold(config)
-        reversed_index = lambdafold.build_reversed_index(data, header=header)
-        assert len(reversed_index) == 5 * 2
-        assert all([len(k) == 31 for k in reversed_index])
-        assert all([len(v) == 1 for v in reversed_index.values()])
+        lambdafold_use_colname = PPRLIndexLambdaFold(config_name)
+        reversed_index_use_colname = lambdafold_use_colname.build_reversed_index(data, header=header)
+        assert len(reversed_index_use_colname) == 5 * 2
+        assert all([len(k) == 31 for k in reversed_index_use_colname])
+        assert all([len(v) == 1 for v in reversed_index_use_colname.values()])
+        assert reversed_index == reversed_index_use_colname
 
     def test_build_reversed_index_clks(self):
         """Test building the inverted index with CLKs input."""
@@ -98,3 +99,45 @@ class TestLambdaFold(unittest.TestCase):
         reversed_index = lambdafold.build_reversed_index(data)
         assert len(reversed_index) == 5 * 4
         assert all([len(k) == 31 for k in reversed_index])
+
+    def test_header_with_feature_type(self):
+        """Test different combination of header and feature column type."""
+        data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
+                ('id2', 'Joyce', 'Hsu', 'Burwood'),
+                ('id3', 'Joyce', 'Shan', 'Lewishm'),
+                ('id4', 'Fred', 'Yu', 'Strathfield'),
+                ('id5', 'Fred', 'Zhang', 'Chippendale'),
+                ('id6', 'Lindsay', 'Jone', 'Narwee')]
+        header = ['ID', 'firstname', 'lastname', 'suburb']
+        config_name = {
+            "blocking-features": ['firstname', 'lastname'],
+            "Lambda": 5,
+            "bf-len": 2000,
+            "record-id-col": 0,
+            "num-hash-funcs": 1000,
+            "K": 30,
+            "random_state": 0,
+            "input-clks": False
+        }
+        config_index = {
+            "blocking-features": [1, 2],
+            "Lambda": 5,
+            "bf-len": 2000,
+            "record-id-col": 0,
+            "num-hash-funcs": 1000,
+            "K": 30,
+            "random_state": 0,
+            "input-clks": False
+        }
+        lambda_fold_index = PPRLIndexLambdaFold(config_index)
+        lambda_fold_name = PPRLIndexLambdaFold(config_name)
+        # case1 header is given and feature type is column names
+        reversed_index1 = lambda_fold_name.build_reversed_index(data, verbose=True, header=header)
+        # case2 header is given and feature type is index
+        reversed_index2 = lambda_fold_index.build_reversed_index(data, verbose=True, header=header)
+        # case3 header is not given and feature type is index
+        reversed_index3 = lambda_fold_index.build_reversed_index(data, verbose=True, header=None)
+
+        # above 3 cases should give exactly same results
+        assert reversed_index1 == reversed_index2
+        assert reversed_index2 == reversed_index3
