@@ -54,7 +54,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         :param verbose: ignored
         :return:
         """
-        self.get_feature_to_index_map(header, data)
+        self.get_feature_to_index_map(data, header)
         # create record index lists
         if self.record_id_col is None:
             record_ids = list(range(len(data)))
