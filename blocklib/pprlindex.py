@@ -14,6 +14,7 @@ class PPRLIndex:
         self.ent_id_col = None
         self.rec_id_col = None
         self.stats = {}  # type: Dict[str, Any]
+        self.blocking_features_index = None
 
     def get_feature_to_index_map(self, data: Sequence[Sequence], header: Optional[List[str]] = None):
         """Return feature name to feature index mapping if there is a header and feature is of type string."""
@@ -24,8 +25,20 @@ class PPRLIndex:
         if header and feature_type == str and tuple_type != str:
             check_header(header, data[0])
             feature_to_index = {name: ind for ind, name in enumerate(header)}
-            self.blocking_features = [feature_to_index[x] for x in self.blocking_features]  # type: ignore
+
         return feature_to_index
+
+    def set_blocking_features_index(self, feature_to_index):
+        """Set value of member variable blocking features index.
+
+        self.blocking_features could be string (column name) or int (column index)
+        self.blocking_features_index must be int (column index)
+
+        """
+        if feature_to_index:
+            self.blocking_features_index = [feature_to_index[x] for x in self.blocking_features]
+        else:
+            self.blocking_features_index = self.blocking_features
 
     def build_reversed_index(self, data: Sequence[Sequence], verbose: bool, header: Optional[List[str]]  = None):
         """Method which builds the index for all database.

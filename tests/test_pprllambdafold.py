@@ -31,7 +31,7 @@ class TestLambdaFold(unittest.TestCase):
         }
         lambdafold = PPRLIndexLambdaFold(config)
         record = [1, 'Xu', 'Li']
-        bloom_filter = lambdafold.__record_to_bf__(record)
+        bloom_filter = lambdafold.__record_to_bf__(record, config['blocking-features'])
         assert sum(bloom_filter) == 6
 
     def test_build_reversed_index(self):
