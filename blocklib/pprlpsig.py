@@ -38,7 +38,7 @@ class PPRLIndexPSignature(PPRLIndex):
     def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False, header: Optional[List[str]] = None):
         """Build inverted index given P-Sig method."""
         feature_to_index = self.get_feature_to_index_map(data, header)
-        self.set_blocking_features_index(feature_to_index)
+        self.set_blocking_features_index(self.blocking_features, feature_to_index)
 
         # Build index of records
         if self.rec_id_col is None:

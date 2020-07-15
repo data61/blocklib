@@ -55,7 +55,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         :return:
         """
         feature_to_index = self.get_feature_to_index_map(data, header)
-        self.set_blocking_features_index(feature_to_index)
+        self.set_blocking_features_index(self.blocking_features, feature_to_index)
 
         # create record index lists
         if self.record_id_col is None:
