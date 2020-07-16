@@ -2,6 +2,10 @@
 
 ## new version
 
+## 0.1.6
+
+* Improve column name support in blocking schema
+
 ## 0.1.5
 
 * Support column names in blocking schema
