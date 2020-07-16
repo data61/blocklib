@@ -9,7 +9,6 @@ from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex
 from .signature_generator import generate_signatures
 from .stats import reversed_index_per_strategy_stats
-from .utils import check_header
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -30,6 +29,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
         """
         super().__init__()
+        self.blocking_features = get_config(config, "blocking-features")
         self.filter_config = get_config(config, "filter")
         self.blocking_config = get_config(config, "blocking-filter")
         self.signature_strategies = get_config(config, 'signatureSpecs')
@@ -37,11 +37,8 @@ class PPRLIndexPSignature(PPRLIndex):
 
     def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False, header: Optional[List[str]] = None):
         """Build inverted index given P-Sig method."""
-        # find blocking feature index if blocking feature type is string
-        feature_to_index = None
-        if header:
-            check_header(header, data[0])
-            feature_to_index = {name: ind for ind, name in enumerate(header)}
+        feature_to_index = self.get_feature_to_index_map(data, header)
+        self.set_blocking_features_index(self.blocking_features, feature_to_index)
 
         # Build index of records
         if self.rec_id_col is None:

@@ -25,6 +25,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
 
         """
         super().__init__()
+        self.blocking_features = get_config(config, "blocking-features")
         # Lambda: number of redundant tables
         self.mylambda = int(get_config(config, "Lambda"))
         # bf-len: length of bloom filter
@@ -33,15 +34,13 @@ class PPRLIndexLambdaFold(PPRLIndex):
         self.num_hash_function = int(get_config(config, "num-hash-funcs"))
         # K: number of base Hamming LSH hashing functions
         self.K = int(get_config(config, "K"))
-        # blocking-features: list of blocking feature indices
-        self.blocking_features = get_config(config, "blocking-features")
         self.input_clks = get_config(config, 'input-clks')
         self.random_state = get_config(config, "random_state")
         self.record_id_col = config.get("record-id-col", None)
 
-    def __record_to_bf__(self, record: Sequence):
+    def __record_to_bf__(self, record: Sequence, blocking_features_index: List[int]):
         """Convert a record to list of bigrams and then map to a bloom filter."""
-        s = ''.join([record[i] for i in self.blocking_features])
+        s = ''.join([record[i] for i in blocking_features_index])
         # generate list of bigram of s. hash each bigram to position of bit 1 and flip bloom filter
         ngram = 2
         grams = [s[i: i + ngram] for i in range(len(s) - ngram + 1)]
@@ -55,11 +54,8 @@ class PPRLIndexLambdaFold(PPRLIndex):
         :param verbose: ignored
         :return:
         """
-        # convert blocking feature to index if header is given
-        if header:
-            check_header(header, data[0])
-            feature_to_index = {name: ind for ind, name in enumerate(header)}
-            self.blocking_features = [feature_to_index[x] for x in self.blocking_features]
+        feature_to_index = self.get_feature_to_index_map(data, header)
+        self.set_blocking_features_index(self.blocking_features, feature_to_index)
 
         # create record index lists
         if self.record_id_col is None:
@@ -72,7 +68,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
         if self.input_clks:
             clks = deserialize_filters(data)
         else:
-            clks = [self.__record_to_bf__(rec) for rec in data]
+            clks = [self.__record_to_bf__(rec, self.blocking_features_index) for rec in data]
         bf_len = len(clks[0])
 
         # build Lambda fold tables and add to the invert index

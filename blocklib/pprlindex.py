@@ -2,6 +2,7 @@ import random
 from typing import Any, Dict, List, Sequence, Optional
 from blocklib.configuration import get_config
 from blocklib.stats import reversed_index_stats
+from blocklib.utils import check_header
 
 
 class PPRLIndex:
@@ -13,6 +14,30 @@ class PPRLIndex:
         self.ent_id_col = None
         self.rec_id_col = None
         self.stats = {}  # type: Dict[str, Any]
+
+    def get_feature_to_index_map(self, data: Sequence[Sequence], header: Optional[List[str]] = None):
+        """Return feature name to feature index mapping if there is a header and feature is of type string."""
+        feature_type = type(self.blocking_features[0])  # type: ignore
+        feature_to_index = None
+        tuple_type = type(data[0])  # if data is CLKs, then tuple_type will be str, otherwise a tuple
+
+        if header and feature_type == str and tuple_type != str:
+            check_header(header, data[0])
+            feature_to_index = {name: ind for ind, name in enumerate(header)}
+
+        return feature_to_index
+
+    def set_blocking_features_index(self, blocking_features, feature_to_index: Optional[Dict[str, int]] = None):
+        """Set value of member variable blocking features index.
+
+        self.blocking_features could be string (column name) or int (column index)
+        self.blocking_features_index must be int (column index)
+
+        """
+        if feature_to_index:
+            self.blocking_features_index = [feature_to_index[x] for x in blocking_features]
+        else:
+            self.blocking_features_index = blocking_features
 
     def build_reversed_index(self, data: Sequence[Sequence], verbose: bool, header: Optional[List[str]]  = None):
         """Method which builds the index for all database.
