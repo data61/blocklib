@@ -6,4 +6,4 @@ tqdm==4.48.0
 pytest==6.0.0
 pytest-cov==2.10.0
 pytest-azurepipelines==0.8.0
-nbval==0.9.5
+nbval==0.9.6
