@@ -37,6 +37,9 @@ def assess_blocks_2party(filtered_reverse_indices, data):
 
     num_cand_rec_pairs = num_block_true_matches + num_block_false_matches
     total_rec = len(dp1_data) * len(dp2_data)
+    
+    if total_rec == 0:
+        raise ValueError('There are not records in the provided data. Therefore we cannot assess the blocking result.')
 
     entity1 = set(dp1_data)
     entity2 = set(dp2_data)
@@ -44,5 +47,9 @@ def assess_blocks_2party(filtered_reverse_indices, data):
 
     # pair completeness is the "recall" before matching stage
     rr = 1.0 - float(num_cand_rec_pairs) / total_rec
-    pc = float(num_block_true_matches) / num_all_true_matches
+    if num_all_true_matches == 0:
+        print("Pair completeness is zero, because there are no true matches in the provided data.")
+        pc = 0
+    else:
+        pc = float(num_block_true_matches) / num_all_true_matches
     return rr, pc
