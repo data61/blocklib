@@ -1,4 +1,5 @@
 from blocklib import assess_blocks_2party, generate_blocks, generate_candidate_blocks
+import pytest
 
 
 def test_assess_blocks_2party():
@@ -40,17 +41,17 @@ def test_assess_blocks_2party():
                        'version': 1,
                        'config': config}
 
-    # generate candidate blocks
-    candidate_obj_alice = generate_candidate_blocks(data1, blocking_config)
-    candidate_obj_bob = generate_candidate_blocks(data2, blocking_config)
-
-    # blocks generator
-    filtered_records = generate_blocks([candidate_obj_alice, candidate_obj_bob], K=2)
+    def get_filtered_records(data_a, data_b):
+        # generate candidate blocks
+        candidate_obj_alice = generate_candidate_blocks(data_a, blocking_config)
+        candidate_obj_bob = generate_candidate_blocks(data_b, blocking_config)
+        # blocks generator
+        return generate_blocks([candidate_obj_alice, candidate_obj_bob], K=2)
 
     # assess blocks
     subdata1 = [r[0] for r in data1]
     subdata2 = [r[0] for r in data2]
-    rr, pc = assess_blocks_2party(filtered_records, [subdata1, subdata2])
+    rr, pc = assess_blocks_2party(get_filtered_records(data1, data2), [subdata1, subdata2])
 
     # compare expected and actual rr pc
     # final blocks should have blocking key Fr, Li and Fred
@@ -61,3 +62,10 @@ def test_assess_blocks_2party():
 
     assert rr == expected_rr
     assert pc == expected_pc
+
+    data2_b = data2[1:]  # no true matches between data1 and data2_b
+    _, pc = assess_blocks_2party(get_filtered_records(data1, data2_b), [data1, data2_b])
+    assert pc == 0
+
+    with pytest.raises(ValueError):
+        assess_blocks_2party([{}, {}], [[], []])
