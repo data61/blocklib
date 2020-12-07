@@ -1,4 +1,4 @@
-bitarray-hardbyte==1.6.1
+bitarray-hardbyte==1.6.2
 jsonschema==3.2.0
 numpy==1.19.4
 metaphone==0.6
