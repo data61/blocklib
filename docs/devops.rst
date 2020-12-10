@@ -24,9 +24,9 @@ There are three top level stages in the build pipeline:
 The *Test and build* job does:
 
   - install the requirements,
-  - run tests on Ubuntu 18.04 OS, for ``Python 3.5``, ``Python 3.6``, ``Python 3.7`` and ``Python 3.8``
+  - run tests on Ubuntu 18.04 OS, for ``Python 3.6``, ``Python 3.7``, ``Python 3.8`` and ``Python 3.9``
   - publish the test results,
-  - publish the code coverage (on Azure only),
+  - publish the code coverage,
   - package and publish the artifacts.
 
 Release Pipeline
