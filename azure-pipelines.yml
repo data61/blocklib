@@ -52,6 +52,8 @@ stages:
           PYTHON_VERSION: '3.7'
         python38:
           PYTHON_VERSION: '3.8'
+        python39:
+          PYTHON_VERSION: '3.9'
     pool:
       vmImage: 'ubuntu-18.04'
     steps:
@@ -99,6 +101,8 @@ stages:
             python.version: '3.7'
           Python38:
             python.version: '3.8'
+          Python39:
+            python.version: '3.9'
 
       steps:
         - task: UsePythonVersion@0
