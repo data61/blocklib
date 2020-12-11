@@ -13,7 +13,7 @@ requirements = [
 
 setuptools.setup(
     name="blocklib",
-    version="0.1.6",
+    version="0.1.7",
     author="Joyce Wang",
     author_email="joyce.wang@csiro.au",
     description="A library for blocking in record linkage",

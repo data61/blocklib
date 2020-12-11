@@ -2,6 +2,11 @@
 
 ## new version
 
+## 0.1.7
+
+* added Python 3.9 support to CI pipeline #116
+* fixed division by zero bug in evaluation #107
+
 ## 0.1.6
 
 * Improve column name support in blocking schema
