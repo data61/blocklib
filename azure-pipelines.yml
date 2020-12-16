@@ -30,7 +30,7 @@ stages:
         displayName: 'mypy (latest)'
         continueOnError: True
 
-    - job: check for tag
+    - job: tag_check
       displayName: "Check for Git tags"
       steps:
       # In this step, if this build is triggered by a tag, it will add the tag 'doRelease' to the current build. This tag
