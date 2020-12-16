@@ -1,49 +1,49 @@
-# This pipeline should be triggered by every push to any branches, but should not be used
-# for external PRs.
-pr: none
 trigger:
   branches:
     include:
     - '*'
+  tags:
+    include:
+      - v*
 
 stages:
 - stage: static_checks
   displayName: Static Checks
   dependsOn: []
   jobs:
-  - job:
-    displayName: 'Typechecking'
-    pool:
-      vmImage: 'ubuntu-18.04'
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.7'
-    - script: |
-        python -m pip install -U mypy==0.730
-        mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
-      displayName: 'mypy (pinned)'
+    - job: typechecking
+      displayName: 'Typechecking'
+      pool:
+        vmImage: 'ubuntu-18.04'
+      steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.7'
+      - script: |
+          python -m pip install -U mypy==0.730
+          mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
+        displayName: 'mypy (pinned)'
 
-    - script: |
-        python -m pip install -U mypy
-        mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
-      displayName: 'mypy (latest)'
-      continueOnError: true
+      - script: |
+          python -m pip install -U mypy
+          mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
+        displayName: 'mypy (latest)'
+        continueOnError: True
 
-  - job:
-    displayName: "Check Git Tags"
-    steps:
-    # In this step, if this build is triggered by a tag, it will add a tag 'Automated' to the current build. Used to
-    # trigger the release pipeline.
-    - script: echo "##vso[build.addbuildtag]Automated"
-      condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    - job: tag_check
+      displayName: "Check for Git tags"
+      steps:
+      # In this step, if this build is triggered by a tag, it will add the tag 'doRelease' to the current build. This tag
+      # is used to trigger the release pipeline.
+      - script: echo "##vso[build.addbuildtag]doRelease"
+        condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
 
 - stage: test_and_build
   displayName: 'Test and build'
   dependsOn: []
   jobs:
-  - job:
-    displayName: ' '
+  - job: testnbuild
+    displayName: Linux
     strategy:
       matrix:
         python36:
