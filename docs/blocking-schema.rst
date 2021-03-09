@@ -131,12 +131,12 @@ It is better to illustrate this one with an example:
     {
       "signatureSpecs": [
         [
-         {"type": "characters-at", "config": {"pos": [0]}, "feature-idx": 1},
-         {"type": "characters-at", "config": {"pos": [0]}, "feature-idx": 2},
+         {"type": "characters-at", "config": {"pos": [0]}, "feature": 1},
+         {"type": "characters-at", "config": {"pos": [0]}, "feature": 2},
         ],
         [
-         {"type": "metaphone", "feature-idx": 1},
-         {"type": "metaphone", "feature-idx": 2},
+         {"type": "metaphone", "feature": 1},
+         {"type": "metaphone", "feature": 2},
         ]
       ]
     }
@@ -176,12 +176,12 @@ Finally a full example of p-sig blocking schema:
         },
         "signatureSpecs": [
             [
-                 {"type": "characters-at", "config": {"pos": [0]}, "feature-idx": 1},
-                 {"type": "characters-at", "config": {"pos": [0]}, "feature-idx": 2},
+                 {"type": "characters-at", "config": {"pos": [0]}, "feature": 1},
+                 {"type": "characters-at", "config": {"pos": [0]}, "feature": 2},
             ],
             [
-                {"type": "metaphone", "feature-idx": 1},
-                {"type": "metaphone", "feature-idx": 2},
+                {"type": "metaphone", "feature": 1},
+                {"type": "metaphone", "feature": 2},
             ]
         ]
       }

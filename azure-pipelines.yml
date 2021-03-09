@@ -18,9 +18,9 @@ stages:
       steps:
       - task: UsePythonVersion@0
         inputs:
-          versionSpec: '3.7'
+          versionSpec: '3.8'
       - script: |
-          python -m pip install -U mypy==0.730
+          python -m pip install -U mypy==0.812 pydantic
           mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
         displayName: 'mypy (pinned)'
 
@@ -62,26 +62,26 @@ stages:
         versionSpec: $(PYTHON_VERSION)
     - script: |
         pip install -U pip
-        pip install -U -r requirements.txt
+        pip install -U poetry
+        poetry install
       displayName: 'Install requirements'
     - script: |
-        pytest --cov=blocklib --junitxml=testResults.xml  --cov-report=xml:coverage.xml
+        poetry run pytest --cov=blocklib --junitxml=testResults.xml  --cov-report=xml:coverage.xml
       displayName: 'Tests'
 
 
     # Test tutorial jupyter notebooks
     - script:
-        pip install -e .
+        poetry install
     - script:
-        python -m pip install -U -r docs/doc-requirements.txt
+        poetry run pip install -U -r docs/doc-requirements.txt
     - script:
-        pytest --nbval docs/tutorial
+        poetry run pytest --nbval docs/tutorial
 
     # Send report to codecov
     - bash: |
-        pip install -U pip codecov
         report_name="ubuntu18-04_$(PYTHON_VERSION)"
-        python -m codecov --token $(CODECOV_TOKEN) \
+        poetry run codecov --token $(CODECOV_TOKEN) \
           --file coverage.xml \
           -n ${report_name}
       displayName: 'Send coverage to codecov'
@@ -110,13 +110,15 @@ stages:
             versionSpec: '$(python.version)'
           displayName: 'Use Python $(python.version)'
 
-        - script:
-            pip install wheel
-          displayName: 'Install wheel'
-
         # artifact creation
+        - script: |
+            pip install -U pip
+            pip install -U poetry
+            poetry -V
+          displayName: 'Install requirements'
+
         - script:
-            python setup.py sdist bdist_wheel
+            poetry build -vv --no-interaction
           displayName: 'Artifact creation'
 
         # copy artifact
