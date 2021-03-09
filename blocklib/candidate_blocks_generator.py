@@ -2,7 +2,6 @@
 import sys
 
 from typing import Dict, Sequence, Tuple, Type, List, Optional, TextIO
-from .configuration import get_config
 from .pprlindex import PPRLIndex, ReversedIndexResult
 from .pprlpsig import PPRLIndexPSignature
 from .pprllambdafold import PPRLIndexLambdaFold
@@ -56,7 +55,7 @@ class CandidateBlockingResult:
                 print_stats(stat, output)
 
 
-def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict, header: Optional[List[str]] = None):
+def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict, header: Optional[List[str]] = None) -> CandidateBlockingResult:
     """
     :param data: list of tuples E.g. ('0', 'Kenneth Bain', '1964/06/17', 'M')
     :param signature_config:
@@ -72,14 +71,14 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config:
 
     """
     # validate config of blocking
-    validate_signature_config(signature_config)
+    blocking_schema = validate_signature_config(signature_config)
 
     # extract algorithm and its config
-    algorithm = signature_config.get('type', 'not specified')
-    config = signature_config.get('config', 'not specified')
+    algorithm = blocking_schema.type.value
+    config = blocking_schema.config
 
     # check if blocking features are column index or feature name
-    blocking_features = get_config(config, 'blocking-features')
+    blocking_features = config.blocking_features
     feature_type = type(blocking_features[0])
     error_msg = 'All feature types should be the same - either feature name or feature index'
     assert all(type(x) == feature_type for x in blocking_features[1:]), error_msg

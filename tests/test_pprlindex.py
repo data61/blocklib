@@ -3,17 +3,18 @@ from blocklib.stats import reversed_index_stats
 import random
 
 
-def test_init():
+def test_init(valid_psig_config):
     """Test constructor for base class PPRLIndex."""
-    pprl = PPRLIndex()
+    pprl = PPRLIndex(config=valid_psig_config)
 
     assert pprl.rec_dict is None
     assert pprl.ent_id_col is None
     assert pprl.rec_id_col is None
 
 
-def test_summarize_reversed_index():
+def test_summarize_reversed_index(valid_psig_config):
     """Test summarize_reversed_index for base class PPRLIndex."""
+    pprl = PPRLIndex(config=valid_psig_config)
 
     reversed_index = {
         'Jo': ['id1', 'id2', 'id3'],
@@ -43,8 +44,8 @@ def test_select_reference_value():
         (4, 'Lindsay', 'Lin'),
         (5, 'Evelyn', 'Lai')
     ]
-    pprl = PPRLIndex()
-    ref_val_list = pprl.select_reference_value(reference_data, reference_config)
+
+    ref_val_list = PPRLIndex.select_reference_value(reference_data, reference_config)
     combined = [reference_data[i][1] + reference_data[i][2] for i in range(len(reference_data))]
     random.seed(0)
     expected = random.sample(combined, 3)

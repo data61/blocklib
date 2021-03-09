@@ -1,6 +1,9 @@
-from typing import Any, Callable, Dict, List, Sequence, Optional
+from typing import Any, Callable, Dict, List, Sequence, Optional, cast
 
 from metaphone import doublemetaphone
+
+from blocklib.validation import PSigSignatureModel
+from blocklib.validation.psig_validation import PSigCharsAtSignatureSpec
 
 
 def generate_by_feature_value(attr_ind: int, dtuple: Sequence):
@@ -78,13 +81,13 @@ SIGNATURE_STRATEGIES = {
 }  # type: Dict[str, Callable[..., str]]
 
 
-def generate_signatures(signature_strategies: List[List],
+def generate_signatures(signature_strategies: List[PSigSignatureModel],
                         dtuple: Sequence,
                         feature_to_index: Optional[Dict[str, int]] = None):
     """Generate signatures for one record.
 
     :param signature_strategies:
-        A list of dicts each describing a strategy to generate signatures.
+        A list of PSigSignatureModel instances each describing a strategy to generate signatures.
 
     :param dtuple:
         Raw data to generate signatures from
@@ -103,26 +106,30 @@ def generate_signatures(signature_strategies: List[List],
         sig = []
         for spec in strategy:
             # arguments that we need to pass for any strategy
-            attr = spec.get("feature", -1)
+            attr = spec.feature
             if type(attr) == str:
-                assert feature_to_index
-                attr_ind = feature_to_index.get(attr, None)
+                attr_name: str = cast(str, attr)
+                assert feature_to_index, "Missing information to map from feature name to index"
+                attr_ind = feature_to_index.get(attr_name, None)
                 if attr_ind is None:
                     raise ValueError(f'Feature {attr} is not in the dataset')
             else:
-                attr_ind = attr
+                attr_ind = cast(int, attr)
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
-            config = spec.get('config', {})
+            #config = spec.config
 
             # find the correct strategy function to call
-            func = SIGNATURE_STRATEGIES.get(spec['type'], None)
+            func = SIGNATURE_STRATEGIES.get(spec.type, None)
 
             if func is None:
-                strategy_type = spec['type']
+                strategy_type = spec.type
                 raise NotImplementedError('Strategy {} is not implemented yet!'.format(strategy_type))
             else:
-                config.update(args)
-                s = func(**config)
+                if hasattr(spec, 'config'):
+                    # For now that means it must be a PSigCharsAtSignatureSpec
+
+                    args.update(cast(PSigCharsAtSignatureSpec, spec).config)
+                s = func(**args)
                 sig.append(s)
         signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
 
