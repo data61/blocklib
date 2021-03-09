@@ -1,7 +1,7 @@
 import pytest
 import io
-from blocklib import generate_candidate_blocks
-from blocklib import PPRLIndexPSignature
+
+from blocklib import generate_candidate_blocks, validate_signature_config
 from blocklib import flip_bloom_filter
 
 data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
@@ -23,7 +23,7 @@ class TestCandidateBlockGenerator:
             generate_candidate_blocks(data, block_config)
 
         # test when type of blocking is not implemented
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(ValueError):
             block_config = {'type': 'fancy-block', 'version': 1, 'config': {'blocking-features': [1, 2]}}
             generate_candidate_blocks(data, block_config)
 
@@ -33,12 +33,12 @@ class TestCandidateBlockGenerator:
             generate_candidate_blocks(data, block_config)
 
         # test when blocking feature is a mix of integer and string
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             block_config = {'type': 'p-sig', 'version': 1, 'config': {'blocking-features': [1, 'name']}}
             generate_candidate_blocks(data, block_config)
 
         # test when blocking features are string but header is not given
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             block_config = {'type': 'p-sig', 'version': 1, 'config': {'blocking-features': ['name']}}
             generate_candidate_blocks(data, block_config)
 
@@ -70,6 +70,8 @@ class TestCandidateBlockGenerator:
         block_config = {'type': 'p-sig',
                         'version': 1,
                         'config': config}
+        print(validate_signature_config(block_config))
+
         candidate_block_obj = generate_candidate_blocks(data, block_config)
         bf_set_fred = str(tuple(flip_bloom_filter('0_Fred', bf_len, num_hash_funcs)))
         bf_set_lindsay = str(tuple(flip_bloom_filter('0_Lindsay', bf_len, num_hash_funcs)))

@@ -120,8 +120,11 @@ class TestPSig(unittest.TestCase):
 
         psig = PPRLIndexPSignature(config)
         reversed_index_result = psig.build_reversed_index(data, header=header)
-        bf_set = tuple(flip_bloom_filter("0_Fred", config['blocking-filter']['bf-len'],
-                                         config['blocking-filter']['number-hash-functions']))
+        bf_set = tuple(flip_bloom_filter(
+            "0_Fred",
+             config['blocking-filter']['bf-len'],
+             config['blocking-filter']['number-hash-functions']
+         ))
         assert reversed_index_result.reversed_index == {str(bf_set): ['id4', 'id5']}
 
         # test if results with column name and column index are the same

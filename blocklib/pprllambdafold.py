@@ -1,13 +1,13 @@
 import random
 
 from collections import defaultdict
-from typing import Dict, Sequence, Any, List, Optional
-from blocklib.configuration import get_config
+from typing import Dict, Sequence, Any, List, Optional, Union, cast
+
 from .pprlindex import PPRLIndex, ReversedIndexResult
 from .encoding import generate_bloom_filter
 from .utils import deserialize_filters
 from .stats import reversed_index_stats
-
+from .validation import LambdaConfig
 
 class PPRLIndexLambdaFold(PPRLIndex):
     """Class that implements the PPRL indexing technique:
@@ -17,27 +17,26 @@ class PPRLIndexLambdaFold(PPRLIndex):
         This class includes an implementation of Lambda-fold redundant blocking method.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Union[LambdaConfig, Dict]):
         """Initialize the class and set the required parameters.
 
-        Arguments:
-        - config: dict
-            Configuration for P-Sig reverted index.
-
+        :param config: Configuration for P-Sig reverted index.
         """
-        super().__init__()
-        self.blocking_features = get_config(config, "blocking-features")
+
+        if isinstance(config, dict):
+            config = LambdaConfig.parse_obj(config)
+        config = cast(LambdaConfig, config)
+        super().__init__(config)
+        self.blocking_features = config.blocking_features
         # Lambda: number of redundant tables
-        self.mylambda = int(get_config(config, "Lambda"))
-        # bf-len: length of bloom filter
-        self.bf_len = int(get_config(config, "bf-len"))
-        # num_hash_function
-        self.num_hash_function = int(get_config(config, "num-hash-funcs"))
+        self.mylambda = config.Lambda
+        self.bf_len = config.bloom_filter_length
+        self.num_hash_function = config.number_of_hash_functions
         # K: number of base Hamming LSH hashing functions
-        self.K = int(get_config(config, "K"))
-        self.input_clks = get_config(config, 'input-clks')
-        self.random_state = get_config(config, "random_state")
-        self.record_id_col = config.get("record-id-col", None)
+        self.K = config.K
+        self.input_clks = config.block_encodings
+        self.random_state = config.random_state
+        self.record_id_col = config.record_id_column
 
     def __record_to_bf__(self, record: Sequence, blocking_features_index: List[int]):
         """Convert a record to list of bigrams and then map to a bloom filter."""
@@ -50,6 +49,7 @@ class PPRLIndexLambdaFold(PPRLIndex):
 
     def build_reversed_index(self, data: Sequence[Any], header: Optional[List[str]] = None):
         """Build inverted index for PPRL Lambda-fold blocking method.
+
         :param data: list of lists
         :param header: file header, optional
         :return: reversed index as ReversedIndexResult

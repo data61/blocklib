@@ -92,7 +92,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
             bf_set = ast.literal_eval(bf_set)
             cbf = cbf.union(bf_set)
 
-        bf_len = int(block_states[0].blocking_config.get("bf-len", None))
+        bf_len = block_states[0].blocking_config.bloom_filter_length
         bf_vector = np.zeros(bf_len, dtype=bool)
         bf_vector[list(cbf)] = True
         candidate_bloom_filters.append(bf_vector)

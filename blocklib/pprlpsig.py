@@ -1,37 +1,40 @@
 import logging
 from collections import defaultdict
-from typing import Dict, List, Sequence, Any, Optional
+from typing import Dict, List, Sequence, Any, Optional, Union, cast
 
-from .configuration import get_config
 from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex, ReversedIndexResult
 from .signature_generator import generate_signatures
 from .stats import reversed_index_per_strategy_stats, reversed_index_stats
+from .validation import PSigConfig
 
 
 class PPRLIndexPSignature(PPRLIndex):
     """Class that implements the PPRL indexing technique:
 
-        Reference scalability entity resolution using probability signatures
-        on parallel databases.
+    Reference scalability entity resolution using probability signatures
+    on parallel databases.
 
-        This class includes an implementation of p-sig algorithm.
+    This class includes an implementation of p-sig algorithm.
     """
 
-    def __init__(self, config: Dict) -> None:
+    def __init__(self, config: Union[PSigConfig, Dict]) -> None:
         """Initialize the class and set the required parameters.
 
         Arguments:
-        - config: dict
-            Configuration for P-Sig reverted index.
+        - config: Configuration for P-Sig reverted index.
 
         """
-        super().__init__()
-        self.blocking_features = get_config(config, "blocking-features")
-        self.filter_config = get_config(config, "filter")
-        self.blocking_config = get_config(config, "blocking-filter")
-        self.signature_strategies = get_config(config, 'signatureSpecs')
-        self.rec_id_col = config.get("record-id-col", None)
+
+        if isinstance(config, dict):
+            config = PSigConfig.parse_obj(config)
+        config = cast(PSigConfig, config)
+        super().__init__(config)
+        self.blocking_features = config.blocking_features
+        self.filter_config = config.filter
+        self.blocking_config = config.blocking_filter
+        self.signature_strategies = config.signatures
+        self.rec_id_col = config.record_id_column
 
     def build_reversed_index(self, data: Sequence[Sequence], header: Optional[List[str]] = None):
         """Build inverted index given P-Sig method."""
@@ -83,8 +86,8 @@ class PPRLIndexPSignature(PPRLIndex):
             )
 
         # map signatures in reversed_index into bloom filter
-        num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
-        bf_len = int(self.blocking_config.get("bf-len", None))
+        num_hash_func = self.blocking_config.number_of_hash_functions
+        bf_len = self.blocking_config.bloom_filter_length
 
         reversed_index = {}  # type: Dict[str, List[Any]]
 
@@ -106,14 +109,14 @@ class PPRLIndexPSignature(PPRLIndex):
         n = len(data)
 
         # filter blocks based on filter type
-        filter_type = get_config(self.filter_config, "type")
+        filter_type = self.filter_config.type
         if filter_type == "ratio":
-            min_occur_ratio = get_config(self.filter_config, 'min')
-            max_occur_ratio = get_config(self.filter_config, 'max')
+            min_occur_ratio = self.filter_config.min
+            max_occur_ratio = self.filter_config.max
             reversed_index = {k: v for k, v in reversed_index.items() if n * max_occur_ratio > len(v) > n * min_occur_ratio}
         elif filter_type == "count":
-            min_occur_count = get_config(self.filter_config, "min")
-            max_occur_count = get_config(self.filter_config, "max")
+            min_occur_count = self.filter_config.min
+            max_occur_count = self.filter_config.max
             reversed_index = {k: v for k, v in reversed_index.items() if max_occur_count > len(v) > min_occur_count}
         else:
             raise NotImplementedError("Don't support {} filter yet.".format(filter_type))

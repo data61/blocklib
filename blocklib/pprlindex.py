@@ -1,17 +1,23 @@
 import random
-from typing import Dict, List, Sequence, Optional
+from typing import Any, Dict, List, Sequence, Optional, Union, cast
+
+from pydantic.tools import parse_obj_as
+
 from blocklib.configuration import get_config
 from blocklib.utils import check_header
+from blocklib.validation import PSigConfig, LambdaConfig, BlockingSchemaModel, PPRLIndexConfig, BlockingSchemaTypes
 
 
 class PPRLIndex:
     """Base class for PPRL indexing/blocking."""
 
-    def __init__(self, config: Dict = {}) -> None:
+    def __init__(self, config: Union[PSigConfig, LambdaConfig]) -> None:
         """Initialise base class."""
+
+        self.config: PPRLIndexConfig = cast(PPRLIndexConfig, config)
         self.rec_dict = None
         self.ent_id_col = None
-        self.rec_id_col = None
+        self.rec_id_col: Optional[int]  = None
 
     def get_feature_to_index_map(self, data: Sequence[Sequence], header: Optional[List[str]] = None):
         """Return feature name to feature index mapping if there is a header and feature is of type string."""
@@ -49,7 +55,8 @@ class PPRLIndex:
         """
         raise NotImplementedError("Derived class needs to implement")
 
-    def select_reference_value(self, reference_data: Sequence[Sequence], ref_data_config: Dict):
+    @classmethod
+    def select_reference_value(cls, reference_data: Sequence[Sequence], ref_data_config: Dict):
         """Load reference data for methods need reference."""
         # read configurations
         ref_default_features = get_config(ref_data_config, 'blocking-features')
@@ -63,7 +70,7 @@ class PPRLIndex:
         random.seed(ref_random_seed)
         ref_val_list = random.sample(rec_features, num_vals)
 
-        print('  Selected %d random reference values' % (len(ref_val_list)))
+        #logger.info('  Selected %d random reference values' % (len(ref_val_list)))
         return ref_val_list
 
 
