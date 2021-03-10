@@ -1,4 +1,4 @@
-import statistics
+import logging
 from collections import defaultdict
 from typing import Dict, List, Sequence, Any, Optional
 
@@ -6,9 +6,9 @@ import numpy as np
 
 from .configuration import get_config
 from .encoding import flip_bloom_filter
-from .pprlindex import PPRLIndex
+from .pprlindex import PPRLIndex, ReversedIndexResult
 from .signature_generator import generate_signatures
-from .stats import reversed_index_per_strategy_stats
+from .stats import reversed_index_per_strategy_stats, reversed_index_stats
 
 
 class PPRLIndexPSignature(PPRLIndex):
@@ -35,7 +35,7 @@ class PPRLIndexPSignature(PPRLIndex):
         self.signature_strategies = get_config(config, 'signatureSpecs')
         self.rec_id_col = config.get("record-id-col", None)
 
-    def build_reversed_index(self, data: Sequence[Sequence], verbose: bool = False, header: Optional[List[str]] = None):
+    def build_reversed_index(self, data: Sequence[Sequence], header: Optional[List[str]] = None):
         """Build inverted index given P-Sig method."""
         feature_to_index = self.get_feature_to_index_map(data, header)
         self.set_blocking_features_index(self.blocking_features, feature_to_index)
@@ -57,21 +57,11 @@ class PPRLIndexPSignature(PPRLIndex):
             for i, signature in enumerate(signatures):
                 reversed_index_per_strategy[i][signature].append(rec_id)
 
-        n = len(data)
         reversed_index_per_strategy = [self.filter_reversed_index(data, reversed_index) for reversed_index in
                                        reversed_index_per_strategy]
-        if verbose:
-            strat_stats = reversed_index_per_strategy_stats(reversed_index_per_strategy, n)
-            print("Statistics for the individual strategies:")
-            for strat_stat in strat_stats:
-                print('Strategy {}:'.format(strat_stat["strategy_idx"]))
-                print('\tblock size {} min, {} max, {:.2f} avg, {} median, {:.2f} std'
-                      .format(strat_stat["min_size"], strat_stat["max_size"], strat_stat["avg_size"],
-                              strat_stat["med_size"], strat_stat["std_size"]))
-                print('\t {} blocks, {} filtered elements, {:.2f}% coverage'
-                      .format(strat_stat["num_of_blocks"], strat_stat["num_filtered_elements"],
-                              (strat_stat["coverage"] * 100)))
-
+        # somehow the reversed_index of the first strategy gets overwritten in the next step. Thus, we generate the
+        # statistics of the different strategies first.
+        strategy_stats = reversed_index_per_strategy_stats(reversed_index_per_strategy, len(data))
         # combine the reversed indices into one
         filtered_reversed_index = reversed_index_per_strategy[0]
         for rev_idx in reversed_index_per_strategy[1:]:
@@ -86,12 +76,13 @@ class PPRLIndexPSignature(PPRLIndex):
         for recids in filtered_reversed_index.values():
             for rid in recids:
                 entities.add(rid)
-        coverage = round(len(entities) / len(record_ids) * 100, 2)
-        if coverage == 100:
-            print('P-Sig: {}% records are covered in blocks'.format(coverage))
-        else:
-            print('P-Sig: Warning! only {}% records are covered in blocks. Please consider to improve signatures'
-                  .format(coverage))
+        coverage = len(entities) / len(record_ids)
+        if coverage < 1:
+            logging.warning(
+                f'The P-Sig configuration leads to incomplete coverage ({round(coverage * 100, 2)}%)!\n'
+                f'This means that not all records are part of at least one block. You can increase coverage by '
+                f'adjusting the filter to be less aggressive or by finding signatures that produce smaller block sizes.'
+            )
 
         # map signatures in reversed_index into bloom filter
         num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
@@ -106,7 +97,11 @@ class PPRLIndexPSignature(PPRLIndex):
             else:
                 reversed_index[bf_set] = rec_ids
 
-        return reversed_index
+        # create some statistics around the blocking results
+        stats = reversed_index_stats(reversed_index)
+        stats['statistics_per_strategy'] = strategy_stats
+        stats['coverage'] = coverage
+        return ReversedIndexResult(reversed_index, stats)
 
     def filter_reversed_index(self, data: Sequence[Sequence], reversed_index: Dict):
         # Filter inverted index based on ratio

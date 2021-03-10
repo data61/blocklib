@@ -1,11 +1,12 @@
 import random
-import numpy as np
+
 from collections import defaultdict
 from typing import Dict, Sequence, Any, List, Optional
 from blocklib.configuration import get_config
-from .pprlindex import PPRLIndex
+from .pprlindex import PPRLIndex, ReversedIndexResult
 from .encoding import generate_bloom_filter
-from .utils import deserialize_filters, check_header
+from .utils import deserialize_filters
+from .stats import reversed_index_stats
 
 
 class PPRLIndexLambdaFold(PPRLIndex):
@@ -47,12 +48,11 @@ class PPRLIndexLambdaFold(PPRLIndex):
         bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
         return bloom_filter
 
-    def build_reversed_index(self, data: Sequence[Any], verbose: bool = False, header: Optional[List[str]] = None):
+    def build_reversed_index(self, data: Sequence[Any], header: Optional[List[str]] = None):
         """Build inverted index for PPRL Lambda-fold blocking method.
-
         :param data: list of lists
-        :param verbose: ignored
-        :return:
+        :param header: file header, optional
+        :return: reversed index as ReversedIndexResult
         """
         feature_to_index = self.get_feature_to_index_map(data, header)
         self.set_blocking_features_index(self.blocking_features, feature_to_index)
@@ -82,5 +82,5 @@ class PPRLIndexLambdaFold(PPRLIndex):
                 lambda_table['{}{}'.format(i, block_key)].append(rec_id)
             invert_index.update(lambda_table)
 
-        return invert_index
+        return ReversedIndexResult(invert_index, reversed_index_stats(invert_index))
 
