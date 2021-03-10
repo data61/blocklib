@@ -119,7 +119,6 @@ def generate_signatures(signature_strategies: List[List],
 
             if func is None:
                 strategy_type = spec['type']
-                print(spec)
                 raise NotImplementedError('Strategy {} is not implemented yet!'.format(strategy_type))
             else:
                 config.update(args)
