@@ -138,11 +138,11 @@ class TestLambdaFold(unittest.TestCase):
         lambda_fold_index = PPRLIndexLambdaFold(config_index)
         lambda_fold_name = PPRLIndexLambdaFold(config_name)
         # case1 header is given and feature type is column names
-        reversed_index1 = lambda_fold_name.build_reversed_index(data, verbose=True, header=header)
+        reversed_index1 = lambda_fold_name.build_reversed_index(data, header=header)
         # case2 header is given and feature type is index
-        reversed_index2 = lambda_fold_index.build_reversed_index(data, verbose=True, header=header)
+        reversed_index2 = lambda_fold_index.build_reversed_index(data, header=header)
         # case3 header is not given and feature type is index
-        reversed_index3 = lambda_fold_index.build_reversed_index(data, verbose=True, header=None)
+        reversed_index3 = lambda_fold_index.build_reversed_index(data, header=None)
 
         # above 3 cases should give exactly same results
         assert reversed_index1 == reversed_index2
