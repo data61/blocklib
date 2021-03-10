@@ -40,7 +40,7 @@ Example Schema
       "type": "lambda-fold",
       "version": 1,
       "config": {
-        "blocking-features": [1, 2],
+        "blocking-features": ["name", "suburb"],
         "Lambda": 30,
         "bf-len": 2048,
         "num-hash-funcs": 5,
