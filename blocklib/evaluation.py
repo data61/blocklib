@@ -1,5 +1,6 @@
 """Module to evaluate blocking when ground truth is available."""
 from tqdm import tqdm
+import logging
 
 
 def assess_blocks_2party(filtered_reverse_indices, data):
@@ -48,7 +49,7 @@ def assess_blocks_2party(filtered_reverse_indices, data):
     # pair completeness is the "recall" before matching stage
     rr = 1.0 - float(num_cand_rec_pairs) / total_rec
     if num_all_true_matches == 0:
-        print("Pair completeness is zero, because there are no true matches in the provided data.")
+        logging.warning("Pair completeness is zero, because there are no true matches in the provided data.")
         pc = 0
     else:
         pc = float(num_block_true_matches) / num_all_true_matches
