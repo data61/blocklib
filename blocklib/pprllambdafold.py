@@ -1,11 +1,12 @@
 import random
-import numpy as np
+
 from collections import defaultdict
 from typing import Dict, Sequence, Any, List, Optional
 from blocklib.configuration import get_config
-from .pprlindex import PPRLIndex
+from .pprlindex import PPRLIndex, ReversedIndexResult
 from .encoding import generate_bloom_filter
-from .utils import deserialize_filters, check_header
+from .utils import deserialize_filters
+from .stats import reversed_index_stats
 
 
 class PPRLIndexLambdaFold(PPRLIndex):
@@ -82,5 +83,5 @@ class PPRLIndexLambdaFold(PPRLIndex):
                 lambda_table['{}{}'.format(i, block_key)].append(rec_id)
             invert_index.update(lambda_table)
 
-        return invert_index
+        return ReversedIndexResult(invert_index, reversed_index_stats(invert_index))
 
