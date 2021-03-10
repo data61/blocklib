@@ -48,12 +48,11 @@ class PPRLIndexLambdaFold(PPRLIndex):
         bloom_filter = generate_bloom_filter(grams, self.bf_len, self.num_hash_function)
         return bloom_filter
 
-    def build_reversed_index(self, data: Sequence[Any], verbose: bool = False, header: Optional[List[str]] = None):
+    def build_reversed_index(self, data: Sequence[Any], header: Optional[List[str]] = None):
         """Build inverted index for PPRL Lambda-fold blocking method.
-
         :param data: list of lists
-        :param verbose: ignored
-        :return:
+        :param header: file header, optional
+        :return: reversed index as ReversedIndexResult
         """
         feature_to_index = self.get_feature_to_index_map(data, header)
         self.set_blocking_features_index(self.blocking_features, feature_to_index)
