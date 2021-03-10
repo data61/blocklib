@@ -1,5 +1,5 @@
 import pytest
-
+import io
 from blocklib import generate_candidate_blocks
 from blocklib import PPRLIndexPSignature
 from blocklib import flip_bloom_filter
@@ -74,3 +74,11 @@ class TestCandidateBlockGenerator:
         bf_set_fred = str(tuple(flip_bloom_filter('0_Fred', bf_len, num_hash_funcs)))
         bf_set_lindsay = str(tuple(flip_bloom_filter('0_Lindsay', bf_len, num_hash_funcs)))
         assert candidate_block_obj.blocks == {bf_set_fred: ['id4', 'id5'], bf_set_lindsay: ['id6']}
+        stringbuf = io.StringIO()
+        candidate_block_obj.print_summary_statistics(output=stringbuf)
+        stats = stringbuf.getvalue()
+        assert stats.startswith('Statistics for the generated blocks:')
+        assert 'Number of Blocks:   2' in stats
+        assert 'Coverage:           50.0%' in stats
+        assert 'Individual statistics for each strategy:' in stats
+

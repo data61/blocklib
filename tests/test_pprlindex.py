@@ -50,3 +50,8 @@ def test_select_reference_value():
     expected = random.sample(combined, 3)
     assert ref_val_list == expected
 
+
+def test_get_feature_to_index_map():
+    pprl = PPRLIndex()
+    pprl.blocking_features = ['boo']
+    assert pprl.get_feature_to_index_map([]) is None
