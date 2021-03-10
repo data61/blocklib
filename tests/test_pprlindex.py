@@ -1,4 +1,5 @@
 from blocklib import PPRLIndex
+from blocklib.stats import reversed_index_stats
 import random
 
 
@@ -9,12 +10,10 @@ def test_init():
     assert pprl.rec_dict is None
     assert pprl.ent_id_col is None
     assert pprl.rec_id_col is None
-    assert pprl.stats == {}
 
 
 def test_summarize_reversed_index():
     """Test summarize_reversed_index for base class PPRLIndex."""
-    pprl = PPRLIndex()
 
     reversed_index = {
         'Jo': ['id1', 'id2', 'id3'],
@@ -22,17 +21,12 @@ def test_summarize_reversed_index():
         'Li': ['id5']
     }
 
-    stats = pprl.summarize_reversed_index(reversed_index)
+    stats = reversed_index_stats(reversed_index)
     assert stats['num_of_blocks'] == 3
     assert stats['min_size'] == 1
     assert stats['max_size'] == 3
     assert stats['avg_size'] == 2
     assert stats['med_size'] == 2
-
-    # Same comment as the block length.
-    num_of_blocks_per_rec = stats['num_of_blocks_per_rec']
-    num_of_blocks_per_rec.sort()
-    assert num_of_blocks_per_rec == [1, 1, 1, 1, 2]
 
 
 def test_select_reference_value():

@@ -49,18 +49,23 @@ class TestLambdaFold(unittest.TestCase):
         lambdafold = PPRLIndexLambdaFold(config_index)
         data = [[1, 'Xu', 'Li'],
                 [2, 'Fred', 'Yu']]
-        reversed_index = lambdafold.build_reversed_index(data)
-        assert len(reversed_index) == 5 * 2
-        assert all([len(k) == 31 for k in reversed_index])
-        assert all([len(v) == 1 for v in reversed_index.values()])
+        reversed_index_result = lambdafold.build_reversed_index(data)
+        assert len(reversed_index_result.reversed_index) == 5 * 2
+        assert all([len(k) == 31 for k in reversed_index_result.reversed_index])
+        assert all([len(v) == 1 for v in reversed_index_result.reversed_index.values()])
+        stats = reversed_index_result.stats
+        assert stats['num_of_blocks'] == 10
+        assert stats['min_size'] == 1
+        assert stats['max_size'] == 1
+        assert len(stats) >= 7
 
         # build with row index
         del config_index['record-id-col']
         lambdafold = PPRLIndexLambdaFold(config_index)
-        reversed_index = lambdafold.build_reversed_index(data)
-        assert len(reversed_index) == 5 * 2
-        assert all([len(k) == 31 for k in reversed_index])
-        assert all([len(v) == 1 for v in reversed_index.values()])
+        reversed_index_result = lambdafold.build_reversed_index(data)
+        assert len(reversed_index_result.reversed_index) == 5 * 2
+        assert all([len(k) == 31 for k in reversed_index_result.reversed_index])
+        assert all([len(v) == 1 for v in reversed_index_result.reversed_index.values()])
 
         # build given headers
         config_name = {
@@ -74,11 +79,11 @@ class TestLambdaFold(unittest.TestCase):
         }
         header = ['ID', 'firstname', 'lastname']
         lambdafold_use_colname = PPRLIndexLambdaFold(config_name)
-        reversed_index_use_colname = lambdafold_use_colname.build_reversed_index(data, header=header)
-        assert len(reversed_index_use_colname) == 5 * 2
-        assert all([len(k) == 31 for k in reversed_index_use_colname])
-        assert all([len(v) == 1 for v in reversed_index_use_colname.values()])
-        assert reversed_index == reversed_index_use_colname
+        reversed_index_result_use_colname = lambdafold_use_colname.build_reversed_index(data, header=header)
+        assert len(reversed_index_result_use_colname.reversed_index) == 5 * 2
+        assert all([len(k) == 31 for k in reversed_index_result_use_colname.reversed_index])
+        assert all([len(v) == 1 for v in reversed_index_result_use_colname.reversed_index.values()])
+        assert reversed_index_result == reversed_index_result_use_colname
 
     def test_build_reversed_index_clks(self):
         """Test building the inverted index with CLKs input."""
@@ -97,9 +102,9 @@ class TestLambdaFold(unittest.TestCase):
         with clk_filepath.open() as f:
             data = json.load(f)['clks']\
 
-        reversed_index = lambdafold.build_reversed_index(data)
-        assert len(reversed_index) == 5 * 4
-        assert all([len(k) == 31 for k in reversed_index])
+        reversed_index_result = lambdafold.build_reversed_index(data)
+        assert len(reversed_index_result.reversed_index) == 5 * 4
+        assert all([len(k) == 31 for k in reversed_index_result.reversed_index])
 
     def test_header_with_feature_type(self):
         """Test different combination of header and feature column type."""
