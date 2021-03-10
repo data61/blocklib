@@ -79,8 +79,10 @@ class PPRLIndexPSignature(PPRLIndex):
         coverage = len(entities) / len(record_ids)
         if coverage < 1:
             logging.warning(
-                'P-Sig: Warning! only {}% records are covered in blocks. Please consider to improve signatures'
-                .format(round(coverage * 100, 2)))
+                f'The P-Sig configuration leads to incomplete coverage ({round(coverage * 100, 2)}%)!\n'
+                f'This means that not all records are part of at least one block. You can increase coverage by '
+                f'adjusting the filter to be less aggressive or by finding signatures that produce smaller block sizes.'
+            )
 
         # map signatures in reversed_index into bloom filter
         num_hash_func = int(self.blocking_config.get("number-hash-functions", None))
