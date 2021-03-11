@@ -3,11 +3,8 @@
 
 name: Python Test and Lint
 
-on:
-  push:
-    branches: [*]
-  pull_request:
-    branches: [ main ]
+# Triggers the workflow on push or pull request events
+on: [push, pull_request]
 
 jobs:
   build:
