@@ -72,9 +72,7 @@ stages:
 
     # Test tutorial jupyter notebooks
     - script:
-        poetry install
-    - script:
-        poetry run pip install -U -r docs/doc-requirements.txt
+        poetry install -E docs
     - script:
         poetry run pytest --nbval docs/tutorial
 
