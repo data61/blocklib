@@ -69,12 +69,12 @@ stages:
         poetry run pytest --cov=blocklib --junitxml=testResults.xml  --cov-report=xml:coverage.xml
       displayName: 'Tests'
 
-
     # Test tutorial jupyter notebooks
     - script:
-        poetry install -E docs
+        poetry install -E docs -vv
     - script:
         poetry run pytest --nbval docs/tutorial
+      displayName: 'Notebook test'
 
     # Send report to codecov
     - bash: |
