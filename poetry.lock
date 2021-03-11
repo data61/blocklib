@@ -1200,7 +1200,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 docs = []
 
 [metadata]
-content-hash = "f2da51f9396c2c0af0b0c05ef1f1cdf3103ffca782e65f037704db773affa97e"
+content-hash = "ad364d96003aafd7ebf448d683318209e959afe7e5672f2ed2a3b30da2a0f7fc"
 lock-version = "1.0"
 python-versions = "^3.6.1"
 

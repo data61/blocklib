@@ -51,7 +51,7 @@ ipython = {version = ">7.0", optional = true}
 
 [tool.poetry.extras]
 docs = [
-    "Sphinx",
+    "sphinx",
     "nbsphinx",
     "pandas",
     "ipython",
