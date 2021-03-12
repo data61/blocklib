@@ -27,7 +27,10 @@ include = [
 python = "^3.6.1"
 bitarray-hardbyte = "^1.6"
 jsonschema = "^3.1"
-numpy = "^1.17"
+numpy = [
+    { version = "^1.20", python = ">=3.7"},
+    { version = "^1.19.5", python = "<3.7"}
+]
 metaphone = "^0.6"
 tqdm = "^4.36.1"
 
@@ -35,8 +38,6 @@ tqdm = "^4.36.1"
 nbval = {version = "^0.9.6", optional = true}
 Sphinx = {version = "^3.5.2", optional = true}
 nbsphinx = {version = "^0.8.2", optional = true}
-pandas = {version = "^1.1", optional = true}
-ipython = {version = "^7.21", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
@@ -47,9 +48,6 @@ flake8 = "^3.8.4"
 wheel = "^0.36.2"
 codecov = "^2.1.11"
 mypy = "^0.812"
-numpy = { version = "1.19.5", python = "<3.7"}
-pandas = {version = "1.1", python = "<3.7"}
-ipython = {version = "7.16", python = "<3.7"}
 
 [tool.poetry.extras]
 docs = [
