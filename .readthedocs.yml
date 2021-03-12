@@ -19,9 +19,9 @@ formats:
 # Set the version of Python and requirements required to build your docs
 # Install the current code
 python:
-  version: 3.7
+  version: 3.8
   install:
-    - requirements: docs/doc-requirements.txt
-    - requirements: requirements.txt
     - method: pip
       path: .
+      extra_requirements:
+        - docs

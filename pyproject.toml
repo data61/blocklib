@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "blocklib"
+version = "0.1.7"
+description = "A library for blocking in record linkage"
+license = "Apache-2.0"
+authors = [
+    "Wilko Henecka <wilko.henecka@csiro.au>",
+    "Joyce Wang <joyce.wang@csiro.au>",
+    "Brian Thorne <brian@hardbyte.nz>"
+]
+homepage = "https://github.com/data61/blocklib"
+documentation = "https://blocklib.readthedocs.io/en/latest/"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent"
+]
+
+include = [
+    "CHANGELOG.md",
+    "schemas/*.json*"
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/data61/blocklib/issues"
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+bitarray-hardbyte = "^1.6"
+jsonschema = "^3.1"
+numpy = [
+    { version = "^1.20", python = ">=3.7"},
+    { version = "^1.19.5", python = "<3.7"}
+]
+metaphone = "^0.6"
+tqdm = "^4.36.1"
+
+# Optional dependencies, see extras section to toggle
+nbval = {version = "^0.9.6", optional = true}
+Sphinx = {version = "^3.5.2", optional = true}
+nbsphinx = {version = "^0.8.2", optional = true}
+pandas = {version = ">1.0", optional = true}
+ipython = {version = ">7.0", optional = true}
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
+pytest-cov = "^2.11"
+pytest-azurepipelines = "^0.8"
+black = "^20.8b1"
+flake8 = "^3.8.4"
+wheel = "^0.36.2"
+codecov = "^2.1.11"
+mypy = "^0.812"
+
+[tool.poetry.extras]
+docs = [
+    "sphinx",
+    "nbsphinx",
+    "pandas",
+    "ipython",
+    "nbval"
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0a5"]
+build-backend = "poetry.core.masonry.api"

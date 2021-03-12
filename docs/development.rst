@@ -4,25 +4,22 @@ Development
 Testing
 -------
 
-Make sure you have all the required modules before running the tests
-(modules that are only needed for tests are not included during
-installation)::
+Make sure you have all the required dependencies before running the tests::
 
 
-    $ pip install -r requirements.txt
+    $ poetry install
 
 
-Now run the unit tests and print out code coverage with `py.test`::
+Now run the unit tests and print out code coverage with `pytest`::
 
-    $ python -m pytest --cov=blocklib
+    $ poetry run pytest --cov=blocklib
 
 
 Type Checking
 -------------
 
 
-``blocklib`` uses static typechecking with ``mypy``. To run the type checker (in Python 3.5 or later)::
+``blocklib`` uses static typechecking with ``mypy``. To run the type checker as configured to run in the CI::
 
-    $ pip install mypy
-    $ mypy blocklib --ignore-missing-imports --strict-optional --no-implicit-optional --disallow-untyped-calls
+    $ poetry run mypy blocklib --ignore-missing-imports --strict-optional --no-implicit-optional --disallow-untyped-calls
 

@@ -98,7 +98,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
         candidate_bloom_filters.append(bf_vector)
 
     # compute blocking filter (and operation)
-    cbf_array = np.sum(candidate_bloom_filters, axis=0)
+    cbf_array = np.sum(np.stack(candidate_bloom_filters), axis=0)
     block_filter = cbf_array >= threshold
 
     # filter reversed_indices with block filter

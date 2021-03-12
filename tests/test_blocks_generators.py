@@ -1,6 +1,8 @@
 import pytest
 from blocklib import generate_blocks, generate_reverse_blocks
 from blocklib import generate_candidate_blocks, flip_bloom_filter
+from blocklib.candidate_blocks_generator import CandidateBlockingResult
+from blocklib.pprlindex import ReversedIndexResult
 
 
 class TestBlocksGenerator:
@@ -50,6 +52,14 @@ class TestBlocksGenerator:
 
         # blocks generator
         filtered_records = generate_blocks([candidate_obj_alice, candidate_obj_bob], K=2)
+
+        # Test that `state` matches
+        incomplete_candidate_blocks = CandidateBlockingResult(
+            blocking_result=ReversedIndexResult(candidate_obj_alice.blocks, stats={}),
+            state=None)
+        with pytest.raises(TypeError):
+            generate_blocks([candidate_obj_alice, incomplete_candidate_blocks], K=2)
+
         filtered_alice = filtered_records[0]
         filtered_bob = filtered_records[1]
         assert list(filtered_alice.values()) == [['id1'], ['id1'], ['id1'], ['id1'], ['id1']]
