@@ -38,6 +38,8 @@ tqdm = "^4.36.1"
 nbval = {version = "^0.9.6", optional = true}
 Sphinx = {version = "^3.5.2", optional = true}
 nbsphinx = {version = "^0.8.2", optional = true}
+pandas = {version = ">1.0", optional = true}
+ipython = {version = ">7.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
