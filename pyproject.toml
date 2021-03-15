@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blocklib"
-version = "0.1.8"
+version = "0.1.8-dev"
 description = "A library for blocking in record linkage"
 license = "Apache-2.0"
 authors = [
