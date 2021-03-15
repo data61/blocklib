@@ -37,12 +37,12 @@ class PSigSignatureTypes(str, Enum):
 
 
 class PSigSignatureSpecBase(BaseModel):
-    type: str   #PSigSignatureTypes
+    type: str
     feature: Union[int, str]
 
 
 class PSigCharsAtSignatureConfig(BaseModel):
-    pos: List[Union[PositiveInt, str]] # slice?
+    pos: List[Union[PositiveInt, str]]
 
 
 class PSigCharsAtSignatureSpec(PSigSignatureSpecBase):
@@ -51,7 +51,7 @@ class PSigCharsAtSignatureSpec(PSigSignatureSpecBase):
 
 
 class PSigMetaphoneSignatureSpec(PSigSignatureSpecBase):
-    type: Literal[PSigSignatureTypes.metaphone]# = PSigSignatureTypes.metaphone
+    type: Literal[PSigSignatureTypes.metaphone]
 
 
 class PSigFeatureValueSignatureSpec(PSigSignatureSpecBase):
