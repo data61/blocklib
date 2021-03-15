@@ -5,7 +5,7 @@ from typing import Dict, Sequence, Tuple, Type, List, Optional, TextIO
 from .pprlindex import PPRLIndex, ReversedIndexResult
 from .pprlpsig import PPRLIndexPSignature
 from .pprllambdafold import PPRLIndexLambdaFold
-from .validation import validate_signature_config
+from .validation import validate_blocking_schema
 
 
 PPRLSTATES = {
@@ -55,10 +55,12 @@ class CandidateBlockingResult:
                 print_stats(stat, output)
 
 
-def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config: Dict, header: Optional[List[str]] = None) -> CandidateBlockingResult:
+def generate_candidate_blocks(data: Sequence[Tuple[str, ...]],
+                              blocking_schema: Dict,
+                              header: Optional[List[str]] = None) -> CandidateBlockingResult:
     """
     :param data: list of tuples E.g. ('0', 'Kenneth Bain', '1964/06/17', 'M')
-    :param signature_config:
+    :param blocking_schema:
         A description of how the signatures should be generated.
         Schema for the signature config is found in
         ``docs/schema/signature-config-schema.json``
@@ -70,12 +72,11 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]], signature_config:
         Internal state object from the signature generation (or None).
 
     """
-    # validate config of blocking
-    blocking_schema = validate_signature_config(signature_config)
+    blocking_model = validate_blocking_schema(blocking_schema)
 
     # extract algorithm and its config
-    algorithm = blocking_schema.type.value
-    config = blocking_schema.config
+    algorithm = blocking_model.type.value
+    config = blocking_model.config
 
     # check if blocking features are column index or feature name
     blocking_features = config.blocking_features

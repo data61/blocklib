@@ -1,5 +1,5 @@
 import pytest
-from blocklib import validate_signature_config
+from blocklib import validate_blocking_schema
 from blocklib.validation import load_schema, BlockingSchemaModel, BlockingSchemaTypes
 import tempfile
 import json
@@ -37,7 +37,7 @@ class TestValidation:
             }
         }
 
-        validated_schema = validate_signature_config(config)
+        validated_schema = validate_blocking_schema(config)
         assert isinstance(validated_schema, BlockingSchemaModel)
 
         # Check we can serialize the object
@@ -61,7 +61,7 @@ class TestValidation:
         """Test if validation will capture error and throw assertion."""
         config = {"type": "p-sig", "version": 1}
         with pytest.raises(ValueError):
-            validate_signature_config(config)
+            validate_blocking_schema(config)
 
     def test_load_schema(self):
         """Test exception with invalid schema."""

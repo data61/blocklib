@@ -122,8 +122,7 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
             func = SIGNATURE_STRATEGIES.get(spec.type, None)
 
             if func is None:
-                strategy_type = spec.type
-                raise NotImplementedError('Strategy {} is not implemented yet!'.format(strategy_type))
+                raise NotImplementedError(f'Strategy {spec.type} is not implemented yet!')
             else:
                 if hasattr(spec, 'config'):
                     # For now that means it must be a PSigCharsAtSignatureSpec

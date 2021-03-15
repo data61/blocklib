@@ -19,16 +19,10 @@ class BlockingSchemaTypes(str, Enum):
 PPRLIndexConfig = Union[PSigConfig, LambdaConfig]
 
 
-class BlockingSchemaBaseModel(BaseModel):
-    version: int
-    type: BlockingSchemaTypes = Field(..., description="Identifier of the blocking type")
-    config: Dict
-
-
 class BlockingSchemaModel(BaseModel):
     version: int
     type: BlockingSchemaTypes = Field(..., description="Identifier of the blocking type")
-    config: Union[PSigConfig, LambdaConfig]
+    config: PPRLIndexConfig
 
     @validator('config', pre=True, always=True, each_item=False)
     def validate_config(cls, config_to_validate, values):
@@ -60,14 +54,9 @@ def load_schema(file_name: str):
             raise ValueError("Invalid schema") from e
 
 
-def validate_signature_config(config: Dict) -> BlockingSchemaModel:
-    # First we check the top level structure
-    try:
-        BlockingSchemaBaseModel.parse_obj(config)
-    except ValidationError as e:
-        raise ValueError('The signature config is not valid.\n\n' + str(e)) from e
+def validate_blocking_schema(config: Dict) -> BlockingSchemaModel:
+    """Validate blocking schema data with pydantic.
 
-    # Validate blocking schema with pydantic
-    # Note we already know the config contains a type so we could
-    # directly create a PSig or LambdaFold type
+    :raises ValueError exceptions when passed an invalid config.
+    """
     return BlockingSchemaModel.parse_obj(config)

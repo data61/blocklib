@@ -1,7 +1,7 @@
 import pytest
 import io
 
-from blocklib import generate_candidate_blocks, validate_signature_config
+from blocklib import generate_candidate_blocks, validate_blocking_schema
 from blocklib import flip_bloom_filter
 
 data = [('id1', 'Joyce', 'Wang', 'Ashfield'),
@@ -70,7 +70,7 @@ class TestCandidateBlockGenerator:
         block_config = {'type': 'p-sig',
                         'version': 1,
                         'config': config}
-        print(validate_signature_config(block_config))
+        print(validate_blocking_schema(block_config))
 
         candidate_block_obj = generate_candidate_blocks(data, block_config)
         bf_set_fred = str(tuple(flip_bloom_filter('0_Fred', bf_len, num_hash_funcs)))

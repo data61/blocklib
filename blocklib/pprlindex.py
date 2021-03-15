@@ -1,23 +1,23 @@
 import random
 from typing import Any, Dict, List, Sequence, Optional, Union, cast
-
+import logging
 from pydantic.tools import parse_obj_as
 
 from blocklib.configuration import get_config
 from blocklib.utils import check_header
-from blocklib.validation import PSigConfig, LambdaConfig, BlockingSchemaModel, PPRLIndexConfig, BlockingSchemaTypes
+from blocklib.validation import PPRLIndexConfig
 
 
 class PPRLIndex:
     """Base class for PPRL indexing/blocking."""
 
-    def __init__(self, config: Union[PSigConfig, LambdaConfig]) -> None:
+    def __init__(self, config: PPRLIndexConfig) -> None:
         """Initialise base class."""
 
         self.config: PPRLIndexConfig = cast(PPRLIndexConfig, config)
         self.rec_dict = None
         self.ent_id_col = None
-        self.rec_id_col: Optional[int]  = None
+        self.rec_id_col: Optional[int] = None
 
     def get_feature_to_index_map(self, data: Sequence[Sequence], header: Optional[List[str]] = None):
         """Return feature name to feature index mapping if there is a header and feature is of type string."""
@@ -70,7 +70,7 @@ class PPRLIndex:
         random.seed(ref_random_seed)
         ref_val_list = random.sample(rec_features, num_vals)
 
-        #logger.info('  Selected %d random reference values' % (len(ref_val_list)))
+        logging.info('Selected %d random reference values' % (len(ref_val_list)))
         return ref_val_list
 
 
