@@ -57,6 +57,6 @@ def load_schema(file_name: str):
 def validate_blocking_schema(config: Dict) -> BlockingSchemaModel:
     """Validate blocking schema data with pydantic.
 
-    :raises ValueError exceptions when passed an invalid config.
+    :raises ValueError: exceptions when passed an invalid config.
     """
     return BlockingSchemaModel.parse_obj(config)

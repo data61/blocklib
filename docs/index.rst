@@ -33,6 +33,7 @@ Table of Contents
 
    tutorial/index
    blocking-schema
+   python-api
    development
    devops
    references

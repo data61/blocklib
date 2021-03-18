@@ -1,4 +1,4 @@
-"""Module that implement final block generations."""
+"""Module that implements final block generations."""
 from collections import defaultdict
 from typing import Any, Dict, Sequence, Set, List, cast
 import ast
@@ -11,9 +11,10 @@ from .candidate_blocks_generator import CandidateBlockingResult
 
 def check_block_object(candidate_block_objs: Sequence[CandidateBlockingResult]):
     """
-    Check candidate block objects type and their states type. Raise TypeError if conditions aren't met.
+    Check candidate block objects type and their states type.
+
+    :raises TypeError: if conditions aren't met.
     :param candidate_block_objs: A list of candidate block result objects from 2 data providers
-    :return:
     """
     for obj in candidate_block_objs:
         if type(obj) != CandidateBlockingResult:
@@ -25,13 +26,13 @@ def check_block_object(candidate_block_objs: Sequence[CandidateBlockingResult]):
             raise TypeError('Unexpected state type found: {} where we expect: {}'.format(type(obj.state), state_type))
 
 
-def generate_blocks(candidate_block_objs: Sequence[CandidateBlockingResult], K: int):
+def generate_blocks(candidate_block_objs: Sequence[CandidateBlockingResult], K: int) -> List[Dict[Any, List[Any]]]:
     """
     Generate final blocks given list of candidate block objects from 2 or more than 2 data providers.
 
     :param candidate_block_objs: A list of CandidateBlockingResult from multiple data providers
     :param K: it specifies the minimum number of occurrence for records to be included in the final blocks
-    :return: filtered_reversed_indices: List of dictionaries, filter out records that appear in less than K parties
+    :return: List of dictionaries, filter out records that appear in less than K parties
     """
     check_block_object(candidate_block_objs)
     assert len(candidate_block_objs) >= K >= 2
@@ -61,10 +62,10 @@ def generate_blocks(candidate_block_objs: Sequence[CandidateBlockingResult], K: 
 
 
 def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
-    """
-    Return a list of dictionaries of record to block key mapping
+    """Invert a map from "blocks to records" to "records to blocks".
+
     :param reversed_indices: A list of dictionaries where key is the block key and value is a list of record IDs.
-    :return: rec_to_blockkey: A list of dictionaries where key is the record ID and value is a set of block key the record belongs to
+    :return: A list of dictionaries where key is the record ID and value is a set of blocking keys the record belongs to.
     """
     rec_to_blockkey = []
     for reversed_index in reversed_indices:
@@ -77,12 +78,12 @@ def generate_reverse_blocks(reversed_indices: Sequence[Dict]):
 
 
 def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequence[PPRLIndexPSignature], threshold: int):
-    """
-    Generate final blocks for P-Sig.
+    """Generate blocks for P-Sig
+
     :param reversed_indices: A list of dictionaries where key is the block key and value is a list of record IDs.
     :param block_states: A list of PPRLIndex objects that hold configuration of the blocking job
     :param threshold: int which decides a pair when number of 1 bits in bloom filter is large than or equal to threshold
-    :return: reversed_indices: A list of dictionaries where blocks that don't contain any matches are deleted
+    :return: A list of dictionaries where blocks that don't contain any matches are deleted
     """
     # generate candidate bloom filters
     candidate_bloom_filters = []

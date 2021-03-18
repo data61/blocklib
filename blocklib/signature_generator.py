@@ -13,10 +13,12 @@ def generate_by_feature_value(attr_ind: int, dtuple: Sequence):
 
 def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
     """ Generate signatures by select subset of characters in original features.
+
     >>> res = generate_by_char_at(2, ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), [0, 3])
     >>> assert res == 'Lt'
     >>> res = generate_by_char_at(2, ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), [":4"])
     >>> assert res == 'Litt'
+
     """
     sig = []
     feature = dtuple[attr_ind]
@@ -116,7 +118,6 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
             else:
                 attr_ind = cast(int, attr)
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
-            #config = spec.config
 
             # find the correct strategy function to call
             func = SIGNATURE_STRATEGIES.get(spec.type, None)
@@ -126,7 +127,6 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
             else:
                 if hasattr(spec, 'config'):
                     # For now that means it must be a PSigCharsAtSignatureSpec
-
                     args.update(cast(PSigCharsAtSignatureSpec, spec).config)
                 s = func(**args)
                 sig.append(s)
