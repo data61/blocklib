@@ -2,8 +2,6 @@ import logging
 from collections import defaultdict
 from typing import Dict, List, Sequence, Any, Optional
 
-import numpy as np
-
 from .configuration import get_config
 from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex, ReversedIndexResult
