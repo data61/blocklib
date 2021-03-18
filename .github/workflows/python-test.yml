@@ -3,15 +3,31 @@
 
 name: Python Unit Tests
 
-# Triggers the workflow on push or pull request events
+# Ref: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
+# Triggers the workflow on push pushed to any branch in a repository
 on: push
 
 jobs:
-  build:
-    runs-on: Ubuntu-20.04
+  pytest:
+    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    # Ref: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idcontinue-on-error
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        python-version: [3.9]
+        experimental: [false]
+        # Ref: https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
+        os: [macos-latest, ubuntu-latest]
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+# How to add an experimental job:
+#          - "3.10.0-alpha.6"
+#        include:
+#          - python-version: "3.10.0-alpha.6"
+#            os: ubuntu-latest
+#            experimental: true
 
     steps:
     - uses: actions/checkout@v2
@@ -32,7 +48,9 @@ jobs:
         echo "$HOME/.poetry/bin" >> $GITHUB_PATH
     - name: Configure poetry
       shell: bash
-      run: poetry config virtualenvs.in-project true
+      run: |
+        poetry --version
+        poetry config virtualenvs.in-project true
 
     - name: Set up cache
       uses: actions/cache@v2.1.4
@@ -43,7 +61,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        poetry install
+        poetry install --no-interaction
     - name: Test with pytest
       run: |
         poetry run pytest -q tests
