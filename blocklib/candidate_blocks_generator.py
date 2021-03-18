@@ -1,4 +1,3 @@
-"""Class that implement candidate block generations."""
 import sys
 
 from typing import Dict, Sequence, Tuple, Type, List, Optional, TextIO
@@ -62,15 +61,13 @@ def generate_candidate_blocks(data: Sequence[Tuple[str, ...]],
     :param data: list of tuples E.g. ('0', 'Kenneth Bain', '1964/06/17', 'M')
     :param blocking_schema:
         A description of how the signatures should be generated.
-        Schema for the signature config is found in
-        ``docs/schema/signature-config-schema.json``
+        See :ref:`blocking-schema`
     :param header: column names (optional)
         Program should throw exception if block features are string but header is None
 
     :return: A 2-tuple containing
         A list of "signatures" per record in data.
         Internal state object from the signature generation (or None).
-
     """
     blocking_model = validate_blocking_schema(blocking_schema)
 

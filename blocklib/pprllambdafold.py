@@ -9,6 +9,7 @@ from .utils import deserialize_filters
 from .stats import reversed_index_stats
 from .validation import LambdaConfig
 
+
 class PPRLIndexLambdaFold(PPRLIndex):
     """Class that implements the PPRL indexing technique:
 
