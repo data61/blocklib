@@ -2,8 +2,6 @@ import logging
 from collections import defaultdict
 from typing import Dict, List, Sequence, Any, Optional
 
-import numpy as np
-
 from .configuration import get_config
 from .encoding import flip_bloom_filter
 from .pprlindex import PPRLIndex, ReversedIndexResult
@@ -42,7 +40,7 @@ class PPRLIndexPSignature(PPRLIndex):
 
         # Build index of records
         if self.rec_id_col is None:
-            record_ids = np.arange(len(data))
+            record_ids = list(range(len(data)))
         else:
             record_ids = [x[self.rec_id_col] for x in data]
 
