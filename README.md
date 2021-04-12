@@ -2,7 +2,6 @@
 [![codecov](https://codecov.io/gh/data61/blocklib/branch/master/graph/badge.svg)](https://codecov.io/gh/data61/blocklib)
 [![Documentation Status](https://readthedocs.org/projects/blocklib/badge/?version=latest)](http://blocklib.readthedocs.io/en/latest/?badge=latest)
 ![Build Status](https://dev.azure.com/data61/Anonlink/_apis/build/status/data61.blocklib?branchName=master)
-[![Requirements Status](https://requires.io/github/data61/blocklib/requirements.svg?branch=master)](https://requires.io/github/data61/blocklib/requirements/?branch=master)
 [![Downloads](https://pepy.tech/badge/blocklib)](https://pepy.tech/project/blocklib)
 
 
