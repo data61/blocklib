@@ -45,7 +45,7 @@ notebook = {version = "^6.2.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
-pytest-cov = "^2.11"
+pytest-cov = "^2.12"
 pytest-azurepipelines = "^0.8"
 black = "^20.8b1"
 flake8 = "^3.8.4"
