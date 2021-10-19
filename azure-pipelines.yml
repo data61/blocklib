@@ -33,6 +33,8 @@ stages:
 
     - job: tag_check
       displayName: "Check for Git tags"
+      pool:
+        vmImage: 'ubuntu-18.04'
       steps:
       # In this step, if this build is triggered by a tag, it will add the tag 'doRelease' to the current build. This tag
       # is used to trigger the release pipeline.
