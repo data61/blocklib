@@ -25,6 +25,7 @@ stages:
         displayName: 'mypy (pinned)'
 
       - script: |
+          python -m pip install types-pkg_resources
           python -m pip install -U mypy
           mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
         displayName: 'mypy (latest)'
@@ -32,6 +33,8 @@ stages:
 
     - job: tag_check
       displayName: "Check for Git tags"
+      pool:
+        vmImage: 'ubuntu-18.04'
       steps:
       # In this step, if this build is triggered by a tag, it will add the tag 'doRelease' to the current build. This tag
       # is used to trigger the release pipeline.
@@ -89,7 +92,7 @@ stages:
   dependsOn: ['test_and_build']
   jobs:
     - job: linux
-      pool: {vmImage: 'Ubuntu-16.04'}
+      pool: {vmImage: 'Ubuntu-18.04'}
       strategy:
         matrix:
           Python36:
