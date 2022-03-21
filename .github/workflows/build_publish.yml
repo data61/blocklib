@@ -1,0 +1,68 @@
+name: Build and upload to PyPI
+
+on:
+  release:
+    types: [ published ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build_dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install poetry
+        shell: bash
+        run: |
+          curl -sSL -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python get-poetry.py -y
+          # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#adding-a-system-path
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Configure poetry
+        shell: bash
+        run: |
+          poetry --version
+          poetry config virtualenvs.in-project true
+
+      - name: Set up cache
+        uses: actions/cache@v2.1.6
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction
+
+      - name: Build package
+        run: poetry build --no-interaction
+
+      - name: Save artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: blocklib-dist
+          path: ./dist
+
+  upload_pypi:
+    needs: [build_dist]
+    runs-on: ubuntu-latest
+
+    # upload to PyPI only on release
+    if: github.event.release && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: blocklib-dist
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
