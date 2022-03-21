@@ -20,10 +20,12 @@ jobs:
         pip install --upgrade pip
         pip install -U mypy==0.931
         pip install -U pydantic
+        pip install -U types-setuptools
         mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
     - name: mypy (latest)
       run: |
         pip install --upgrade pip
         pip install -U mypy
         pip install -U pydantic
+        pip install -U types-setuptools
         mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
