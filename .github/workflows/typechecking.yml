@@ -19,9 +19,9 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install -U mypy==0.931
-        mypy blocklib --install-types --non-interactive --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
+        mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
     - name: mypy (latest)
       run: |
         pip install --upgrade pip
         pip install -U mypy
-        mypy blocklib --install-types --non-interactive --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
+        mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
