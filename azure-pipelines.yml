@@ -11,26 +11,6 @@ stages:
   displayName: Static Checks
   dependsOn: []
   jobs:
-    - job: typechecking
-      displayName: 'Typechecking'
-      pool:
-        vmImage: 'ubuntu-18.04'
-      steps:
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: '3.8'
-      - script: |
-          python -m pip install -U mypy==0.812 pydantic
-          mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
-        displayName: 'mypy (pinned)'
-
-      - script: |
-          python -m pip install types-pkg_resources
-          python -m pip install -U mypy
-          mypy blocklib --ignore-missing-imports --no-implicit-optional --disallow-untyped-calls
-        displayName: 'mypy (latest)'
-        continueOnError: True
-
     - job: tag_check
       displayName: "Check for Git tags"
       pool:
