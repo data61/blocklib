@@ -17,7 +17,7 @@ jobs:
       matrix:
         experimental: [false]
         # Ref: https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
         python-version:
           - "3.7"
           - "3.8"
