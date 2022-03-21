@@ -46,8 +46,6 @@ bitarray = "^2.4.0"
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
 pytest-cov = "^2.11"
-black = "^20.8b1"
-flake8 = "^3.8.4"
 mypy = "^0.910"
 
 [tool.poetry.extras]
