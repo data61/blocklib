@@ -25,7 +25,6 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-bitarray-hardbyte = "^1.6"
 jsonschema = "^3.1"
 numpy = [
     { version = "^1.20.1", python = ">=3.7"},
@@ -42,6 +41,7 @@ Sphinx = {version = "^3.5.2", optional = true}
 nbsphinx = {version = "^0.8.2", optional = true}
 pandas = {version = ">1.0", optional = true}
 notebook = {version = "^6.2.0", optional = true}
+bitarray = "^2.4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
@@ -63,5 +63,5 @@ docs = [
 ]
 
 [build-system]
-requires = ["poetry-core>=1.0.0a5"]
+requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
