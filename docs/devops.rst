@@ -1,41 +1,39 @@
 Devops
 ===========
 
-Azure Pipeline
+GitHub Actions
 --------------
 
-``blocklib`` is automatically built and tested using Azure Pipeline
-as part of the `Anonlink <https://dev.azure.com/data61/anonlink>`_ project.
+``blocklib`` is automatically built and tested using `GitHub actions <https://github.com/data61/blocklib/actions>`_.
 
-The continuous integration pipeline is `here <https://dev.azure.com/data61/Anonlink/_build?definitionId=5>`_,
-and the release pipeline is `here <https://dev.azure.com/data61/Anonlink/_release?_a=releases&definitionId=7>`_
+There are currently three workflows:
 
-Build Pipeline
+Testing
 ~~~~~~~~~~~~~~
 
-The build pipeline is defined in the script ``azure-pipelines.yml``.
+The testing workflow is defined in the script ``.github/workflows/python-test.yml``.
 
-There are three top level stages in the build pipeline:
+It consists of two jobs
 
-- *Static Checks* - run typechecking with mypy.
-- *Test and build* - tests the library using ``pytest`` with different versions of ``Python``.
-- *Build Wheel Packages* - packages blocklib into wheels and saves the build artifacts.
+- *Unit tests* - tests the library using ``pytest`` with different combinations of python versions and operating systems.
+- *Notebook tests* - tests the tutorial notebooks using ``pytest``.
 
-The *Test and build* job does:
+Type Checking
+~~~~~~~~~~~~~~
 
-  - install the requirements,
-  - run tests on Ubuntu 18.04 OS, for ``Python 3.6``, ``Python 3.7``, ``Python 3.8`` and ``Python 3.9``
-  - publish the test results,
-  - publish the code coverage,
-  - package and publish the artifacts.
+The type checking workflow is defined in the script ``.github/workflows/typechecking.yml``.
+It runs typechecking with mypy.
 
-Release Pipeline
-~~~~~~~~~~~~~~~~
+Build and Publish
+~~~~~~~~~~~~~~~~~~
 
-The release pipeline publishes the built wheels and source code to `PyPi <https://pypi.org/project/blocklib/>`_
-as ``blocklib``.
+The build and publish workflow is defined in the script ``.github/workflows/build_publish.yml``.
+
+It consists of two jobs:
+
+- *Build distribution Packages* - packages blocklib into wheels and saves the build artifacts.
+- *Publish to PyPI* - uploads the built artifacts to PyPI.
 
 .. Note::
-
-   The release pipeline requires manual intervention by a Data61 team member.
+   The *Publish to PyPI* job is only triggered on a GitHub release.
 
