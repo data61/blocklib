@@ -63,7 +63,7 @@ jobs:
         poetry install --no-interaction
     - name: Test with pytest
       run: |
-        poetry run pytest --cov=clkhash --cov-report=xml:coverage.xml -q tests
+        poetry run pytest --cov=blocklib --cov-report=xml:coverage.xml -q tests
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
@@ -116,4 +116,4 @@ jobs:
 
       - name: Test notebooks
         shell: bash
-        run: poetry run pytest --nbval docs -x --sanitize-with docs/tutorial_sanitize.cfg
+        run: poetry run pytest --nbval docs/tutorial
