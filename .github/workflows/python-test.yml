@@ -112,7 +112,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-interaction
+          poetry install -E docs --no-interaction
 
       - name: Test notebooks
         shell: bash
