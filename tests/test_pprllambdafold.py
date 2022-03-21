@@ -98,7 +98,7 @@ class TestLambdaFold(unittest.TestCase):
             "input-clks": True
         }
         lambdafold = PPRLIndexLambdaFold(config)
-        clk_filepath = Path(__file__).parent / 'testdata' / 'small_clk.json'
+        clk_filepath = Path(__file__).parent / 'data' / 'small_clk.json'
         with clk_filepath.open() as f:
             data = json.load(f)['clks']\
 
