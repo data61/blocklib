@@ -1,15 +1,15 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python Unit Tests
+name: Testing
 
 # Ref: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
 # Triggers the workflow on push pushed to any branch in a repository
 on: push
 
 jobs:
-  pytest:
-    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+  unittests:
+    name: Unit tests / ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     # Ref: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idcontinue-on-error
     continue-on-error: ${{ matrix.experimental }}
@@ -22,6 +22,7 @@ jobs:
           - "3.7"
           - "3.8"
           - "3.9"
+          - "3.10"
 # How to add an experimental job:
 #          - "3.10.0-alpha.6"
 #        include:
@@ -31,14 +32,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Get full Python version
-      id: full-python-version
-      shell: bash
-      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
     - name: Install poetry
       shell: bash
       run: |
@@ -64,4 +63,57 @@ jobs:
         poetry install --no-interaction
     - name: Test with pytest
       run: |
-        poetry run pytest -q tests
+        poetry run pytest --cov=blocklib --cov-report=xml:coverage.xml -q tests
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        env_vars: OS,PYTHON
+        fail_ci_if_error: false
+        files: ./coverage.xml
+        flags: unittests
+        name: codecov-blocklib
+
+  notebooktests:
+    name: Notebook tests / ${{ matrix.python }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest,  ubuntu-latest ]
+        python: [ "3.10" ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install poetry
+        shell: bash
+        run: |
+          curl -sSL -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python get-poetry.py -y
+          # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#adding-a-system-path
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Configure poetry
+        shell: bash
+        run: |
+          poetry --version
+          poetry config virtualenvs.in-project true
+
+      - name: Set up cache
+        uses: actions/cache@v2.1.6
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install -E docs --no-interaction
+
+      - name: Test notebooks
+        shell: bash
+        run: poetry run pytest --nbval docs/tutorial
