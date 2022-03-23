@@ -37,7 +37,7 @@ typing_extensions = "^3.7.4"
 
 # Optional dependencies, see extras section to toggle
 nbval = {version = "^0.9.6", optional = true}
-Sphinx = {version = "^3.5.2", optional = true}
+Sphinx = {version = ">=3.5.2,<5.0.0", optional = true}
 nbsphinx = {version = "^0.8.2", optional = true}
 pandas = {version = ">1.0", optional = true}
 notebook = {version = "^6.2.0", optional = true}
