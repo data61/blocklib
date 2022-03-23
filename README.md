@@ -1,7 +1,8 @@
 
 [![codecov](https://codecov.io/gh/data61/blocklib/branch/master/graph/badge.svg)](https://codecov.io/gh/data61/blocklib)
 [![Documentation Status](https://readthedocs.org/projects/blocklib/badge/?version=latest)](http://blocklib.readthedocs.io/en/latest/?badge=latest)
-![Build Status](https://dev.azure.com/data61/Anonlink/_apis/build/status/data61.blocklib?branchName=master)
+[![Typechecking](https://github.com/data61/blocklib/actions/workflows/typechecking.yml/badge.svg)](https://github.com/data61/blocklib/actions/workflows/typechecking.yml)
+[![Testing](https://github.com/data61/blocklib/actions/workflows/python-test.yml/badge.svg)](https://github.com/data61/blocklib/actions/workflows/python-test.yml)
 [![Downloads](https://pepy.tech/badge/blocklib)](https://pepy.tech/project/blocklib)
 
 
