@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import cast, Union, List
+from typing import cast, Union, List, Optional
 
 from typing_extensions import Literal
 from pydantic import BaseModel, Field
@@ -28,6 +28,7 @@ class PSigBlockingBFFilterConfig(BaseModel):
     type: Literal['bloom filter']
     number_of_hash_functions: int = Field(..., alias='number-hash-functions')
     bloom_filter_length: int = Field(..., alias='bf-len')
+    compress_block_key: Optional[bool] = Field(False, alias='compress-block-key')
 
 
 class PSigSignatureTypes(str, Enum):
