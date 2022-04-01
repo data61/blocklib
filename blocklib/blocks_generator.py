@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Any, Dict, Sequence, Set, List, cast
 import ast
 import numpy as np
+from hashlib import blake2b
 
 from blocklib import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
@@ -117,7 +118,15 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
             keys[k] += 1
     common_keys = [k for k in keys if keys[k] >= threshold]
     clean_reversed_indices = []  # type: List[Dict[Set, List]]
+    compress_block_key = block_states[0].blocking_config.compress_block_key
+
+    def optional_compression(key):
+        if compress_block_key:
+            return blake2b(key.encode(), digest_size=5).hexdigest()
+        else:
+            return key
+
     for reversed_index in reversed_indices:
-        clean_reversed_indices.append(dict((k, reversed_index[k]) for k in common_keys if k in reversed_index))
+        clean_reversed_indices.append(dict((optional_compression(k), reversed_index[k]) for k in common_keys if k in reversed_index))
 
     return clean_reversed_indices

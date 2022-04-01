@@ -88,6 +88,7 @@ class TestBlocksGenerator:
                 "type": "bloom filter",
                 "number-hash-functions": 20,
                 "bf-len": 2048,
+                "compress-block-key": True,
             },
             "signatureSpecs": [
                 [
