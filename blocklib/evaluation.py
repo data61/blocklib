@@ -13,9 +13,6 @@ def assess_blocks_2party(filtered_reverse_indices, data):
     dp1_signature, dp2_signature = filtered_reverse_indices
     dp1_data, dp2_data = data
 
-    num_block_true_matches = 0
-    num_block_false_matches = 0
-
     keys = set(dp1_signature.keys()).intersection(dp2_signature.keys())
     num_comparisons = 0
     found_matches = set()
@@ -29,7 +26,6 @@ def assess_blocks_2party(filtered_reverse_indices, data):
 
         found_matches.update(set(dp1_data[rec] for rec in dp1_recs).intersection(dp2_data[rec] for rec in dp2_recs))
 
-
     num_full_comparison = len(dp1_data) * len(dp2_data)
     if num_full_comparison == 0:
         raise ValueError('There are not records in the provided data. Therefore we cannot assess the blocking result.')
@@ -39,7 +35,7 @@ def assess_blocks_2party(filtered_reverse_indices, data):
     num_all_true_matches = len(entity1.intersection(entity2))
 
     # pair completeness is the "recall" before matching stage
-    rr = 1.0 - float(num_comparisons) / num_full_comparison
+    rr = 1.0 - num_comparisons / num_full_comparison
     if len(found_matches) == 0:
         logging.warning("Pair completeness is zero, because there are no true matches in the provided data.")
         pc = 0
