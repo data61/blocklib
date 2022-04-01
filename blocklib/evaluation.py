@@ -13,33 +13,25 @@ def assess_blocks_2party(filtered_reverse_indices, data):
     dp1_signature, dp2_signature = filtered_reverse_indices
     dp1_data, dp2_data = data
 
-    cand_pairs = {}  # key is record id of data provider1 and value is list of record ids from data provider 2
     num_block_true_matches = 0
     num_block_false_matches = 0
 
     keys = set(dp1_signature.keys()).intersection(dp2_signature.keys())
+    num_comparisons = 0
+    found_matches = set()
+
     for key in tqdm(keys, desc='assessing blocks', total=len(keys), unit='key'):
         dp1_recs = dp1_signature.get(key, None)
         dp2_recs = dp2_signature.get(key, None)
         if dp1_recs is None or dp2_recs is None:
             continue
-        for d1 in dp1_recs:
-            d1_entity = dp1_data[d1]
-            d1_cache = cand_pairs.get(d1_entity, set())
-            for d2 in dp2_recs:
-                d2_entity = dp2_data[d2]
-                if d2_entity not in d1_cache:
-                    d1_cache.add(d2_entity)
-                    if d2_entity == d1_entity:
-                        num_block_true_matches += 1
-                    else:
-                        num_block_false_matches += 1
-            cand_pairs[d1_entity] = d1_cache
+        num_comparisons += len(dp1_recs) * len(dp2_recs)
 
-    num_cand_rec_pairs = num_block_true_matches + num_block_false_matches
-    total_rec = len(dp1_data) * len(dp2_data)
-    
-    if total_rec == 0:
+        found_matches.update(set(dp1_data[rec] for rec in dp1_recs).intersection(dp2_data[rec] for rec in dp2_recs))
+
+
+    num_full_comparison = len(dp1_data) * len(dp2_data)
+    if num_full_comparison == 0:
         raise ValueError('There are not records in the provided data. Therefore we cannot assess the blocking result.')
 
     entity1 = set(dp1_data)
@@ -47,10 +39,10 @@ def assess_blocks_2party(filtered_reverse_indices, data):
     num_all_true_matches = len(entity1.intersection(entity2))
 
     # pair completeness is the "recall" before matching stage
-    rr = 1.0 - float(num_cand_rec_pairs) / total_rec
-    if num_all_true_matches == 0:
+    rr = 1.0 - float(num_comparisons) / num_full_comparison
+    if len(found_matches) == 0:
         logging.warning("Pair completeness is zero, because there are no true matches in the provided data.")
         pc = 0
     else:
-        pc = float(num_block_true_matches) / num_all_true_matches
+        pc = len(found_matches) / num_all_true_matches
     return rr, pc

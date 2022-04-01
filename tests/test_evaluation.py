@@ -56,7 +56,7 @@ def test_assess_blocks_2party():
     # compare expected and actual rr pc
     # final blocks should have blocking key Fr, Li and Fred
     num_all_comparison = len(data1) * len(data2)
-    num_reduced_comparison = 2 + 1 + 2
+    num_reduced_comparison = 2 + 1 + 4
     expected_rr = 1 - float(num_reduced_comparison / num_all_comparison)
     expected_pc = 1
 
