@@ -111,6 +111,10 @@ max           numeric      for ratio, it should be within 0 and 1; for count, it
 
 Blocking-filter Configuration
 '''''''''''''''''''''''''''''
+A blocking filter is represented as a string describing the bit positions in the Bloom filter set to one, e.g.:
+"(3, 265, 403, 665, 927, 165, 41, 303, 565, 827, 965, 203, 465, 727, 865, 103, 365, 627, 503, 765)". This representation
+consumes a considerable amount of space. If the indices are not needed for further processing, you can tell blocklib to
+replace these strings with a 5 byte hash by setting the `compress-block-key` flag.
 
 ===================== ============ ==================
 attribute             type         description
@@ -118,6 +122,7 @@ attribute             type         description
 type                  string       currently we only support "bloom filter"
 number-hash-functions integer      this specifies how many bits will be flipped for each signature
 bf-len                integer      defines the length of blocking filter, for bloom filter usually this is 1024 or 2048
+compress-block-key    boolean      optional. Replace the block key by a 5 bytes hash versions of itself.
 ===================== ============ ==================
 
 SignatureSpecs Configurations
