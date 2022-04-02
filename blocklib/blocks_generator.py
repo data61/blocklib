@@ -112,12 +112,12 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
 
     # because of collisions in counting bloom filter, there are blocks only unique to one filtered index
     # only keep blocks that exist in at least threshold many reversed indices
-    keys = defaultdict(int)  # type: Dict[Set, int]
+    keys = defaultdict(int)  # type: Dict[str, int]
     for reversed_index in reversed_indices:
         for k in reversed_index:
             keys[k] += 1
     common_keys = [k for k in keys if keys[k] >= threshold]
-    clean_reversed_indices = []  # type: List[Dict[Set, List]]
+    clean_reversed_indices = []  # type: List[Dict[str, List]]
     compress_block_key = block_states[0].blocking_config.compress_block_key
 
     def optional_compression(key: str) -> str:
