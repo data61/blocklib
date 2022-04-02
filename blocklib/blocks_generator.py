@@ -120,7 +120,7 @@ def generate_blocks_psig(reversed_indices: Sequence[Dict], block_states: Sequenc
     clean_reversed_indices = []  # type: List[Dict[Set, List]]
     compress_block_key = block_states[0].blocking_config.compress_block_key
 
-    def optional_compression(key):
+    def optional_compression(key: str) -> str:
         if compress_block_key:
             return blake2b(key.encode(), digest_size=5).hexdigest()
         else:
