@@ -88,7 +88,7 @@ class TestBlocksGenerator:
                 "type": "bloom filter",
                 "number-hash-functions": 20,
                 "bf-len": 2048,
-                "compress-block-key": True,
+                "compress-block-key": False,
             },
             "signatureSpecs": [
                 [
@@ -121,6 +121,59 @@ class TestBlocksGenerator:
             expected_bf_sets[str(tuple(bf_set))] = True
 
         assert all(key in expected_bf_sets for key in filtered_alice)
+        assert filtered_alice.keys() == filtered_bob.keys()
+
+    def test_psig_key_compression(self):
+        """Test key compression of block generator for PPRLPsig method."""
+        data1 = [('id1', 'Joyce', 'Wang', 'Ashfield'),
+                 ('id2', 'Joyce', 'Hsu', 'Burwood'),
+                 ('id3', 'Joyce', 'Shan', 'Lewishm'),
+                 ('id4', 'Fred', 'Yu', 'Strathfield'),
+                 ('id5', 'Fred', 'Zhang', 'Chippendale'),
+                 ('id6', 'Lindsay', 'Jone', 'Narwee')]
+        data2 = [('4', 'Fred', 'Yu', 'Strathfield'),
+                 ('5', 'Fred', 'Zhang', 'Chippendale'),
+                 ('6', 'Li', 'Jone', 'Narwee')]
+
+        config = {
+            "blocking-features": [1],
+            "filter": {
+                "type": "count",
+                "max": 5,
+                "min": 0,
+            },
+            "blocking-filter": {
+                "type": "bloom filter",
+                "number-hash-functions": 20,
+                "bf-len": 2048,
+                "compress-block-key": True,
+            },
+            "signatureSpecs": [
+                [
+                    {"type": "feature-value", "feature": 1}
+                ],
+                [
+                    {"type": "characters-at", "config": {"pos": ["0:2"]}, "feature": 1},
+                ]
+            ]
+
+        }
+
+        blocking_config = {'type': 'p-sig',
+                           'version': 1,
+                           'config': config}
+
+        # generate candidate blocks
+        candidate_obj_alice = generate_candidate_blocks(data1, blocking_config)
+        candidate_obj_bob = generate_candidate_blocks(data2, blocking_config)
+
+        # blocks generator
+        filtered_records = generate_blocks([candidate_obj_alice, candidate_obj_bob], K=2)
+        filtered_alice = filtered_records[0]
+        filtered_bob = filtered_records[1]
+
+        assert all(len(key) == 10 for key in filtered_alice)
+        assert all(len(key) == 10 for key in filtered_bob)
         assert filtered_alice.keys() == filtered_bob.keys()
 
     def test_psig_multiparty(self):
