@@ -2,6 +2,14 @@
 
 ## new version
 
+## 0.1.8
+
+* use logging instead of the `print` function  #138
+* use poetry for dependecy management  #139
+* validate blocking schemas with pydantic #140
+* move CI from Azure pipelines to GitHub actions #179
+* rewrite of `asses_blocks_2party` for better scaling #189
+
 ## 0.1.7
 
 * added Python 3.9 support to CI pipeline #116
