@@ -30,7 +30,7 @@ numpy = "^1.20.1"
 metaphone = "^0.6"
 tqdm = "^4.36.1"
 pydantic = "^1.8"
-typing_extensions = "^3.7.4"
+typing_extensions = ">=3.7.4,<5.0.0"
 
 # Optional dependencies, see extras section to toggle
 nbval = {version = "^0.9.6", optional = true}
