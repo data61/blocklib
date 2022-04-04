@@ -30,18 +30,19 @@ class CandidateBlockingResult:
         self.state = state
         self.stats = blocking_result.stats
 
-    def print_summary_statistics(self, output: TextIO = sys.stdout):
+    def print_summary_statistics(self, output: TextIO = sys.stdout, round_ndigits: int = 4):
         """
         Print the summary statistics of this candidate blocking result to 'output'.
         :param output: a file like object to write to. Defaults to sys.stdout
+        :param round_ndigits: round floating point numbers to ndigits precision. Defaults to 4.
         """
         def print_stats(stats: Dict, out: TextIO):
             out.write('\tNumber of Blocks:   {}\n'.format(stats['num_of_blocks']))
             out.write('\tMinimum Block Size: {}\n'.format(stats['min_size']))
             out.write('\tMaximum Block Size: {}\n'.format(stats['max_size']))
-            out.write('\tAverage Block Size: {}\n'.format(stats['avg_size']))
+            out.write('\tAverage Block Size: {}\n'.format(round(stats['avg_size'], round_ndigits)))
             out.write('\tMedian Block Size:  {}\n'.format(stats['med_size']))
-            out.write('\tStandard Deviation of Block Size:  {}\n'.format(stats['std_size']))
+            out.write('\tStandard Deviation of Block Size:  {}\n'.format(round(stats['std_size'], round_ndigits)))
             if 'coverage' in stats:
                 out.write('\tCoverage:           {}%\n'.format(round(stats['coverage'] * 100, 2)))
 
