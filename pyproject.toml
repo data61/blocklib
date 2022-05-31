@@ -42,7 +42,7 @@ notebook = {version = "^6.2.0", optional = true}
 bitarray = "^2.4.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.0"
+pytest = "^7.1"
 pytest-cov = "^3.0"
 mypy = "^0.960"
 
