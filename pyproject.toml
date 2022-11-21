@@ -44,7 +44,7 @@ bitarray = "^2.4.0"
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
 pytest-cov = "^3.0"
-mypy = "^0.960"
+mypy = "^0.991"
 
 [tool.poetry.extras]
 docs = [
