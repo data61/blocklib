@@ -1,4 +1,4 @@
-import pkg_resources
+from importlib.metadata import version
 from .pprlindex import PPRLIndex
 from .pprlpsig import PPRLIndexPSignature
 from .pprllambdafold import PPRLIndexLambdaFold
@@ -9,5 +9,7 @@ from .candidate_blocks_generator import generate_candidate_blocks
 from .encoding import generate_bloom_filter, flip_bloom_filter
 from .evaluation import assess_blocks_2party
 
-
-__version__ = pkg_resources.get_distribution('blocklib').version
+try:
+    __version__ = version('blocklib')
+except ImportError:
+    __version__ = 'unknown'

@@ -4,7 +4,7 @@ on:
   release:
     types: [ published ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build_dist:
@@ -16,19 +16,12 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install poetry
-        shell: bash
-        run: |
-          curl -sSL -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
-          python get-poetry.py -y
-          # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#adding-a-system-path
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-
-      - name: Configure poetry
-        shell: bash
-        run: |
-          poetry --version
-          poetry config virtualenvs.in-project true
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
 
       - name: Set up cache
         uses: actions/cache@v3
