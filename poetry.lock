@@ -1409,14 +1409,14 @@ traitlets = ">=5"
 
 [[package]]
 name = "nbval"
-version = "0.9.6"
+version = "0.10.0"
 description = "A py.test plugin to validate Jupyter notebooks"
 category = "main"
 optional = true
-python-versions = "*"
+python-versions = ">=3.6, <4"
 files = [
-    {file = "nbval-0.9.6-py2.py3-none-any.whl", hash = "sha256:4f9b780997d8942408853513f2c5ee6c1863de193559fc3f95e1c1cde8110439"},
-    {file = "nbval-0.9.6.tar.gz", hash = "sha256:cfefcd2ef66ee2d337d0b252c6bcec4023384eb32e8b9e5fcc3ac80ab8cd7d40"},
+    {file = "nbval-0.10.0-py2.py3-none-any.whl", hash = "sha256:427e42caabeae39f493d8baca629b03816269fc11f1b7e2046e10929a3149a73"},
+    {file = "nbval-0.10.0.tar.gz", hash = "sha256:b4acefdc1132aef8a1b5b62bf9a93d128eba52839b2854ea3e42598f4db7beb3"},
 ]
 
 [package.dependencies]
@@ -1425,7 +1425,6 @@ ipykernel = "*"
 jupyter-client = "*"
 nbformat = "*"
 pytest = ">=2.8"
-six = "*"
 
 [[package]]
 name = "nest-asyncio"
@@ -2647,4 +2646,4 @@ docs = ["Sphinx", "nbsphinx", "pandas", "notebook", "nbval"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "5ce5e2d993a9de84684b7552beb9e58b9b0e5050da3586a5429dd568339f985e"
+content-hash = "9dcec2ed0092a71cc84f546fcdaa0a730aea592d3242ec1999e3b1f838bdce06"
