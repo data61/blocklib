@@ -136,6 +136,7 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
                     args.update(cast(PSigCharsAtSignatureSpec, spec).config)
                 s = func(**args)
                 sig.append(s)
-        signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
+        if len(sig) > 0:
+            signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
 
     return signatures
