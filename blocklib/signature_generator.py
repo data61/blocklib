@@ -108,7 +108,7 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
     # loop through each strategy
 
     for i, strategy in enumerate(signature_strategies):
-        sig = []
+        sig: List = []
         for spec in strategy:
             # arguments that we need to pass for any strategy
             attr = spec.feature
@@ -121,7 +121,7 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
             else:
                 attr_ind = cast(int, attr)
             if str(dtuple[attr_ind]) == null_sentinel:
-                sig = None
+                sig = []
                 break
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
 
@@ -136,7 +136,6 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
                     args.update(cast(PSigCharsAtSignatureSpec, spec).config)
                 s = func(**args)
                 sig.append(s)
-        if sig:
-            signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
+        signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
 
     return signatures
