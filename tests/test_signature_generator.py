@@ -90,8 +90,29 @@ class TestPSig:
                 ]
             ]
         )
-        signatures = generate_signatures(signatures, dtuple)
+        signatures = generate_signatures(signatures, dtuple, "")
         assert signatures == ["0_Joyce_Wang", "1_JSAS_ANKFNK"]
+
+    def test_generate_signatures_with_null(self):
+        signatures = parse_obj_as(
+            List[PSigSignatureModel],
+            [
+                [
+                    {'type': 'feature-value', 'feature': 0},
+                    {'type': 'feature-value', 'feature': 1},
+                ],
+                [
+                    {'type': 'metaphone', 'feature': 0},
+                    {'type': 'metaphone', 'feature': 1},
+                ]
+            ]
+        )
+        dtuple = ('Joyce', '', 2134)
+        signatures = generate_signatures(signatures, dtuple, "")
+        assert signatures == []
+        dtuple = ('N/A', 'Wang', 2134)
+        signatures = generate_signatures(signatures, dtuple, "N/A")
+        assert signatures == []
 
     def test_invalid_signature_type(self):
         with pytest.raises(ValidationError) as e:

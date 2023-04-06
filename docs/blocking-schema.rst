@@ -92,9 +92,10 @@ Probabilistic Signature Configuration
 ===================== ============= ==========================
 attribute             type          description
 ===================== ============= ==========================
-blocking-features     list[integer] specify which features u
+blocking-features     list[integer] specify which features are used in blocks generation
 filter                dictionary    filtering threshold
 blocking-filter       dictionary    type of filter to generate blocks
+null-sentinel         string        defines the string that represents the NULL value in the dataset. Defaults to ""
 signatureSpecs        list of lists signature strategies where each list is a combination of signature strategies
 ===================== ============= ==========================
 
@@ -168,7 +169,7 @@ Finally a full example of p-sig blocking schema:
     "type": "p-sig",
     "version": 1,
     "config": {
-        "blocking_features": [1],
+        "blocking-features": [1],
         "filter": {
             "type": "ratio",
             "max": 0.02,
@@ -199,7 +200,8 @@ LSH based :math:`\lambda`-fold Configuration
 ===================== ============= ==========================
 attribute             type          description
 ===================== ============= ==========================
-blocking-features     list[integer] specify which features to used in blocks generation
+blocking-features     list[integer] specify which features are used in blocks generation
+null-sentinel         string        defines the string that represents the NULL value in the dataset. Defaults to ""
 Lambda                integer       denotes the degree of redundancy - :math:`H^i`, :math:`i=1,2,...`, :math:`\Lambda` where each :math:`H^i` represents one independent blocking group
 bf-len                integer       length of bloom filter
 num-hash-funcs        integer       number of hash functions used to map record to Bloom filter

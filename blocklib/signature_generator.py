@@ -84,7 +84,7 @@ SIGNATURE_STRATEGIES = {
 
 
 def generate_signatures(signature_strategies: List[PSigSignatureModel],
-                        dtuple: Sequence,
+                        dtuple: Sequence, null_sentinel: str,
                         feature_to_index: Optional[Dict[str, int]] = None):
     """Generate signatures for one record.
 
@@ -93,6 +93,9 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
 
     :param dtuple:
         Raw data to generate signatures from
+
+    :param null_sentinel:
+        String that represents the NULL value in the dataset
 
     :param feature_to_index:
         Mapping from feature name to feature index
@@ -117,6 +120,9 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
                     raise ValueError(f'Feature {attr} is not in the dataset')
             else:
                 attr_ind = cast(int, attr)
+            if str(dtuple[attr_ind]) == null_sentinel:
+                sig = None
+                break
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
 
             # find the correct strategy function to call
@@ -130,6 +136,7 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
                     args.update(cast(PSigCharsAtSignatureSpec, spec).config)
                 s = func(**args)
                 sig.append(s)
-        signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
+        if sig:
+            signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
 
     return signatures
