@@ -1,4 +1,4 @@
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Any
 
 from pydantic import BaseModel, Field
 
@@ -10,7 +10,7 @@ class BlockingConfigBase(BaseModel):
         name="blocking-features",
         alias="blocking-features",
     )
-    null_sentinel: str = Field(
+    null_sentinel: Any = Field(
         alias="null-sentinel",
         description="The value that represents a NULL value in the dataset",
         default="",

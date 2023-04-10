@@ -12,7 +12,7 @@ def generate_by_feature_value(attr_ind: int, dtuple: Sequence):
 
 
 def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
-    """ Generate signatures by select subset of characters in original features.
+    """Generate signatures by select subset of characters in original features.
 
     >>> res = generate_by_char_at(2, ('harry potter', '4 Privet Drive', 'Little Whinging', 'Surrey'), [0, 3])
     >>> assert res == 'Lt'
@@ -24,7 +24,7 @@ def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
     feature = dtuple[attr_ind]
 
     # missing value
-    if feature == '':
+    if feature == "":
         return None
 
     max_ind = len(feature)
@@ -32,32 +32,34 @@ def generate_by_char_at(attr_ind: int, dtuple: Sequence, pos: List[Any]):
         if type(p) == int:
             p = min(p, max_ind - 1)
             sig.append(feature[p])
-        elif ':' not in p:
+        elif ":" not in p:
             p = int(p)
             p = min(p, max_ind - 1)
             sig.append(feature[p])
         else:
             start_ind, end_ind = p.split(":")
-            if start_ind != '' and end_ind != '':
+            if start_ind != "" and end_ind != "":
                 start_ind = int(start_ind)
                 end_ind = int(end_ind)
-                assert start_ind < end_ind, "Start index should be less than End index in {}".format(p)
+                assert (
+                    start_ind < end_ind
+                ), "Start index should be less than End index in {}".format(p)
                 start_ind = min(start_ind, max_ind - 1)
                 end_ind = min(end_ind, max_ind)
-                c = feature[start_ind: end_ind]
-            elif start_ind == '' and end_ind != '':
+                c = feature[start_ind:end_ind]
+            elif start_ind == "" and end_ind != "":
                 end_ind = int(end_ind)
                 end_ind = min(end_ind, max_ind)
                 c = feature[:end_ind]
-            elif start_ind != '' and end_ind == '':
+            elif start_ind != "" and end_ind == "":
                 start_ind = int(start_ind)
                 start_ind = min(start_ind, max_ind)
                 c = feature[start_ind:]
             else:
-                raise ValueError('Invalid pos argument: {}'.format(p))
+                raise ValueError("Invalid pos argument: {}".format(p))
             sig.append(c)
 
-    return ''.join(sig)
+    return "".join(sig)
 
 
 def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
@@ -69,23 +71,26 @@ def generate_by_metaphone(attr_ind: int, dtuple: Sequence):
     """
     feature = dtuple[attr_ind]
     phonetic_encoding = doublemetaphone(feature)
-    return ''.join(phonetic_encoding)
+    return "".join(phonetic_encoding)
 
 
 #################################################
 ########## Add strategy here ####################
 #################################################
 SIGNATURE_STRATEGIES = {
-    'feature-value': generate_by_feature_value,
+    "feature-value": generate_by_feature_value,
     "characters-at": generate_by_char_at,
     "characters_at": generate_by_char_at,
-    'metaphone': generate_by_metaphone,
+    "metaphone": generate_by_metaphone,
 }  # type: Dict[str, Callable[..., str]]
 
 
-def generate_signatures(signature_strategies: List[PSigSignatureModel],
-                        dtuple: Sequence, null_sentinel: str,
-                        feature_to_index: Optional[Dict[str, int]] = None):
+def generate_signatures(
+    signature_strategies: List[PSigSignatureModel],
+    dtuple: Sequence,
+    null_sentinel: Any,
+    feature_to_index: Optional[Dict[str, int]] = None,
+):
     """Generate signatures for one record.
 
     :param signature_strategies:
@@ -114,13 +119,20 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
             attr = spec.feature
             if type(attr) == str:
                 attr_name: str = cast(str, attr)
-                assert feature_to_index, "Missing information to map from feature name to index"
+                assert (
+                    feature_to_index
+                ), "Missing information to map from feature name to index"
                 attr_ind = feature_to_index.get(attr_name, None)
                 if attr_ind is None:
-                    raise ValueError(f'Feature {attr} is not in the dataset')
+                    raise ValueError(f"Feature {attr} is not in the dataset")
             else:
                 attr_ind = cast(int, attr)
-            if str(dtuple[attr_ind]) == null_sentinel:
+
+            if (
+                dtuple[attr_ind] is null_sentinel
+                if null_sentinel is None
+                else dtuple[attr_ind] == null_sentinel
+            ):
                 sig = []
                 break
             args = dict(attr_ind=attr_ind, dtuple=[str(x) for x in dtuple])
@@ -129,14 +141,18 @@ def generate_signatures(signature_strategies: List[PSigSignatureModel],
             func = SIGNATURE_STRATEGIES.get(spec.type, None)
 
             if func is None:
-                raise NotImplementedError(f'Strategy {spec.type} is not implemented yet!')
+                raise NotImplementedError(
+                    f"Strategy {spec.type} is not implemented yet!"
+                )
             else:
-                if hasattr(spec, 'config'):
+                if hasattr(spec, "config"):
                     # For now that means it must be a PSigCharsAtSignatureSpec
                     args.update(cast(PSigCharsAtSignatureSpec, spec).config)
                 s = func(**args)
                 sig.append(s)
         if len(sig) > 0:
-            signatures.append('{}_{}'.format(i, "_".join([x for x in sig if x is not None])))
+            signatures.append(
+                "{}_{}".format(i, "_".join([x for x in sig if x is not None]))
+            )
 
     return signatures

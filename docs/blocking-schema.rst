@@ -95,7 +95,7 @@ attribute             type          description
 blocking-features     list[integer] specify which features are used in blocks generation
 filter                dictionary    filtering threshold
 blocking-filter       dictionary    type of filter to generate blocks
-null-sentinel         string        defines the string that represents the NULL value in the dataset. Defaults to ""
+null-sentinel         Any           defines the object that represents the NULL value in the dataset. Defaults to the empty string ""
 signatureSpecs        list of lists signature strategies where each list is a combination of signature strategies
 ===================== ============= ==========================
 
@@ -180,6 +180,7 @@ Finally a full example of p-sig blocking schema:
             "number-hash-functions": 4,
             "bf-len": 2048,
         },
+        "null-sentinel": None,
         "signatureSpecs": [
             [
                  {"type": "characters-at", "config": {"pos": [0]}, "feature": 1},
@@ -201,7 +202,7 @@ LSH based :math:`\lambda`-fold Configuration
 attribute             type          description
 ===================== ============= ==========================
 blocking-features     list[integer] specify which features are used in blocks generation
-null-sentinel         string        defines the string that represents the NULL value in the dataset. Defaults to ""
+null-sentinel         Any           defines the object that represents the NULL value in the dataset. Defaults to the empty string ""
 Lambda                integer       denotes the degree of redundancy - :math:`H^i`, :math:`i=1,2,...`, :math:`\Lambda` where each :math:`H^i` represents one independent blocking group
 bf-len                integer       length of bloom filter
 num-hash-funcs        integer       number of hash functions used to map record to Bloom filter
