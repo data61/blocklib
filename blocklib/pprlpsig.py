@@ -35,6 +35,7 @@ class PPRLIndexPSignature(PPRLIndex):
         self.blocking_config = config.blocking_filter
         self.signature_strategies = config.signatures
         self.rec_id_col = config.record_id_column
+        self.null_sentinel = config.null_sentinel
 
     def build_reversed_index(self, data: Sequence[Sequence], header: Optional[List[str]] = None):
         """Build inverted index given P-Sig method.
@@ -55,7 +56,7 @@ class PPRLIndexPSignature(PPRLIndex):
         # {signature -> record ids}
         for rec_id, dtuple in zip(record_ids, data):
 
-            signatures = generate_signatures(self.signature_strategies, dtuple, feature_to_index)
+            signatures = generate_signatures(self.signature_strategies, dtuple, self.null_sentinel, feature_to_index)
 
             for i, signature in enumerate(signatures):
                 reversed_index_per_strategy[i][signature].append(rec_id)
