@@ -2,6 +2,10 @@
 
 ## new version
 
+## 0.1.9
+
+* Bump supported Python versions #245
+
 ## 0.1.8
 
 * use logging instead of the `print` function  #138
