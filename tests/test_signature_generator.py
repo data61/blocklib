@@ -23,7 +23,7 @@ class TestPSig:
                 ]
             )
         ]
-        signatures = generate_signatures(signatures, dtuple)
+        signatures = generate_signatures(signatures, dtuple, "")
         assert signatures == ["0_Joyce_Wang"]
 
     def test_char_at(self):
@@ -39,7 +39,7 @@ class TestPSig:
 
         print(signatures)
 
-        signatures = generate_signatures(signatures, dtuple)
+        signatures = generate_signatures(signatures, dtuple, "")
         assert signatures == ["0_oyc_ang"]
 
         # test :end_ind
@@ -48,11 +48,11 @@ class TestPSig:
                 PSigCharsAtSignatureSpec(**{'type': 'characters-at', 'feature': 0, 'config': {'pos': [':2', '-2:', 2, '2']}})
             ]
         ]
-        signature = generate_signatures(strategy, dtuple)
+        signature = generate_signatures(strategy, dtuple, "")
         assert signature == ["0_Joceyy"]
 
-        res = generate_signatures(strategy, ('', ''))
-        assert res == ['0_']
+        res = generate_signatures(strategy, ('', ''), "")
+        assert res == []
 
         invalid_strategy = [
             [
@@ -60,7 +60,7 @@ class TestPSig:
             ]
         ]
         with pytest.raises(ValueError) as e:
-            generate_signatures(invalid_strategy, dtuple)
+            generate_signatures(invalid_strategy, dtuple, "")
             assert e == 'Invalid pos argument: 1-2'
 
     def test_metaphone(self):
@@ -71,7 +71,7 @@ class TestPSig:
                 PSigMetaphoneSignatureSpec(type='metaphone', feature=0)
             ]
         ]
-        signatures = generate_signatures(signature_strategies, dtuple)
+        signatures = generate_signatures(signature_strategies, dtuple, "")
         assert signatures == ["0_SM0XMT"]
 
     def test_generate_signatures(self):
@@ -90,8 +90,32 @@ class TestPSig:
                 ]
             ]
         )
-        signatures = generate_signatures(signatures, dtuple)
+        signatures = generate_signatures(signatures, dtuple, "")
         assert signatures == ["0_Joyce_Wang", "1_JSAS_ANKFNK"]
+
+    def test_generate_signatures_with_null(self):
+        signature_strats = parse_obj_as(
+            List[PSigSignatureModel],
+            [
+                [
+                    {'type': 'feature-value', 'feature': 0},
+                    {'type': 'feature-value', 'feature': 1},
+                ],
+                [
+                    {'type': 'metaphone', 'feature': 0},
+                    {'type': 'metaphone', 'feature': 1},
+                ]
+            ]
+        )
+        dtuple = ('Joyce', '', 2134)
+        signatures = generate_signatures(signature_strats, dtuple, "")
+        assert signatures == []
+        dtuple = (None, 'Wang', 2134)
+        signatures = generate_signatures(signature_strats, dtuple, None)
+        assert signatures == []
+        dtuple = (None, 'Wang', 2134)
+        signatures = generate_signatures(signature_strats, dtuple, "dummy")
+        assert len(signatures) > 0
 
     def test_invalid_signature_type(self):
         with pytest.raises(ValidationError) as e:
@@ -110,10 +134,10 @@ class TestPSig:
             ]
         ]
         with pytest.raises(AssertionError) as e:
-            generate_signatures(signatures, dtuple)
+            generate_signatures(signatures, dtuple, "")
             assert e == 'Missing information to map from feature name to index'
 
         with pytest.raises(ValueError) as e:
             feature_to_index = {'name': 0}
-            generate_signatures(signatures, dtuple, feature_to_index)
+            generate_signatures(signatures, dtuple, "", feature_to_index)
             assert e == 'Feature name is not in the dataset'
