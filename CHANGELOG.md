@@ -2,6 +2,10 @@
 
 ## new version
 
+## 0.1.10
+
+* no signatures for NULL values #259
+
 ## 0.1.9
 
 * Bump supported Python versions #245
