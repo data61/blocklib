@@ -23,11 +23,8 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          - "3.12.0-alpha.5"
-        include:
-          - python-version: "3.12.0-alpha.5"
-            os: ubuntu-latest
-            experimental: true
+          - "3.12"
+
 
 # How to add an experimental job:
 #          - "3.10.0-alpha.6"
