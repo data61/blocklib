@@ -52,7 +52,7 @@ class TestCandidateBlockGenerator:
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max": 0.5,
+                "max": 0.49,
                 "min": 0.0,
             },
             "blocking-filter": {
