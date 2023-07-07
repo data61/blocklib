@@ -67,7 +67,7 @@ class TestPSig(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max": 0.5,
+                "max": 0.49,
                 "min": 0.2,
             },
             "blocking-filter": {
@@ -102,7 +102,7 @@ class TestPSig(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max": 0.5,
+                "max": 0.49,
                 "min": 0.2,
             },
             "blocking-filter": {
@@ -133,7 +133,7 @@ class TestPSig(unittest.TestCase):
             "record-id-col": 0,
             "filter": {
                 "type": "ratio",
-                "max": 0.5,
+                "max": 0.49,
                 "min": 0.2,
             },
             "blocking-filter": {
