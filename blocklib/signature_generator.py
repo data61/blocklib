@@ -105,7 +105,7 @@ def generate_signatures(
     :param feature_to_index:
         Mapping from feature name to feature index
 
-    :return signatures: set of str
+    :return signatures: list of tuples (strategy_index, signature)
     """
     # signatures to return
     signatures = []
@@ -152,7 +152,7 @@ def generate_signatures(
                 sig.append(s)
         if len(sig) > 0:
             signatures.append(
-                "{}_{}".format(i, "_".join([x for x in sig if x is not None]))
+                (i, "{}_{}".format(i, "_".join([x for x in sig if x is not None])))
             )
 
     return signatures
