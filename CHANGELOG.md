@@ -2,6 +2,11 @@
 
 ## new version
 
+## 0.1.11
+
+* filter boundaries should be inclusive #276 
+* keep track of strategy index #275 
+
 ## 0.1.10
 
 * no signatures for NULL values #259
