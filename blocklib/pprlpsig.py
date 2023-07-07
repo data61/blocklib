@@ -58,8 +58,8 @@ class PPRLIndexPSignature(PPRLIndex):
 
             signatures = generate_signatures(self.signature_strategies, dtuple, self.null_sentinel, feature_to_index)
 
-            for i, signature in enumerate(signatures):
-                reversed_index_per_strategy[i][signature].append(rec_id)
+            for strategy_index, signature in signatures:
+                reversed_index_per_strategy[strategy_index][signature].append(rec_id)
 
         reversed_index_per_strategy = [self.filter_reversed_index(data, reversed_index) for reversed_index in
                                        reversed_index_per_strategy]
